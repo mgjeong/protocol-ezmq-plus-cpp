@@ -1,7 +1,7 @@
 #ifndef EZMQ_X_ERRTYPE_H
 #define EZMQ_X_ERRTYPE_H
 
-namespace EXMQX
+namespace EZMQX
 {
     typedef enum
     {

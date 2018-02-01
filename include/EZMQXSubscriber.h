@@ -10,9 +10,10 @@
 
 namespace EZMQX
 {
+class Subscriber;
 
 typedef std::function<void(std::string topic, void* object)> EZMQXSubCB;
-typedef std::function<void(std::shared_ptr<EZMQX::Subscriber> subscriber, ErrorCode errCode)> EZMQXErrCB;
+typedef std::function<void(std::shared_ptr<EZMQX::Subscriber> subscriber, EZMQX::ErrorCode errCode)> EZMQXErrCB;
 
 class Subscriber
 {
@@ -23,16 +24,17 @@ class Subscriber
 
         // delete default ctor
         Subscriber();
-        Subscriber(std::string topic, EZMQXSubCB subCb, EZMQXErrCB errCb);
-        Subscriber(std::list<std::string> topics, EZMQXSubCB subCb, EZMQXErrCB errCb);
+        Subscriber(std::string &topic, EZMQXSubCB subCb, EZMQXErrCB errCb);
+        Subscriber(std::list<std::string> &topics, EZMQXSubCB subCb, EZMQXErrCB errCb);
         // make noncopyable
         Subscriber(const Subscriber&) = delete;
-        void operator(const Subscriber&) = delete;
+        Subscriber& operator = (const Subscriber&) = delete;
     public:
-        static std::shared_ptr<EZMQX::Subscriber> getSubscriber(std::string topic, EZMQXSubCB subCb, EZMQXErrCB errCb);
-        static std::shared_ptr<EZMQX::Subscriber> getSubscriber(std::list<std::string> topics, EZMQXSubCB subCb, EZMQXErrCB errCb);
-        static std::shared_ptr<EZMQX::Subscriber> getSubscriber(EZMQX::Topic topic, EZMQXSubCB subCb, EZMQXErrCB errCb);
-        static std::shared_ptr<EZMQX::Subscriber> getSubscriber(std::list<EZMQX::Topic> topics, EZMQXSubCB subCb, EZMQXErrCB errCb);
+        static std::shared_ptr<EZMQX::Subscriber> getSubscriber(std::string &topic, EZMQXSubCB subCb, EZMQXErrCB errCb);
+        static std::shared_ptr<EZMQX::Subscriber> getSubscriber(std::list<std::string> &topics, EZMQXSubCB subCb, EZMQXErrCB errCb);
+        static std::shared_ptr<EZMQX::Subscriber> getSubscriber(EZMQX::Topic &topic, EZMQXSubCB subCb, EZMQXErrCB errCb);
+        static std::shared_ptr<EZMQX::Subscriber> getSubscriber(std::list<EZMQX::Topic> &topics, EZMQXSubCB subCb, EZMQXErrCB errCb);
+        bool isTerminated();
         void terminate();
 };
 
