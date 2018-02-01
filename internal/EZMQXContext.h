@@ -15,6 +15,8 @@ class Context
     private:
         std::mutex lock;
         std::atomic_bool initialized;
+        std::atomic_bool terminated;
+        std::string hostname;
         std::string hostAddr;
         static std::shared_ptr<EZMQX::Context> _instance;
         std::map<int, int> ports;

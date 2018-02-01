@@ -1,16 +1,16 @@
 #include<EZMQXEndpoint.h>
 
-EZMQX::Endpoint::Endpoint(std::string addr, int port)
+EZMQX::Endpoint::Endpoint(std::string addr, int port) : addr(addr), port(port)
 {
 
 }
 
 std::string EZMQX::Endpoint::getAddr()
 {
-    return "";
+    return addr;
 }
 
 int EZMQX::Endpoint::getPort()
 {
-    return -1;
+    return port;
 }
