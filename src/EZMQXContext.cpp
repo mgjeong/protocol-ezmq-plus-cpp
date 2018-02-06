@@ -1,4 +1,6 @@
 #include <EZMQXContext.h>
+#include <EZMQXErrorCode.h>
+#include <EZMQXException.h>
 
 std::shared_ptr<EZMQX::Context> EZMQX::Context::_instance;
 
@@ -75,6 +77,10 @@ void EZMQX::Context::terminate()
         if (!terminated.load())
         {
             // release resource
+        }
+        else
+        {
+            throw new EZMQX::Exception("Context terminated", EZMQX::Terminated);
         }
 
         terminated.store(true);

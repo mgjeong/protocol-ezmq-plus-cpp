@@ -10,9 +10,9 @@ class Endpoint
     private:
         std::string addr;
         int port;
-        Endpoint();
     public:
-        Endpoint(std::string addr, int port);
+        Endpoint();
+        Endpoint(const std::string addr, int port);
         std::string getAddr();
         int getPort();
 };

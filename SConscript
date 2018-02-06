@@ -38,7 +38,8 @@ ezmq_plus_env.AppendUnique(CPPPATH=[
 #        './protobuf',
         './include',
 #        './include/logger',
-        './internal'
+        './internal',
+        './src'
 ])
 
 ezmq_plus_env.PrependUnique(LIBS=['zmq', 'protobuf'])
@@ -74,9 +75,9 @@ ezmq_plus_env.AppendUnique(ezmq_plus_src = [ezmq_plus_env.Glob(os.path.join(ezmq
 ezmq_plus_shared = ezmq_plus_env.SharedLibrary('ezmq_plus', ezmq_plus_env.get('ezmq_plus_src'))
 ezmq_plus_static = ezmq_plus_env.StaticLibrary('ezmq_plus', ezmq_plus_env.get('ezmq_plus_src'))
 
-# Go to build ezmq_plus sample apps
-#if target_os == 'linux':
-#       SConscript('samples/SConscript')
+#Go to build ezmq_plus sample apps
+if target_os == 'linux':
+      SConscript('samples/SConscript')
 
 # Go to build ezmq_plus unit test cases
 #if target_os == 'linux':

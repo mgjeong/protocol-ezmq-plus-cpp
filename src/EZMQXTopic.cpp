@@ -1,6 +1,11 @@
 #include <EZMQXTopic.h>
 
-EZMQX::Topic::Topic(std::string &topic, std::string &schema, EZMQX::Endpoint &endpoint): endpoint(endpoint)
+EZMQX::Topic::Topic()
+{
+
+}
+
+EZMQX::Topic::Topic(const std::string &topic, const std::string &schema, const EZMQX::Endpoint &endpoint): endpoint(endpoint)
 {
 
 }
