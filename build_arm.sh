@@ -27,3 +27,15 @@ cd $PROJECT_ROOT
 echo "build protocol-ezmq-plus-cpp"
 scons TARGET_OS=linux TARGET_ARCH=armhf
 echo "done"
+
+#copy samples
+cp out/linux/armhf/release/samples/publisher ./publisher
+cp out/linux/armhf/release/samples/subscriber ./subscriber
+
+#copy libs
+mkdir libs
+cp out/linux/armhf/release/libezmq_plus.so ./libs/libezmq_plus.so
+cp dependencies/protocol-ezmq-cpp/out/linux/armhf/release/libezmq.so ./libs/libezmq.so
+cp -r /usr/local/lib/* libs
+
+echo "done"
