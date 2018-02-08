@@ -18,20 +18,18 @@ int main()
       publisher->publish(payload);
 
       // condition check
-      if (publisher->isTerminated())
+      if (!publisher->isTerminated())
       {
           publisher->terminate();
       }
 
       // occur exception
-      if (publisher->isTerminated())
-      {
-          publisher->terminate();
-      }
+      publisher->terminate();
     }
-    catch(EZMQX::Exception e)
+    catch(EZMQX::Exception& e)
     {
         // catch terminated exception
+        std::cout << "catch exception" << std::endl;
         std::cout << e.what() << std::endl;
     }
 

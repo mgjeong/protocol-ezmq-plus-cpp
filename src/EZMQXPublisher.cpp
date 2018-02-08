@@ -66,7 +66,7 @@ void EZMQX::Publisher::terminate()
         }
         else
         {
-            throw new EZMQX::Exception("Publisher terminated", EZMQX::Terminated);
+            throw EZMQX::Exception("Publisher terminated", EZMQX::Terminated);
         }
 
         terminated.store(true);
