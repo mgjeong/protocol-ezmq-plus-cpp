@@ -24,4 +24,4 @@ ezmq_plus_sample_env.AppendUnique(LIBS=['ezmq_plus', 'protobuf'])
 # Source files and Targets
 ######################################################################
 ezmqxpublisher = ezmq_plus_sample_env.Program('publisher', 'publisher.cpp')
-#ezmqsubscriber = ezmq_sample_env.Program('subscriber', 'subscriber.cpp')
+ezmqsubscriber = ezmq_plus_sample_env.Program('subscriber', 'subscriber.cpp')
