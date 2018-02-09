@@ -15,59 +15,71 @@
 #
 ###############################################################################
 
-################ EZMQ build script ##################
+################ ezmq_plus build script ##################
 
 import os
 
 Import('env')
 
-ezmq_env = env.Clone()
-target_os = ezmq_env.get('TARGET_OS')
-target_arch = ezmq_env.get('TARGET_ARCH')
+ezmq_plus_env = env.Clone()
+target_os = ezmq_plus_env.get('TARGET_OS')
+target_arch = ezmq_plus_env.get('TARGET_ARCH')
 
-if ezmq_env.get('RELEASE'):
-    ezmq_env.AppendUnique(CCFLAGS=['-Os'])
+if ezmq_plus_env.get('RELEASE'):
+    ezmq_plus_env.AppendUnique(CCFLAGS=['-Os'])
 else:
-    ezmq_env.AppendUnique(CCFLAGS=['-g'])
+    ezmq_plus_env.AppendUnique(CCFLAGS=['-g'])
 
-ezmq_env.AppendUnique(CPPPATH=[
-         './extlibs/zmq',
+ezmq_plus_env.AppendUnique(CPPPATH=[
+        './dependencies/protocol-ezmq-cpp/include',
+        './dependencies/protocol-ezmq-cpp/extlibs/zmq',
+        './dependencies/protocol-ezmq-cpp/protobuf',
+#         './extlibs/zmq',
 #        './protobuf',
         './include',
 #        './include/logger',
+        './internal',
         './src'
 ])
 
-ezmq_env.PrependUnique(LIBS=['zmq', 'protobuf'])
+ezmq_plus_env.PrependUnique(LIBS=['zmq', 'protobuf'])
+
+if ezmq_plus_env.get('RELEASE'):
+    ezmq_plus_env.PrependUnique(LIBS=['ezmq'], LIBPATH=[os.path.join('./dependencies/protocol-ezmq-cpp/out/linux/', target_arch, 'release')])
+else:
+    ezmq_plus_env.PrependUnique(LIBS=['ezmq'], LIBPATH=[os.path.join('./dependencies/protocol-ezmq-cpp/out/linux/', target_arch, 'debug')])
+
+#ezmq_plus_env.PrependUnique(LIBS=['protobuf'])
+
 
 if target_os not in ['windows']:
-    ezmq_env.AppendUnique(
-        CXXFLAGS=['-O2', '-g', '-Wall', '-fPIC', '-fmessage-length=0', '-std=c++0x', '-I/usr/local/include'])
+    ezmq_plus_env.AppendUnique(
+        CXXFLAGS=['-O2', '-g', '-Wall', '-fPIC', '-fmessage-length=0', '-std=c++11', '-I/usr/local/include'])
 
 if target_os not in ['windows']:
-    ezmq_env.AppendUnique(LINKFLAGS=['-Wl,--no-undefined'])
+    ezmq_plus_env.AppendUnique(LINKFLAGS=['-Wl,--no-undefined'])
 
 if target_os in ['linux']:
-    ezmq_env.AppendUnique(LIBS=['pthread'])
+    ezmq_plus_env.AppendUnique(LIBS=['pthread'])
 
 #if target_os in ['linux']:
 #    if not env.get('RELEASE'):
-#        ezmq_env.PrependUnique(LIBS=['gcov'])
-#        ezmq_env.AppendUnique(CXXFLAGS=['--coverage'])
+#        ezmq_plus_env.PrependUnique(LIBS=['gcov'])
+#        ezmq_plus_env.AppendUnique(CXXFLAGS=['--coverage'])
 
-EZMQ_DIR = '.'
-ezmq_env.AppendUnique(ezmq_src = [ezmq_env.Glob(os.path.join(EZMQ_DIR, 'src', '*.cpp')),
-#                                ezmq_env.Glob(os.path.join(EZMQ_DIR, 'src', 'logger', '*.cpp')),
-#                                ezmq_env.Glob(os.path.join(EZMQ_DIR, 'protobuf', '*.cc'))])
+ezmq_plus_DIR = '.'
+ezmq_plus_env.AppendUnique(ezmq_plus_src = [ezmq_plus_env.Glob(os.path.join(ezmq_plus_DIR, 'src', '*.cpp'))])
+#                                ezmq_plus_env.Glob(os.path.join(ezmq_plus_DIR, 'src', 'logger', '*.cpp')),
+#                                ezmq_plus_env.Glob(os.path.join(ezmq_plus_DIR, 'protobuf', '*.cc'))])
 
-ezmqshared = ezmq_env.SharedLibrary('ezmq_plus', ezmq_env.get('ezmq_src'))
-ezmqstatic = ezmq_env.StaticLibrary('ezmq_plus', ezmq_env.get('ezmq_src'))
+ezmq_plus_shared = ezmq_plus_env.SharedLibrary('ezmq_plus', ezmq_plus_env.get('ezmq_plus_src'))
+ezmq_plus_static = ezmq_plus_env.StaticLibrary('ezmq_plus', ezmq_plus_env.get('ezmq_plus_src'))
 
-# Go to build EZMQ sample apps
+#Go to build ezmq_plus sample apps
 if target_os == 'linux':
-       SConscript('samples/SConscript')
+      SConscript('samples/SConscript')
 
-# Go to build EZMQ unit test cases
+# Go to build ezmq_plus unit test cases
 #if target_os == 'linux':
 #    if target_arch in ['x86', 'x86_64']:
 #        SConscript('unittests/SConscript')

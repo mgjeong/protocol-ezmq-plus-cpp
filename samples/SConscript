@@ -1,0 +1,27 @@
+################ EZMQ Plus sample build script ##################
+Import('env')
+
+target_os = env.get('TARGET_OS')
+ezmq_plus_sample_env = env.Clone()
+
+######################################################################
+# Build flags
+######################################################################
+ezmq_plus_sample_env.AppendUnique(CPPPATH=[
+	'../dependencies/protocol-ezmq-cpp/include',
+    '../dependencies/protocol-ezmq-cpp/extlibs/zmq',
+    '../dependencies/protocol-ezmq-cpp/protobuf',
+    '../include'
+
+])
+
+ezmq_plus_sample_env.AppendUnique(
+    CXXFLAGS=['-O2', '-g', '-Wall', '-fmessage-length=0', '-std=c++11', '-I/usr/local/include'])
+
+ezmq_plus_sample_env.AppendUnique(LIBS=['ezmq_plus', 'protobuf'])
+
+####################################################################
+# Source files and Targets
+######################################################################
+ezmqxpublisher = ezmq_plus_sample_env.Program('publisher', 'publisher.cpp')
+ezmqsubscriber = ezmq_plus_sample_env.Program('subscriber', 'subscriber.cpp')

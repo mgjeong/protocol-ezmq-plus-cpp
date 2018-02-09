@@ -1,0 +1,8 @@
+FROM armhf/ubuntu:14.04
+MAINTAINER bg.chun@samsung.com
+
+COPY libs /libs
+COPY publisher publisher
+COPY subscriber subscriber
+COPY run.sh run.sh
+CMD ["./run.sh", "arg1", "arg2"]
