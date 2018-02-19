@@ -19,4 +19,9 @@ else
     echo " publisher topic"
     echo " subscriber topic"
 fi
-
+    while true
+    do
+        echo "Entered infinite loop for test"
+        sleep 1
+    done
+    
