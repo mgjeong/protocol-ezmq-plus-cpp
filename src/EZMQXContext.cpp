@@ -1,6 +1,7 @@
 #include <EZMQXContext.h>
 #include <EZMQXErrorCode.h>
 #include <EZMQXException.h>
+#include <curl.h>
 
 std::shared_ptr<EZMQX::Context> EZMQX::Context::_instance;
 
@@ -37,10 +38,12 @@ void EZMQX::Context::initialize()
         {
 
             // initialize resource
+            CURL *curl;
+            CURLcode res;
+            curl_global_init(CURL_GLOBAL_DEFAULT);
+            curl = curl_easy_init();
 
-            // parse host addr
-
-            // parse broker addr
+            // parse host & broker addr
 
             // get hostname
 
