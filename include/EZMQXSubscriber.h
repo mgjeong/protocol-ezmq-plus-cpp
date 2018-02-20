@@ -2,8 +2,9 @@
 #define EZMQ_X_SUBSCRIBER_H
 
 #include <string>
-#include <memory>
 #include <list>
+#include <memory>
+#include <atomic>
 #include <EZMQXErrorCode.h>
 #include <EZMQXTopic.h>
 #include <EZMQSubscriber.h>
@@ -18,7 +19,9 @@ typedef std::function<void(std::shared_ptr<EZMQX::Subscriber> subscriber, EZMQX:
 class Subscriber
 {
     private:
-        std::list<ezmq::EZMQSubscriber> subscribers;
+        std::mutex lock;
+        std::atomic_bool terminated;
+        std::list<std::shared_ptr<ezmq::EZMQSubscriber>> subscribers;
         EZMQX::SubCb mSubCb;
         EZMQX::SubErrCb mSubErrCb;
         ezmq::EZMQSubCB mSubCallback;
@@ -26,7 +29,7 @@ class Subscriber
 
         // delete default ctor
         Subscriber();
-        Subscriber(const  std::string &topic, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb);
+        Subscriber(const std::list<EZMQX::Topic> &topics, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb);
         Subscriber(const std::list<std::string> &topics, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb);
         // make noncopyable
         Subscriber(const Subscriber&) = delete;

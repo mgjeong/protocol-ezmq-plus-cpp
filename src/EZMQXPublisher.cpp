@@ -51,7 +51,7 @@ void EZMQX::Publisher::publish(void* object)
 
 bool EZMQX::Publisher::isTerminated()
 {
-    //atomically
+    // atomically
     return terminated.load();
 }
 
