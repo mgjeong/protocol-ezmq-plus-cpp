@@ -64,9 +64,50 @@ void EZMQX::Context::initialize()
 
             // parse host & broker addr
             std::string nodeInfo;
+
+            try
             {
-                EZMQX::SimpleRest rest;
-                nodeInfo = rest.Get(NODE+PREFIX+API_CONFIG);
+                {
+                    EZMQX::SimpleRest rest;
+                    nodeInfo = rest.Get(NODE+PREFIX+API_CONFIG);
+                }
+
+                Json::Value root;
+                Json::Reader reader;
+                if (!reader.parse(nodeInfo, root))
+                {
+                    std::cout << "json parse fail" << std::endl;
+                }
+                else
+                {
+                    Json::Value props = root[CONF_PROPS];
+
+                    for (Json::Value::ArrayIndex i = 0; i < props.size(); i ++)
+                    {
+                        if (!this->remoteAddr.empty() && !this->hostAddr.empty())
+                        {
+                            break;
+                        }
+
+                        if (props[i].isMember(CONF_NAME))
+                        {
+
+                             if (props[i][CONF_NAME].asString() == CONF_REMOTE_ADDR)
+                             {
+                                this->remoteAddr = props[i][CONF_VALUE].asString();
+
+                             }
+                             else if (props[i][CONF_NAME].asString() == CONF_NODE_ADDR )
+                             {
+                                this->hostAddr = props[i][CONF_VALUE].asString();
+                             }
+                        }
+                    }
+                }
+            }
+            catch(...)
+            {
+                throw new EZMQX::Exception("Internal rest service unavilable", EZMQX::ServiceUnavailable);
             }
 
             // std::cout << nodeInfo <<std::endl;
@@ -76,48 +117,22 @@ void EZMQX::Context::initialize()
                 // do something
             }
 
-            Json::Value root;
-            Json::Reader reader;
-            if (!reader.parse(nodeInfo, root))
+            try
             {
-                std::cout << "json parse fail" << std::endl;
-            }
-            else
-            {
-                Json::Value props = root[CONF_PROPS];
-
-                for (Json::Value::ArrayIndex i = 0; i < props.size(); i ++)
+                // get hostname
+                std::ifstream _file(HOSTNAME);
+                std::string _hostname((std::istreambuf_iterator<char>(_file)), std::istreambuf_iterator<char>());
+                // check last is '\n'
+                if (_hostname.back() == '\n')
                 {
-                    if (!this->remoteAddr.empty() && !this->hostAddr.empty())
-                    {
-                        break;
-                    }
-
-                    if (props[i].isMember(CONF_NAME))
-                    {
-
-                         if (props[i][CONF_NAME].asString() == CONF_REMOTE_ADDR)
-                         {
-                            this->remoteAddr = props[i][CONF_VALUE].asString();
-
-                         }
-                         else if (props[i][CONF_NAME].asString() == CONF_NODE_ADDR )
-                         {
-                            this->hostAddr = props[i][CONF_VALUE].asString();
-                         }
-                    }
+                    _hostname = _hostname.substr(0, _hostname.size()-1);
                 }
+                this->hostname = _hostname;
             }
-
-            // get hostname
-            std::ifstream _file(HOSTNAME);
-            std::string _hostname((std::istreambuf_iterator<char>(_file)), std::istreambuf_iterator<char>());
-            // check last is '\n'
-            if (_hostname.back() == '\n')
+            catch(...)
             {
-                _hostname = _hostname.substr(0, _hostname.size()-1);
+                throw new EZMQX::Exception("Could not found hostname", EZMQX::UnKnownState);
             }
-            this->hostname = _hostname;
 
             // for logging
             std::cout << this->remoteAddr <<std::endl;
@@ -125,23 +140,30 @@ void EZMQX::Context::initialize()
             std::cout << this->hostname <<std::endl;
 
             // parse port mapping table
-
-            int count = 0;
-            nodeInfo.clear();
-            // get apps info from node
+            try
             {
-                EZMQX::SimpleRest rest;
-                // rest api will change
-                // nodeInfo = rest.Get(NODE+PREFIX+API_APPS);
-                // get count
+                int count = 0;
+                nodeInfo.clear();
+                // get apps info from node
+                {
+                    EZMQX::SimpleRest rest;
+                    // rest api will change
+                    // nodeInfo = rest.Get(NODE+PREFIX+API_APPS);
+                    // get count
 
+                }
+
+                for (int i = 0; i< count; i++)
+                {
+                    // get app detail info
+                    // rest api not provide yet
+                }
+            }
+            catch(...)
+            {
+                throw new EZMQX::Exception("Internal rest service unavilable", EZMQX::ServiceUnavailable);
             }
 
-            for (int i = 0; i< count; i++)
-            {
-                // get app detail info
-                // rest api not provide yet
-            }
         }
 
         initialized.store(true);
