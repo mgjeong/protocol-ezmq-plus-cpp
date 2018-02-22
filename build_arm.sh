@@ -40,6 +40,21 @@ sudo make install
 sudo ldconfig
 echo "done"
 
+#build & install JsonCpp
+cd $DEP_ROOT
+if [ -d "./jsoncpp" ] ; then
+    rm -rf jsoncpp
+fi
+git clone https://github.com/open-source-parsers/jsoncpp.git
+cd jsoncpp
+git checkout 1.8.4
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=release -DBUILD_STATIC_LIBS=OFF -DBUILD_SHARED_LIBS=ON -DARCHIVE_INSTALL_DIR=./ -G "Unix Makefiles" ../
+sudo make -j 8
+sudo make install
+sudo ldconfig
+
 #build ezmq-plus-cpp
 cd $PROJECT_ROOT
 #scons TARGET_OS=linux TARGET_ARCH=x86_64
