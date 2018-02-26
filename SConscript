@@ -32,9 +32,11 @@ else:
 
 ezmq_plus_env.AppendUnique(CPPPATH=[
         './dependencies/protocol-ezmq-cpp/include',
-        './dependencies/protocol-ezmq-cpp/extlibs/zmq',
+#        './dependencies/protocol-ezmq-cpp/extlibs/zmq',
         './dependencies/protocol-ezmq-cpp/protobuf',
-#         './extlibs/zmq',
+        './extlibs/zmq',
+#        './extlibs/curl',
+        './extlibs/',
 #        './protobuf',
         './include',
 #        './include/logger',
@@ -42,7 +44,7 @@ ezmq_plus_env.AppendUnique(CPPPATH=[
         './src'
 ])
 
-ezmq_plus_env.PrependUnique(LIBS=['zmq', 'protobuf'])
+ezmq_plus_env.PrependUnique(LIBS=['zmq', 'protobuf', 'curl', 'jsoncpp'])
 
 if ezmq_plus_env.get('RELEASE'):
     ezmq_plus_env.PrependUnique(LIBS=['ezmq'], LIBPATH=[os.path.join('./dependencies/protocol-ezmq-cpp/out/linux/', target_arch, 'release')])

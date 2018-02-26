@@ -18,6 +18,7 @@ class Context
         std::atomic_bool terminated;
         std::string hostname;
         std::string hostAddr;
+        std::string remoteAddr;
         static std::shared_ptr<EZMQX::Context> _instance;
         std::map<int, int> ports;
         void initialize();

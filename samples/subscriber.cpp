@@ -1,37 +1,33 @@
 #include <iostream>
-#include <EZMQXPublisher.h>
+#include <EZMQXSubscriber.h>
 #include <EZMQXException.h>
 int main()
 {
 
-    int dummy = 3;
-    void *payload = (void *)&dummy;
     try
     {
       // error callback
-      EZMQX::PubErrCb errCb = [](std::shared_ptr<EZMQX::Publisher> publisher, EZMQX::ErrorCode errCode){std::cout << "called" << std::endl;};
+      EZMQX::SubCb subCb = [](std::string topic, void* object){std::cout << "subCb called" << std::endl;};
+      EZMQX::SubErrCb errCb = [](std::shared_ptr<EZMQX::Subscriber> subscriber, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl;};
       
-      // create publisher with test topic
-      std::shared_ptr<EZMQX::Publisher> publisher = EZMQX::Publisher::getPublisher("/topic", "test topic", errCb);
       
-      // publish
-      publisher->publish(payload);
+      // create subscriber with test topic
+      std::shared_ptr<EZMQX::Subscriber> subscriber = EZMQX::Subscriber::getSubscriber("/topic", subCb, errCb);
 
       // condition check
-      if (publisher->isTerminated())
+      if (!subscriber->isTerminated())
       {
-          publisher->terminate();
+          std::cout << "terminate subscriber" << std::endl;
+          subscriber->terminate();
       }
 
       // occur exception
-      if (publisher->isTerminated())
-      {
-          publisher->terminate();
-      }
+      subscriber->terminate();
     }
-    catch(EZMQX::Exception e)
+    catch(EZMQX::Exception &e)
     {
         // catch terminated exception
+        std::cout << "catch exception" << std::endl;
         std::cout << e.what() << std::endl;
     }
 
