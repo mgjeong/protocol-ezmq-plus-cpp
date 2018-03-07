@@ -34,6 +34,14 @@ EZMQX::Context::Context() : initialized(false), terminated(false)
     initialize();
 }
 
+EZMQX::Context::Context(std::string fakeHostname, std::string fakeHostAddr, std::string fakeRemoteAddr, std::map<int, int> fakePorts) : initialized(true), terminated(false)
+{
+    this->hostname = fakeHostname;
+    this->hostAddr = fakeHostAddr;
+    this->remoteAddr = fakeRemoteAddr;
+    this->ports = fakePorts;
+}
+
 std::shared_ptr<EZMQX::Context> EZMQX::Context::getInstance()
 {
     if (!_instance)
