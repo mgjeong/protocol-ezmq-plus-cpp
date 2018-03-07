@@ -9,10 +9,11 @@
 #include <EZMQXEndpoint.h>
 
 namespace EZMQX {
-
+class FakeSingletonAccessor;
 class Context
 {
     private:
+        friend class FakeSingletonAccessor;
         std::mutex lock;
         std::atomic_bool initialized;
         std::atomic_bool terminated;
@@ -29,7 +30,11 @@ class Context
         Context(const Context&) = delete;
         Context& operator = (const Context&) = delete;
 
+        // ctor for fake object
+        Context(std::string fakeHostname, std::string fakeHostAddr, std::string fakeRemoteAddr, std::map<int, int> fakePorts);
+
     public:
+        ~Context();
         static std::shared_ptr<EZMQX::Context> getInstance();
         bool isInitialized();
         bool isTerminated();

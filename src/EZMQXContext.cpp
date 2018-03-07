@@ -34,20 +34,40 @@ EZMQX::Context::Context() : initialized(false), terminated(false)
     initialize();
 }
 
+// ctor for fake object that used in unittest
+EZMQX::Context::Context(std::string fakeHostname, std::string fakeHostAddr, std::string fakeRemoteAddr, std::map<int, int> fakePorts) : initialized(true), terminated(false)
+{
+    this->hostname = fakeHostname;
+    this->hostAddr = fakeHostAddr;
+    this->remoteAddr = fakeRemoteAddr;
+    this->ports = fakePorts;
+}
+
+// dtor
+EZMQX::Context::~Context()
+{
+    terminate();
+}
+
 std::shared_ptr<EZMQX::Context> EZMQX::Context::getInstance()
 {
     if (!_instance)
     {
         _instance.reset(new EZMQX::Context());
     }
-    
 
     return _instance;
 }
 
 EZMQX::Endpoint EZMQX::Context::getHostEp(int port)
 {
-    EZMQX::Endpoint ep("", -1);
+    int hostPort = ports[port];
+    if (hostPort == 0)
+    {
+        throw new EZMQX::Exception("Invalid Port", EZMQX::UnKnownState);
+    }
+
+    EZMQX::Endpoint ep(hostAddr, hostPort);
     return ep;
 }
 
@@ -195,7 +215,14 @@ void EZMQX::Context::terminate()
 
         if (!terminated.load())
         {
+            // send dead msg to tns server
+            {
+                    EZMQX::SimpleRest rest;
+                    // tns rest api not provide yet
+            }
+
             // release resource
+            ports.clear();
         }
         else
         {
