@@ -12,17 +12,25 @@ fi
 
 #build ezmq-cpp
 cd $DEP_ROOT
-#clone ezmq-protocol-cpp
 if [ -d "./protocol-ezmq-cpp" ] ; then
-    rm -rf protocol-ezmq-cpp
+    echo "protocol-ezmq-cpp exist"
+else
+    git clone git@github.sec.samsung.net:RS7-EdgeComputing/protocol-ezmq-cpp.git
+    cd ./protocol-ezmq-cpp
+    echo "build protocol-ezmq-cpp"
+    scons TARGET_OS=linux TARGET_ARCH=armhf
+    echo "done"
 fi
-git clone git@github.sec.samsung.net:RS7-EdgeComputing/protocol-ezmq-cpp.git
-cd ./protocol-ezmq-cpp
-#./build.sh --with_dependencies=true --target_arch=x86
-#./build.sh --target_arch=x86_64
-echo "build protocol-ezmq-cpp"
-scons TARGET_OS=linux TARGET_ARCH=armhf
-echo "done"
+
+#build AML
+cd $DEP_ROOT
+if [ -a "./datamodel-aml-cpp" ] ; then
+    echo "datamodel-aml-cpp exist"
+else
+    git clone git@github.sec.samsung.net:RS7-EdgeComputing/datamodel-aml-cpp.git
+    cd datamodel-aml-cpp
+    ./build_arm.sh
+fi
 
 #build & install curl lib
 cd $DEP_ROOT
@@ -30,30 +38,32 @@ if [ -a "./curl-7.58.0.tar.gz" ] ; then
     echo "curl exist"
 else
     wget https://github.com/curl/curl/releases/download/curl-7_58_0/curl-7.58.0.tar.gz
+    tar xvf curl-7.58.0.tar.gz
+    cd curl-7.58.0
+    echo "build curl"
+    ./configure
+    make -j 8
+    sudo make install
+    sudo ldconfig
+    echo "done"
 fi
-tar xvf curl-7.58.0.tar.gz
-cd curl-7.58.0
-echo "build curl"
-./configure
-make -j 8
-sudo make install
-sudo ldconfig
-echo "done"
 
 #build & install JsonCpp
 cd $DEP_ROOT
 if [ -d "./jsoncpp" ] ; then
-    rm -rf jsoncpp
+    echo "jsoncpp exist"
+else
+    git clone https://github.com/open-source-parsers/jsoncpp.git
+    cd jsoncpp
+    git checkout 1.8.4
+    mkdir build
+    cd build
+    cmake -DCMAKE_BUILD_TYPE=release -DBUILD_STATIC_LIBS=OFF -DBUILD_SHARED_LIBS=ON -DARCHIVE_INSTALL_DIR=./ -G "Unix Makefiles" ../
+    sudo make -j 8
+    sudo make install
+    sudo ldconfig
 fi
-git clone https://github.com/open-source-parsers/jsoncpp.git
-cd jsoncpp
-git checkout 1.8.4
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=release -DBUILD_STATIC_LIBS=OFF -DBUILD_SHARED_LIBS=ON -DARCHIVE_INSTALL_DIR=./ -G "Unix Makefiles" ../
-sudo make -j 8
-sudo make install
-sudo ldconfig
+
 
 #build ezmq-plus-cpp
 cd $PROJECT_ROOT
