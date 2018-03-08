@@ -26,6 +26,8 @@ class Publisher
         ezmq::EZMQStopCB mStopCallback;
         ezmq::EZMQErrorCB mErrorCallback;
 
+        virtual void registerTopic(const EZMQX::Topic& topic);
+
         // delete default ctor
         Publisher();
         Publisher(const std::string &topic, const std::string &schema, const EZMQX::PubErrCb &errCb);

@@ -22,6 +22,16 @@ EZMQX::Subscriber::Subscriber(const std::list<std::string> &topics, EZMQX::SubCb
 
 }
 
+void EZMQX::Subscriber::verifyTopics(const std::list<std::string> &topics)
+{
+    return;
+}
+
+void EZMQX::Subscriber::verifyTopics(const std::list<EZMQX::Topic> &topics)
+{
+    return;
+}
+
 std::shared_ptr<EZMQX::Subscriber> EZMQX::Subscriber::getSubscriber(const std::string &topic, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb)
 {
     std::list<std::string> topics(1, topic);
@@ -72,4 +82,10 @@ void EZMQX::Subscriber::terminate()
     }
     // mutex unlock
     return;
+}
+
+std::list<EZMQX::Topic> EZMQX::Subscriber::getTopics()
+{
+    std::list<EZMQX::Topic> topics;
+    return topics;
 }

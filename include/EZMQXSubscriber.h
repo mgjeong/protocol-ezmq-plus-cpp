@@ -27,6 +27,9 @@ class Subscriber
         ezmq::EZMQSubCB mSubCallback;
         ezmq::EZMQSubTopicCB mSubTopicCallback;
 
+        virtual void verifyTopics(const std::list<std::string> &topics);
+        virtual void verifyTopics(const std::list<EZMQX::Topic> &topics);
+
         // delete default ctor
         Subscriber();
         Subscriber(const std::list<EZMQX::Topic> &topics, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb);
@@ -41,7 +44,7 @@ class Subscriber
         static std::shared_ptr<EZMQX::Subscriber> getSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb);
         bool isTerminated();
         void terminate();
-        std::list<EZMQX::Topic> getTopic();
+        std::list<EZMQX::Topic> getTopics();
 };
 
 }

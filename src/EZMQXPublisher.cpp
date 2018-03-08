@@ -31,6 +31,11 @@ std::shared_ptr<EZMQX::Publisher> EZMQX::Publisher::getPublisher(const std::stri
     return pubInstance;
 }
 
+void EZMQX::Publisher::registerTopic(const EZMQX::Topic& topic)
+{
+    return;
+}
+
 void EZMQX::Publisher::publish(void* object)
 {
     // mutex lock
