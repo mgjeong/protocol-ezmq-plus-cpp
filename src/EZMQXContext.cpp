@@ -74,6 +74,15 @@ EZMQX::Endpoint EZMQX::Context::getHostEp(int port)
     return ep;
 }
 
+void EZMQX::Context::addAmlRep(const std::list<std::string>& amlModelInfo)
+{
+    // open file
+    // create Rep
+    // add map
+
+    return;
+}
+
 Representation& EZMQX::Context::getAmlRepRef(const std::string& amlModelId)
 {
     std::map<std::string, Representation>::iterator itr;
