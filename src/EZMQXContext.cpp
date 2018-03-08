@@ -26,16 +26,19 @@ static const std::string CONF_NODE_ADDR = "nodeaddress";
 // hostname path
 static const std::string HOSTNAME = "/etc/hostname";
 
+static const int LOCAL_PORT_START = 4000;
+static const int LOCAL_PORT_MAX = 100;
+
 std::shared_ptr<EZMQX::Context> EZMQX::Context::_instance;
 
 // ctor
-EZMQX::Context::Context() : initialized(false), terminated(false)
+EZMQX::Context::Context() : initialized(false), terminated(false), usedIdx(0)
 {
     initialize();
 }
 
 // ctor for fake object that used in unittest
-EZMQX::Context::Context(std::string fakeHostname, std::string fakeHostAddr, std::string fakeRemoteAddr, std::map<int, int> fakePorts) : initialized(true), terminated(false)
+EZMQX::Context::Context(std::string fakeHostname, std::string fakeHostAddr, std::string fakeRemoteAddr, std::map<int, int> fakePorts) : initialized(true), terminated(false), usedIdx(0)
 {
     this->hostname = fakeHostname;
     this->hostAddr = fakeHostAddr;
@@ -69,6 +72,65 @@ EZMQX::Endpoint EZMQX::Context::getHostEp(int port)
 
     EZMQX::Endpoint ep(hostAddr, hostPort);
     return ep;
+}
+
+Representation& EZMQX::Context::getAmlRepRef(const std::string& amlModelId)
+{
+    std::map<std::string, Representation>::iterator itr;
+    // mutex lock
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+        itr = amlRepDic.find(amlModelId);
+
+        if (itr == amlRepDic.end())
+        {
+            // throw exception
+        }
+    }
+    // mutex unlock
+
+    return itr->second;
+}
+
+int EZMQX::Context::assignDynamicPort()
+{
+    int ret = 0;
+    // mutex lock
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+        //get Random port
+        while (1)
+        {
+            if (usedPorts[LOCAL_PORT_START + usedIdx] == true)
+            {
+                usedIdx++;
+                if ( usedIdx > LOCAL_PORT_MAX)
+                {
+                    usedIdx = 0;
+                }
+            }
+            else
+            {
+                // mark
+                usedPorts[LOCAL_PORT_START + usedIdx] = true;
+                break;
+            }
+        }
+
+    }
+    // mutex unlock
+    return ret;
+}
+
+void EZMQX::Context::releaseDynamicPort(int port)
+{
+    // mutex lock
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+        usedPorts[port] = false;
+    }
+    // mutex unlock
+    return;
 }
 
 void EZMQX::Context::initialize()

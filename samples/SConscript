@@ -11,6 +11,7 @@ ezmq_plus_sample_env.AppendUnique(CPPPATH=[
 	'../dependencies/protocol-ezmq-cpp/include',
     '../dependencies/protocol-ezmq-cpp/extlibs/zmq',
     '../dependencies/protocol-ezmq-cpp/protobuf',
+    '../dependencies/datamodel-aml-cpp/include',
     '../include'
 
 ])

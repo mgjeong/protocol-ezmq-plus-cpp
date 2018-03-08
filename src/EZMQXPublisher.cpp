@@ -3,31 +3,48 @@
 #include <EZMQXContext.h>
 #include <EZMQXErrorCode.h>
 #include <EZMQXException.h>
+#include <Representation.h>
+#include <EZMQErrorCodes.h>
+#include <AMLException.h>
 
 static std::shared_ptr<EZMQX::Context> ctx = EZMQX::Context::getInstance();
+static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQErrorCode code)->void{return;};
+//static ezmq::EZMQStartCB startCb = [](ezmq::EZMQErrorCode){};
+//static ezmq::EZMQStopCB stopCb = [](ezmq::EZMQErrorCode){};
+//static ezmq::EZMQErrorCB errorCb = [](ezmq::EZMQErrorCode){};
 
-EZMQX::Publisher::Publisher(const std::string &topic, const std::string &schema, const EZMQX::PubErrCb &errCb)
- : terminated(false)
+EZMQX::Publisher::Publisher(const std::string &topic, const std::string &amlModelFilePath, const EZMQX::PubErrCb &errCb)
+ : terminated(false), localPort(0)
 {
     //validate topic
 
-    //get Random port
-    int port;
+    localPort = ctx->assignDynamicPort();
+    // create ezmq publisher
+    // ezmq error callback should provide shared pointer in callback
+    pubCtx = std::make_shared<ezmq::EZMQPublisher>(localPort, ezmqCb, ezmqCb, ezmqCb);
 
-    //create EZMQ publisher
-        // loop for validate port
+    //get Aml Model Id
+    std::string modelId="";
 
     //get Host Ep
-    EZMQX::Topic _topic(topic, schema, ctx->getHostEp(port));
+    EZMQX::Topic _topic(topic, modelId, ctx->getHostEp(localPort));
 
-    //register topic
+    //register topic //throw exception
+    registerTopic(_topic);
+
+
     //register here
     this->topic = _topic;
 }
 
-std::shared_ptr<EZMQX::Publisher> EZMQX::Publisher::getPublisher(const std::string &topic, const std::string &schema, const EZMQX::PubErrCb &errCb)
+EZMQX::Publisher::~Publisher()
 {
-    std::shared_ptr<EZMQX::Publisher> pubInstance(new Publisher(topic, schema, errCb));
+    terminate();
+}
+
+std::shared_ptr<EZMQX::Publisher> EZMQX::Publisher::getPublisher(const std::string &topic, const std::string &amlModelFilePath, const EZMQX::PubErrCb &errCb)
+{
+    std::shared_ptr<EZMQX::Publisher> pubInstance(new Publisher(topic, amlModelFilePath, errCb));
     return pubInstance;
 }
 
@@ -36,14 +53,22 @@ void EZMQX::Publisher::registerTopic(const EZMQX::Topic& topic)
     return;
 }
 
-void EZMQX::Publisher::publish(void* object)
+void EZMQX::Publisher::publish(const AMLObject& payload)
 {
     // mutex lock
     {
         std::lock_guard<std::mutex> scopedLock(lock);
         if (!terminated.load())
         {
+            // get AML model id
+            // get AMLRep
+            Representation& rep = ctx->getAmlRepRef(topic.getSchema());
+            // transform // throw exception
+            std::string byteAml = rep.DataToByte(payload);
 
+            // build payload
+
+            // publish
         }
         else
         {
@@ -68,6 +93,7 @@ void EZMQX::Publisher::terminate()
         if (!terminated.load())
         {
             // release resource
+            ctx->releaseDynamicPort(localPort);
         }
         else
         {

@@ -32,14 +32,11 @@ else:
 
 ezmq_plus_env.AppendUnique(CPPPATH=[
         './dependencies/protocol-ezmq-cpp/include',
-#        './dependencies/protocol-ezmq-cpp/extlibs/zmq',
         './dependencies/protocol-ezmq-cpp/protobuf',
+        './dependencies/datamodel-aml-cpp/include',
         './extlibs/zmq',
-#        './extlibs/curl',
         './extlibs/',
-#        './protobuf',
         './include',
-#        './include/logger',
         './internal',
         './src'
 ])
@@ -48,8 +45,10 @@ ezmq_plus_env.PrependUnique(LIBS=['zmq', 'protobuf', 'curl', 'jsoncpp'])
 
 if ezmq_plus_env.get('RELEASE'):
     ezmq_plus_env.PrependUnique(LIBS=['ezmq'], LIBPATH=[os.path.join('./dependencies/protocol-ezmq-cpp/out/linux/', target_arch, 'release')])
+    ezmq_plus_env.PrependUnique(LIBS=['aml'], LIBPATH=[os.path.join('./dependencies/datamodel-aml-cpp/out/linux/', target_arch, 'release')])
 else:
     ezmq_plus_env.PrependUnique(LIBS=['ezmq'], LIBPATH=[os.path.join('./dependencies/protocol-ezmq-cpp/out/linux/', target_arch, 'debug')])
+    ezmq_plus_env.PrependUnique(LIBS=['aml'], LIBPATH=[os.path.join('./dependencies/datamodel-aml-cpp/out/linux/', target_arch, 'debug')])
 
 #ezmq_plus_env.PrependUnique(LIBS=['protobuf'])
 
@@ -78,8 +77,8 @@ ezmq_plus_shared = ezmq_plus_env.SharedLibrary('ezmq_plus', ezmq_plus_env.get('e
 ezmq_plus_static = ezmq_plus_env.StaticLibrary('ezmq_plus', ezmq_plus_env.get('ezmq_plus_src'))
 
 #Go to build ezmq_plus sample apps
-if target_os == 'linux':
-      SConscript('samples/SConscript')
+#if target_os == 'linux':
+#      SConscript('samples/SConscript')
 
 # Go to build ezmq_plus unit test cases
 #if target_os == 'linux':
