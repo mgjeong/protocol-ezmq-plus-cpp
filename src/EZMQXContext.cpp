@@ -83,9 +83,9 @@ void EZMQX::Context::addAmlRep(const std::list<std::string>& amlModelInfo)
     return;
 }
 
-Representation& EZMQX::Context::getAmlRepRef(const std::string& amlModelId)
+std::shared_ptr<Representation> EZMQX::Context::getAmlRep(const std::string& amlModelId)
 {
-    std::map<std::string, Representation>::iterator itr;
+    std::map<std::string, std::shared_ptr<Representation>>::iterator itr;
     // mutex lock
     {
         std::lock_guard<std::mutex> scopedLock(lock);

@@ -5,6 +5,7 @@
 #include <mutex>
 #include <atomic>
 #include <string>
+#include <list>
 #include <memory>
 #include <EZMQXEndpoint.h>
 #include <Representation.h>
@@ -26,7 +27,7 @@ class Context
         std::map<int, int> ports;
         std::map<int, bool> usedPorts;
         int usedIdx;
-        std::map<std::string, Representation> amlRepDic;
+        std::map<std::string, std::shared_ptr<Representation>> amlRepDic;
         void initialize();
         void terminate();
 
@@ -47,7 +48,7 @@ class Context
         void releaseDynamicPort(int port);
         EZMQX::Endpoint getHostEp(int port);
         void addAmlRep(const std::list<std::string>& amlModelInfo);
-        Representation& getAmlRepRef(const std::string& amlModelId);
+        std::shared_ptr<Representation> getAmlRep(const std::string& amlModelId);
 
 };
 

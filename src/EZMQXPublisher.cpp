@@ -62,9 +62,9 @@ void EZMQX::Publisher::publish(const AMLObject& payload)
         {
             // get AML model id
             // get AMLRep
-            Representation& rep = ctx->getAmlRepRef(topic.getSchema());
+            std::shared_ptr<Representation> rep = ctx->getAmlRep(topic.getSchema());
             // transform // throw exception
-            std::string byteAml = rep.DataToByte(payload);
+            std::string byteAml = rep->DataToByte(payload);
 
             // build payload
 
