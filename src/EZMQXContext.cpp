@@ -26,6 +26,7 @@ static const std::string CONF_NODE_ADDR = "nodeaddress";
 // hostname path
 static const std::string HOSTNAME = "/etc/hostname";
 
+// Dynamic port info
 static const int LOCAL_PORT_START = 4000;
 static const int LOCAL_PORT_MAX = 100;
 
@@ -74,13 +75,57 @@ EZMQX::Endpoint EZMQX::Context::getHostEp(int port)
     return ep;
 }
 
-void EZMQX::Context::addAmlRep(const std::list<std::string>& amlModelInfo)
+std::list<std::string> EZMQX::Context::addAmlRep(const std::list<std::string>& amlModelInfo)
 {
-    // open file
-    // create Rep
-    // add map
+    std::list<std::string> modelId;
+    // mutex lock
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+        if (amlModelInfo.empty())
+        {
+            // throw exceptionn
+        }
+        else
+        {
+            for (std::list<std::string>::const_iterator itr = amlModelInfo.cbegin(); itr != amlModelInfo.cend(); itr++)
+            {
+                std::string path = *itr;
+                if (path.empty())
+                {
+                    // throw exception
+                }
+                else
+                {
+                    try
+                    {
+                        std::shared_ptr<Representation> rep = std::make_shared<Representation>(path);
+                        std::string amlModelId = "temp";// rep -> getModelId();
+                        if (amlModelId.empty())
+                        {
+                            // throw invalid aml model exception
+                        }
+                        else
+                        {
+                            // ignore duplicated rep
+                            if (amlRepDic.find(amlModelId) == amlRepDic.end())
+                            {
+                                amlRepDic.insert(std::pair<std::string, std::shared_ptr<Representation>>(amlModelId, rep));
+                            }
 
-    return;
+                            modelId.insert(modelId.end(), amlModelId);
+                        }
+                    }
+                    catch(...)
+                    {
+                        // throw invalid aml file path exception
+                        // throw invalid aml model exception
+                    }
+                }
+            }
+        }
+    }
+    // mutex unlock
+    return modelId;
 }
 
 std::shared_ptr<Representation> EZMQX::Context::getAmlRep(const std::string& amlModelId)
@@ -95,10 +140,12 @@ std::shared_ptr<Representation> EZMQX::Context::getAmlRep(const std::string& aml
         {
             // throw exception
         }
+        else
+        {
+            return itr->second;
+        }
     }
     // mutex unlock
-
-    return itr->second;
 }
 
 int EZMQX::Context::assignDynamicPort()
@@ -255,9 +302,8 @@ void EZMQX::Context::initialize()
                 throw new EZMQX::Exception("Internal rest service unavilable", EZMQX::ServiceUnavailable);
             }
 
+            initialized.store(true);
         }
-
-        initialized.store(true);
     }
     // mutex unlock
     return;

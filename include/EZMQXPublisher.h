@@ -9,6 +9,7 @@
 #include <EZMQPublisher.h>
 #include <EZMQXErrorCode.h>
 #include <AMLInterface.h>
+#include <EZMQXAmlModelInfo.h>
 
 namespace EZMQX {
 class Publisher;
@@ -21,6 +22,7 @@ class Publisher
         std::mutex lock;
         std::atomic_bool terminated;
         std::shared_ptr<ezmq::EZMQPublisher> pubCtx;
+        std::shared_ptr<Representation> rep;
         int localPort;
         EZMQX::Topic topic;
         EZMQX::PubErrCb mCallback;
@@ -32,7 +34,7 @@ class Publisher
 
         // delete default ctor
         Publisher();
-        Publisher(const std::string &topic, const std::string &amlModelFilePath, const EZMQX::PubErrCb &errCb);
+        Publisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, const EZMQX::PubErrCb &errCb);
 
         // make noncopyable        
         Publisher(const Publisher&) = delete;
@@ -40,7 +42,7 @@ class Publisher
 
     public:
         ~Publisher();
-        static std::shared_ptr<EZMQX::Publisher> getPublisher(const std::string &topic, const std::string &amlModelFilePath, const EZMQX::PubErrCb &errCb);
+        static std::shared_ptr<EZMQX::Publisher> getPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, const EZMQX::PubErrCb &errCb);
         void publish(const AMLObject& payload);
         bool isTerminated();
         void terminate();

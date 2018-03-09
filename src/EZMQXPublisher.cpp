@@ -13,7 +13,7 @@ static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQError
 //static ezmq::EZMQStopCB stopCb = [](ezmq::EZMQErrorCode){};
 //static ezmq::EZMQErrorCB errorCb = [](ezmq::EZMQErrorCode){};
 
-EZMQX::Publisher::Publisher(const std::string &topic, const std::string &amlModelFilePath, const EZMQX::PubErrCb &errCb)
+EZMQX::Publisher::Publisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, const EZMQX::PubErrCb &errCb)
  : terminated(false), localPort(0)
 {
     //validate topic
@@ -25,6 +25,34 @@ EZMQX::Publisher::Publisher(const std::string &topic, const std::string &amlMode
 
     //get Aml Model Id
     std::string modelId="";
+    if (infoType == AmlModelId)
+    {
+        try
+        {
+            rep = ctx->getAmlRep(amlModelInfo);
+        }
+        catch(...)
+        {
+            //throw model not exist exception
+        }
+    }
+    else if (infoType == AmlFilePath)
+    {
+        try
+        {
+            std::list<std::string> tmp(1, amlModelInfo);
+            tmp = ctx->addAmlRep(tmp);
+            rep = ctx->getAmlRep(*(tmp.begin()));
+        }
+        catch(...)
+        {
+            //throw AML model parse error
+        }
+    }
+    else
+    {
+        // throw wrong option exception
+    }
 
     //get Host Ep
     EZMQX::Topic _topic(topic, modelId, ctx->getHostEp(localPort));
@@ -42,9 +70,9 @@ EZMQX::Publisher::~Publisher()
     terminate();
 }
 
-std::shared_ptr<EZMQX::Publisher> EZMQX::Publisher::getPublisher(const std::string &topic, const std::string &amlModelFilePath, const EZMQX::PubErrCb &errCb)
+std::shared_ptr<EZMQX::Publisher> EZMQX::Publisher::getPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, const EZMQX::PubErrCb &errCb)
 {
-    std::shared_ptr<EZMQX::Publisher> pubInstance(new Publisher(topic, amlModelFilePath, errCb));
+    std::shared_ptr<EZMQX::Publisher> pubInstance(new Publisher(topic, infoType, amlModelInfo, errCb));
     return pubInstance;
 }
 
@@ -62,7 +90,11 @@ void EZMQX::Publisher::publish(const AMLObject& payload)
         {
             // get AML model id
             // get AMLRep
-            std::shared_ptr<Representation> rep = ctx->getAmlRep(topic.getSchema());
+            if (!rep)
+            {
+                rep = ctx->getAmlRep(topic.getSchema());
+            }
+
             // transform // throw exception
             std::string byteAml = rep->DataToByte(payload);
 

@@ -15,11 +15,10 @@ class Config
     private:
         std::mutex lock;
         std::atomic_bool initialized;
-        std::atomic_bool terminated;
         static std::shared_ptr<EZMQX::Config> _instance;
 
-        void initialize();
-        void terminate();
+        virtual void initialize();
+        virtual void terminate();
 
         // make noncopyable        
         Config();
@@ -29,9 +28,7 @@ class Config
     public:
         ~Config();
         static std::shared_ptr<EZMQX::Config> getInstance();
-        void addAmlModelInfo(const std::list<std::string>& amlModelInfo);
-        bool isInitialized();
-        bool isTerminated();
+        std::list<std::string> addAmlModel(const std::list<std::string>& amlFilePath);
 
 };
 

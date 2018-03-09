@@ -47,7 +47,7 @@ class Context
         int assignDynamicPort();
         void releaseDynamicPort(int port);
         EZMQX::Endpoint getHostEp(int port);
-        void addAmlRep(const std::list<std::string>& amlModelInfo);
+        std::list<std::string> addAmlRep(const std::list<std::string>& amlModelInfo);
         std::shared_ptr<Representation> getAmlRep(const std::string& amlModelId);
 
 };
