@@ -8,7 +8,7 @@
 #include <AMLException.h>
 
 static std::shared_ptr<EZMQX::Context> ctx = EZMQX::Context::getInstance();
-static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQErrorCode code)->void{return;};
+static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQErrorCode code)->void{std::cout<<"errCb"<<std::endl; return;};
 //static ezmq::EZMQStartCB startCb = [](ezmq::EZMQErrorCode){};
 //static ezmq::EZMQStopCB stopCb = [](ezmq::EZMQErrorCode){};
 //static ezmq::EZMQErrorCB errorCb = [](ezmq::EZMQErrorCode){};
@@ -17,8 +17,15 @@ EZMQX::Publisher::Publisher(const std::string &topic, const EZMQX::AmlModelInfo&
  : terminated(false), localPort(0)
 {
     //validate topic
+    try
+    {
+        localPort = ctx->assignDynamicPort();
+    }
+    catch(...)
+    {
+        // throw maximum port exceed exception
+    }
 
-    localPort = ctx->assignDynamicPort();
     // create ezmq publisher
     // ezmq error callback should provide shared pointer in callback
     pubCtx = std::make_shared<ezmq::EZMQPublisher>(localPort, ezmqCb, ezmqCb, ezmqCb);

@@ -27,6 +27,7 @@ class Context
         std::map<int, int> ports;
         std::map<int, bool> usedPorts;
         int usedIdx;
+        int numOfPort;
         std::map<std::string, std::shared_ptr<Representation>> amlRepDic;
         void initialize();
         void terminate();

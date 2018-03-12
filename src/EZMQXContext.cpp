@@ -33,7 +33,7 @@ static const int LOCAL_PORT_MAX = 100;
 std::shared_ptr<EZMQX::Context> EZMQX::Context::_instance;
 
 // ctor
-EZMQX::Context::Context() : initialized(false), terminated(false), usedIdx(0)
+EZMQX::Context::Context() : initialized(false), terminated(false), usedIdx(0), numOfPort(0)
 {
     initialize();
 }
@@ -157,6 +157,11 @@ int EZMQX::Context::assignDynamicPort()
         //get Random port
         while (1)
         {
+            if (numOfPort >= LOCAL_PORT_MAX)
+            {
+                // throw maximum port exceed exception
+            }
+
             if (usedPorts[LOCAL_PORT_START + usedIdx] == true)
             {
                 usedIdx++;
@@ -169,6 +174,7 @@ int EZMQX::Context::assignDynamicPort()
             {
                 // mark
                 usedPorts[LOCAL_PORT_START + usedIdx] = true;
+                numOfPort++;
                 break;
             }
         }
@@ -183,7 +189,15 @@ void EZMQX::Context::releaseDynamicPort(int port)
     // mutex lock
     {
         std::lock_guard<std::mutex> scopedLock(lock);
-        usedPorts[port] = false;
+        if (usedPorts[port] == true)
+        {
+            usedPorts[port] = false;
+            numOfPort--;
+        }
+        else
+        {
+            //throw wrong port exception
+        }
     }
     // mutex unlock
     return;
