@@ -4,16 +4,14 @@
 #include <EZMQXErrorCode.h>
 #include <EZMQXException.h>
 #include <Representation.h>
-#include <EZMQErrorCodes.h>
 #include <AMLException.h>
+#include <EZMQErrorCodes.h>
+#include <EZMQByteData.h>
 
 static std::shared_ptr<EZMQX::Context> ctx = EZMQX::Context::getInstance();
 static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQErrorCode code)->void{std::cout<<"errCb"<<std::endl; return;};
-//static ezmq::EZMQStartCB startCb = [](ezmq::EZMQErrorCode){};
-//static ezmq::EZMQStopCB stopCb = [](ezmq::EZMQErrorCode){};
-//static ezmq::EZMQErrorCB errorCb = [](ezmq::EZMQErrorCode){};
 
-EZMQX::Publisher::Publisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, const EZMQX::PubErrCb &errCb)
+EZMQX::Publisher::Publisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo)
  : terminated(false), localPort(0)
 {
     //validate topic
@@ -62,7 +60,15 @@ EZMQX::Publisher::Publisher(const std::string &topic, const EZMQX::AmlModelInfo&
     }
 
     //get Host Ep
-    EZMQX::Topic _topic(topic, modelId, ctx->getHostEp(localPort));
+    EZMQX::Topic _topic;
+    try
+    {
+        _topic = EZMQX::Topic(topic, modelId, ctx->getHostEp(localPort));
+    }
+    catch(...)
+    {
+        throw new EZMQX::Exception("Invalid Port", EZMQX::UnKnownState);
+    }
 
     //register topic //throw exception
     registerTopic(_topic);
@@ -77,9 +83,9 @@ EZMQX::Publisher::~Publisher()
     terminate();
 }
 
-std::shared_ptr<EZMQX::Publisher> EZMQX::Publisher::getPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, const EZMQX::PubErrCb &errCb)
+std::shared_ptr<EZMQX::Publisher> EZMQX::Publisher::getPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo)
 {
-    std::shared_ptr<EZMQX::Publisher> pubInstance(new Publisher(topic, infoType, amlModelInfo, errCb));
+    std::shared_ptr<EZMQX::Publisher> pubInstance(new Publisher(topic, infoType, amlModelInfo));
     return pubInstance;
 }
 
@@ -105,9 +111,14 @@ void EZMQX::Publisher::publish(const AMLObject& payload)
             // transform // throw exception
             std::string byteAml = rep->DataToByte(payload);
 
-            // build payload
-
             // publish
+            if (!pubCtx)
+            {
+                // throw exception
+            }
+
+            ezmq::EZMQByteData data(reinterpret_cast<const uint8_t*>(byteAml.c_str()), byteAml.length());
+            pubCtx->publish(topic.getTopic(), data);
         }
         else
         {

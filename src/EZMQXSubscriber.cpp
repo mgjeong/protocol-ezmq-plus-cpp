@@ -2,8 +2,11 @@
 #include <EZMQXSubscriber.h>
 #include <EZMQXErrorCode.h>
 #include <EZMQXException.h>
+#include <EZMQErrorCodes.h>
 
 static std::shared_ptr<EZMQX::Context> ctx = EZMQX::Context::getInstance();
+static ezmq::EZMQSubCB ezmqSubCb = [](const ezmq::EZMQMessage &event)->void{ return;};
+static ezmq::EZMQSubTopicCB ezmqSubTopicCb = [](std::string topic, const ezmq::EZMQMessage &event)->void{ return;};
 
 EZMQX::Subscriber::Subscriber()
 {
@@ -13,20 +16,77 @@ EZMQX::Subscriber::Subscriber()
 EZMQX::Subscriber::Subscriber(const std::list<EZMQX::Topic> &topics, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb)
  : terminated(false)
 {
+    verifyTopics(topics);
 
+    try
+    {
+        initialize(topics, subCb, errCb);
+    }
+    catch(...)
+    {
+        // throw exception
+    }
 }
 
 EZMQX::Subscriber::Subscriber(const std::list<std::string> &topics, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb)
  : terminated(false)
 {
+    std::list<EZMQX::Topic> verified;
+    verifyTopics(topics, verified);
 
+    if (verified.empty())
+    {
+        // throw exception
+    }
+
+    try
+    {
+        initialize(verified, subCb, errCb);
+    }
+    catch(...)
+    {
+        // throw exception
+    }
 }
 
-void EZMQX::Subscriber::verifyTopics(const std::list<std::string> &topics)
+void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb)
+{
+    for (std::list<EZMQX::Topic>::const_iterator itr = topics.cbegin(); itr != topics.cend(); itr++)
+    {
+        // create subCtx with internal callback
+        EZMQX::Topic topic = *itr;
+        const std::string &topic_str = topic.getTopic();
+        EZMQX::Endpoint ep = topic.getEndpoint();
+        std::shared_ptr<ezmq::EZMQSubscriber> sub = std::make_shared<ezmq::EZMQSubscriber>(ep.getAddr(), ep.getPort(), ezmqSubCb, ezmqSubTopicCb);
+        subscribers.push_back(sub);
+
+        // store pair of topics and callbacks on map
+        callbacks.insert(std::pair<std::string, std::pair<SubCb, SubErrCb>>(topic_str, std::make_pair(subCb, errCb)));
+
+        ezmq::EZMQErrorCode ret = sub->start();
+
+        if (ezmq::EZMQ_OK != ret)
+        {
+            // throw exception
+        }
+
+        ret = sub->subscribe(topic_str);
+
+        if (ezmq::EZMQ_OK != ret)
+        {
+            // throw exception
+        }
+    }
+
+    return;
+}
+
+void EZMQX::Subscriber::verifyTopics(const std::list<std::string> &topics, std::list<EZMQX::Topic> &verified)
 {
     return;
 }
 
+// throw exception when topic is not mached
 void EZMQX::Subscriber::verifyTopics(const std::list<EZMQX::Topic> &topics)
 {
     return;

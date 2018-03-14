@@ -22,12 +22,13 @@ class Subscriber
         std::mutex lock;
         std::atomic_bool terminated;
         std::list<std::shared_ptr<ezmq::EZMQSubscriber>> subscribers;
+        std::map<std::string, std::pair<SubCb, SubErrCb>> callbacks;
         EZMQX::SubCb mSubCb;
         EZMQX::SubErrCb mSubErrCb;
         ezmq::EZMQSubCB mSubCallback;
         ezmq::EZMQSubTopicCB mSubTopicCallback;
-
-        virtual void verifyTopics(const std::list<std::string> &topics);
+        void initialize(const std::list<EZMQX::Topic> &topics, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb);
+        virtual void verifyTopics(const std::list<std::string> &topics, std::list<EZMQX::Topic> &verified);
         virtual void verifyTopics(const std::list<EZMQX::Topic> &topics);
 
         // delete default ctor

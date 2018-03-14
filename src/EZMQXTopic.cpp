@@ -5,22 +5,22 @@ EZMQX::Topic::Topic()
 
 }
 
-EZMQX::Topic::Topic(const std::string &topic, const std::string &schema, const EZMQX::Endpoint &endpoint): endpoint(endpoint)
+EZMQX::Topic::Topic(const std::string &topic, const std::string &schema, const EZMQX::Endpoint &endpoint): endpoint(endpoint), topic(topic), schema(schema)
 {
 
 }
 
-std::string EZMQX::Topic::getEndpoint()
+EZMQX::Endpoint EZMQX::Topic::getEndpoint()
 {
-    return "";
+    return endpoint;
 }
 
 std::string EZMQX::Topic::getSchema()
 {
-    return "";
+    return schema;
 }
 
 std::string EZMQX::Topic::getTopic()
 {
-    return "";
+    return topic;
 }
