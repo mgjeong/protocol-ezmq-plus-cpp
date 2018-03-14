@@ -22,9 +22,6 @@ class Publisher
         std::shared_ptr<Representation> rep;
         int localPort;
         EZMQX::Topic topic;
-        ezmq::EZMQStartCB mStartCallback;
-        ezmq::EZMQStopCB mStopCallback;
-        ezmq::EZMQErrorCB mErrorCallback;
 
         virtual void registerTopic(const EZMQX::Topic& topic);
 
