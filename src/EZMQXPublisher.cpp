@@ -12,7 +12,7 @@ static std::shared_ptr<EZMQX::Context> ctx = EZMQX::Context::getInstance();
 static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQErrorCode code)->void{std::cout<<"errCb"<<std::endl; return;};
 
 EZMQX::Publisher::Publisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo)
- : terminated(false), localPort(0)
+ : terminated(false), localPort(0), token("")
 {
     //validate topic
     try

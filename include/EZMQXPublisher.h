@@ -22,6 +22,7 @@ class Publisher
         std::shared_ptr<Representation> rep;
         int localPort;
         EZMQX::Topic topic;
+        std::string token;
 
         virtual void registerTopic(const EZMQX::Topic& topic);
 

@@ -14,7 +14,7 @@ EZMQX::Subscriber::Subscriber()
 }
 
 EZMQX::Subscriber::Subscriber(const std::list<EZMQX::Topic> &topics, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb)
- : terminated(false)
+ : terminated(false), token("")
 {
     verifyTopics(topics);
 
@@ -29,7 +29,7 @@ EZMQX::Subscriber::Subscriber(const std::list<EZMQX::Topic> &topics, EZMQX::SubC
 }
 
 EZMQX::Subscriber::Subscriber(const std::list<std::string> &topics, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb)
- : terminated(false)
+ : terminated(false), token("")
 {
     std::list<EZMQX::Topic> verified;
     verifyTopics(topics, verified);

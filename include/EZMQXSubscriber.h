@@ -23,6 +23,7 @@ class Subscriber
         std::atomic_bool terminated;
         std::list<std::shared_ptr<ezmq::EZMQSubscriber>> subscribers;
         std::map<std::string, std::pair<SubCb, SubErrCb>> callbacks;
+        std::string token;
         EZMQX::SubCb mSubCb;
         EZMQX::SubErrCb mSubErrCb;
         ezmq::EZMQSubCB mSubCallback;
