@@ -3,10 +3,9 @@
 #include <EZMQXErrorCode.h>
 #include <EZMQXException.h>
 #include <EZMQErrorCodes.h>
+#include <EZMQByteData.h>
 
 static std::shared_ptr<EZMQX::Context> ctx = EZMQX::Context::getInstance();
-static ezmq::EZMQSubCB ezmqSubCb = [](const ezmq::EZMQMessage &event)->void{ return;};
-static ezmq::EZMQSubTopicCB ezmqSubTopicCb = [](std::string topic, const ezmq::EZMQMessage &event)->void{ return;};
 
 EZMQX::Subscriber::Subscriber()
 {
@@ -14,7 +13,7 @@ EZMQX::Subscriber::Subscriber()
 }
 
 EZMQX::Subscriber::Subscriber(const std::list<EZMQX::Topic> &topics, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb)
- : terminated(false), token("")
+ : terminated(false), token(""), mSubCb(subCb), mSubErrCb(errCb)
 {
     verifyTopics(topics);
 
@@ -27,9 +26,24 @@ EZMQX::Subscriber::Subscriber(const std::list<EZMQX::Topic> &topics, EZMQX::SubC
         // throw exception
     }
 }
+void EZMQX::Subscriber::internalSubCb(std::string topic, const ezmq::EZMQMessage &event)
+{
+
+    if (event.getContentType() == ezmq::EZMQ_CONTENT_TYPE_BYTEDATA && !topic.empty())
+    {
+        const ezmq::EZMQByteData &bytes= dynamic_cast<const ezmq::EZMQByteData&>(event);
+        std::string payload((const char*)(bytes.getByteData()), bytes.getLength());
+        this->que.inQue(std::make_pair(topic, payload));
+    }
+    else
+    {
+        //error handle
+    }
+    return;
+}
 
 EZMQX::Subscriber::Subscriber(const std::list<std::string> &topics, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb)
- : terminated(false), token("")
+ : terminated(false), token(""), mSubCb(subCb), mSubErrCb(errCb)
 {
     std::list<EZMQX::Topic> verified;
     verifyTopics(topics, verified);
@@ -51,17 +65,29 @@ EZMQX::Subscriber::Subscriber(const std::list<std::string> &topics, EZMQX::SubCb
 
 void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb)
 {
+    // create thread and push to blocked
+    mThread = std::thread(&EZMQX::Subscriber::handler, this);
+
     for (std::list<EZMQX::Topic>::const_iterator itr = topics.cbegin(); itr != topics.cend(); itr++)
     {
         // create subCtx with internal callback
         EZMQX::Topic topic = *itr;
         const std::string &topic_str = topic.getTopic();
-        EZMQX::Endpoint ep = topic.getEndpoint();
-        std::shared_ptr<ezmq::EZMQSubscriber> sub = std::make_shared<ezmq::EZMQSubscriber>(ep.getAddr(), ep.getPort(), ezmqSubCb, ezmqSubTopicCb);
-        subscribers.push_back(sub);
 
-        // store pair of topics and callbacks on map
-        callbacks.insert(std::pair<std::string, std::pair<SubCb, SubErrCb>>(topic_str, std::make_pair(subCb, errCb)));
+        // find Aml rep
+        try
+        {
+            repDic.insert(std::make_pair(topic_str, ctx->getAmlRep(topic.getSchema())));
+        }
+        catch(...)
+        {
+            // throw no Aml Representaion exception
+        }
+
+        EZMQX::Endpoint ep = topic.getEndpoint();
+
+        std::shared_ptr<ezmq::EZMQSubscriber> sub = std::make_shared<ezmq::EZMQSubscriber>(ep.getAddr(), ep.getPort(), [](const ezmq::EZMQMessage &event)->void{ return;}, std::bind(&EZMQX::Subscriber::internalSubCb, this, std::placeholders::_1, std::placeholders::_2));
+        subscribers.push_back(sub);
 
         ezmq::EZMQErrorCode ret = sub->start();
 
@@ -75,6 +101,50 @@ void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics, EZMQX:
         if (ezmq::EZMQ_OK != ret)
         {
             // throw exception
+        }
+    }
+
+    return;
+}
+
+void EZMQX::Subscriber::handler()
+{
+    while(1)
+    {
+        std::pair<std::string, std::string> payload;
+
+        // aml parsing here
+        try
+        {
+            que.deQue(payload);
+            if (payload.first.empty() || payload.second.empty())
+            {
+                throw std::runtime_error("error");
+            }
+
+            auto itr = repDic.find(payload.first);
+            if (itr == repDic.end())
+            {
+                throw std::runtime_error("error");
+            }
+            else
+            {
+                AMLObject *obj = itr->second->ByteToData(payload.second);
+
+                if (!obj)
+                {
+                    throw std::runtime_error("error");
+                }
+
+                // call subCb
+                mSubCb(payload.first, *obj);
+
+            }
+        }
+        catch(...)
+        {
+            // call errCb
+            mSubErrCb(payload.first, payload.first.empty() ? UnknownTopic : BrokenPayload);
         }
     }
 
