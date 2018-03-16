@@ -5,8 +5,11 @@
 #include <mutex>
 #include <atomic>
 #include <string>
+#include <list>
 #include <memory>
 #include <EZMQXEndpoint.h>
+#include <Representation.h>
+#include <AMLException.h>
 
 namespace EZMQX {
 class FakeSingletonAccessor;
@@ -22,6 +25,10 @@ class Context
         std::string remoteAddr;
         static std::shared_ptr<EZMQX::Context> _instance;
         std::map<int, int> ports;
+        std::map<int, bool> usedPorts;
+        int usedIdx;
+        int numOfPort;
+        std::map<std::string, std::shared_ptr<Representation>> amlRepDic;
         void initialize();
         void terminate();
 
@@ -34,10 +41,15 @@ class Context
         Context(std::string fakeHostname, std::string fakeHostAddr, std::string fakeRemoteAddr, std::map<int, int> fakePorts);
 
     public:
+        ~Context();
         static std::shared_ptr<EZMQX::Context> getInstance();
         bool isInitialized();
         bool isTerminated();
+        int assignDynamicPort();
+        void releaseDynamicPort(int port);
         EZMQX::Endpoint getHostEp(int port);
+        std::list<std::string> addAmlRep(const std::list<std::string>& amlModelInfo);
+        std::shared_ptr<Representation> getAmlRep(const std::string& amlModelId);
 
 };
 

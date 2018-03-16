@@ -26,20 +26,31 @@ static const std::string CONF_NODE_ADDR = "nodeaddress";
 // hostname path
 static const std::string HOSTNAME = "/etc/hostname";
 
+// Dynamic port info
+static const int LOCAL_PORT_START = 4000;
+static const int LOCAL_PORT_MAX = 100;
+
 std::shared_ptr<EZMQX::Context> EZMQX::Context::_instance;
 
 // ctor
-EZMQX::Context::Context() : initialized(false), terminated(false)
+EZMQX::Context::Context() : initialized(false), terminated(false), usedIdx(0), numOfPort(0)
 {
     initialize();
 }
 
-EZMQX::Context::Context(std::string fakeHostname, std::string fakeHostAddr, std::string fakeRemoteAddr, std::map<int, int> fakePorts) : initialized(true), terminated(false)
+// ctor for fake object that used in unittest
+EZMQX::Context::Context(std::string fakeHostname, std::string fakeHostAddr, std::string fakeRemoteAddr, std::map<int, int> fakePorts) : initialized(true), terminated(false), usedIdx(0)
 {
     this->hostname = fakeHostname;
     this->hostAddr = fakeHostAddr;
     this->remoteAddr = fakeRemoteAddr;
     this->ports = fakePorts;
+}
+
+// dtor
+EZMQX::Context::~Context()
+{
+    terminate();
 }
 
 std::shared_ptr<EZMQX::Context> EZMQX::Context::getInstance()
@@ -48,15 +59,148 @@ std::shared_ptr<EZMQX::Context> EZMQX::Context::getInstance()
     {
         _instance.reset(new EZMQX::Context());
     }
-    
 
     return _instance;
 }
 
 EZMQX::Endpoint EZMQX::Context::getHostEp(int port)
 {
-    EZMQX::Endpoint ep("", -1);
+    int hostPort = ports[port];
+    if (hostPort == 0)
+    {
+        throw new EZMQX::Exception("Invalid Port", EZMQX::UnKnownState);
+    }
+
+    EZMQX::Endpoint ep(hostAddr, hostPort);
     return ep;
+}
+
+std::list<std::string> EZMQX::Context::addAmlRep(const std::list<std::string>& amlModelInfo)
+{
+    std::list<std::string> modelId;
+    // mutex lock
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+        if (amlModelInfo.empty())
+        {
+            // throw exceptionn
+        }
+        else
+        {
+            for (std::list<std::string>::const_iterator itr = amlModelInfo.cbegin(); itr != amlModelInfo.cend(); itr++)
+            {
+                std::string path = *itr;
+                if (path.empty())
+                {
+                    // throw exception
+                }
+                else
+                {
+                    try
+                    {
+                        std::shared_ptr<Representation> rep = std::make_shared<Representation>(path);
+                        std::string amlModelId = "temp";// rep -> getModelId();
+                        if (amlModelId.empty())
+                        {
+                            // throw invalid aml model exception
+                        }
+                        else
+                        {
+                            // ignore duplicated rep
+                            if (amlRepDic.find(amlModelId) == amlRepDic.end())
+                            {
+                                amlRepDic.insert(std::pair<std::string, std::shared_ptr<Representation>>(amlModelId, rep));
+                            }
+
+                            modelId.insert(modelId.end(), amlModelId);
+                        }
+                    }
+                    catch(...)
+                    {
+                        // throw invalid aml file path exception
+                        // throw invalid aml model exception
+                    }
+                }
+            }
+        }
+    }
+    // mutex unlock
+    return modelId;
+}
+
+std::shared_ptr<Representation> EZMQX::Context::getAmlRep(const std::string& amlModelId)
+{
+    std::map<std::string, std::shared_ptr<Representation>>::iterator itr;
+    // mutex lock
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+        itr = amlRepDic.find(amlModelId);
+
+        if (itr == amlRepDic.end())
+        {
+            // throw exception
+        }
+        else
+        {
+            return itr->second;
+        }
+    }
+    // mutex unlock
+}
+
+int EZMQX::Context::assignDynamicPort()
+{
+    int ret = 0;
+    // mutex lock
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+        //get Random port
+        while (1)
+        {
+            if (numOfPort >= LOCAL_PORT_MAX)
+            {
+                // throw maximum port exceed exception
+            }
+
+            if (usedPorts[LOCAL_PORT_START + usedIdx] == true)
+            {
+                usedIdx++;
+                if ( usedIdx > LOCAL_PORT_MAX)
+                {
+                    usedIdx = 0;
+                }
+            }
+            else
+            {
+                // mark
+                usedPorts[LOCAL_PORT_START + usedIdx] = true;
+                numOfPort++;
+                break;
+            }
+        }
+
+    }
+    // mutex unlock
+    return ret;
+}
+
+void EZMQX::Context::releaseDynamicPort(int port)
+{
+    // mutex lock
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+        if (usedPorts[port] == true)
+        {
+            usedPorts[port] = false;
+            numOfPort--;
+        }
+        else
+        {
+            //throw wrong port exception
+        }
+    }
+    // mutex unlock
+    return;
 }
 
 void EZMQX::Context::initialize()
@@ -172,9 +316,8 @@ void EZMQX::Context::initialize()
                 throw new EZMQX::Exception("Internal rest service unavilable", EZMQX::ServiceUnavailable);
             }
 
+            initialized.store(true);
         }
-
-        initialized.store(true);
     }
     // mutex unlock
     return;
@@ -203,7 +346,14 @@ void EZMQX::Context::terminate()
 
         if (!terminated.load())
         {
+            // send dead msg to tns server
+            {
+                    EZMQX::SimpleRest rest;
+                    // tns rest api not provide yet
+            }
+
             // release resource
+            ports.clear();
         }
         else
         {

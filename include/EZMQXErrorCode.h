@@ -12,7 +12,8 @@ namespace EZMQX
         InvalidTopic,
         DuplicatedTopic,
         UnknownTopic,
-        InvalidEndpoint
+        InvalidEndpoint,
+        BrokenPayload
     }ErrorCode;
 }
 
