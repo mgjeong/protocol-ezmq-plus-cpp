@@ -12,7 +12,7 @@ class Endpoint
         int port;
     public:
         Endpoint();
-        Endpoint(const std::string addr, int port);
+        Endpoint(std::string addr, int port);
         std::string getAddr();
         int getPort();
 };

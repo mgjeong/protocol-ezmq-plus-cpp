@@ -14,7 +14,7 @@ class Topic
         std::string topic;
     public:
         Topic();
-        Topic(const std::string &topic, const std::string &schema, const EZMQX::Endpoint &endpoint);
+        Topic(std::string topic, std::string schema, const EZMQX::Endpoint &endpoint);
         EZMQX::Endpoint getEndpoint();
         std::string getSchema();
         std::string getTopic();
