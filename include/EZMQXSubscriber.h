@@ -11,6 +11,7 @@
 #include <EZMQXTopic.h>
 #include <EZMQSubscriber.h>
 #include <AMLInterface.h>
+#include <Representation.h>
 #include <EZMQXAmlModelInfo.h>
 
 namespace EZMQX
