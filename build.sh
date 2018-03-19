@@ -28,7 +28,7 @@ fi
 
 #build AML
 cd $DEP_ROOT
-if [ -a "./datamodel-aml-cpp" ] ; then
+if [ -d "./datamodel-aml-cpp" ] ; then
     echo "datamodel-aml-cpp exist"
 else
     git clone git@github.sec.samsung.net:RS7-EdgeComputing/datamodel-aml-cpp.git
@@ -42,16 +42,20 @@ fi
 
 #build & install curl lib
 cd $DEP_ROOT
-if [ -a "./curl-7.58.0.tar.gz" ] ; then
-    echo "curl exist"
+if [ -d "./curl-7.58.0" ] ; then
+    echo "curl lib exist"
 else
-    wget https://github.com/curl/curl/releases/download/curl-7_58_0/curl-7.58.0.tar.gz
-    tar xvf curl-7.58.0.tar.gz
-    cd curl-7.58.0
-    ./configure
-    make -j 8
-    sudo make install
-    sudo ldconfig
+    if [ -a "./curl-7.58.0.tar.gz" ] ; then
+        echo "curl file exist"
+    else
+        wget https://github.com/curl/curl/releases/download/curl-7_58_0/curl-7.58.0.tar.gz
+    fi
+        tar xvf curl-7.58.0.tar.gz
+        cd curl-7.58.0
+        ./configure
+        make -j 8
+        sudo make install
+        sudo ldconfig
 fi
 
 
