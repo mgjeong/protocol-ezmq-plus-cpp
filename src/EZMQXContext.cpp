@@ -35,7 +35,7 @@ std::shared_ptr<EZMQX::Context> EZMQX::Context::_instance;
 // ctor
 EZMQX::Context::Context() : initialized(false), terminated(false), usedIdx(0), numOfPort(0)
 {
-    initialize();
+    //initialize();
 }
 
 // ctor for fake object that used in unittest
