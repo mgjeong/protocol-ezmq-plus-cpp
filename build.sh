@@ -20,6 +20,8 @@ else
     cd ./protocol-ezmq-cpp
     echo "build protocol-ezmq-cpp"
     ./build.sh --target_arch=x86_64
+    sudo cp out/linux/x86_64/release/libezmq.so /usr/local/lib
+    sudo ldconfig
     echo "done"
 fi
 
@@ -31,7 +33,10 @@ if [ -a "./datamodel-aml-cpp" ] ; then
 else
     git clone git@github.sec.samsung.net:RS7-EdgeComputing/datamodel-aml-cpp.git
     cd datamodel-aml-cpp
+    git checkout alpha
     ./build.sh
+    sudo cp out/linux/x86_64/release/libaml.so /usr/local/lib
+    sudo ldconfig
 fi
 
 
@@ -65,7 +70,6 @@ else
     sudo make install
     sudo ldconfig
 fi
-
 
 #build ezmq-plus-cpp
 cd $PROJECT_ROOT
