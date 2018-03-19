@@ -19,6 +19,7 @@ else
     cd ./protocol-ezmq-cpp
     echo "build protocol-ezmq-cpp"
     scons TARGET_OS=linux TARGET_ARCH=armhf
+    sudo cp out/linux/armhf/release/libezmq.so /usr/local/lib
     echo "done"
 fi
 
@@ -31,6 +32,7 @@ else
     cd datamodel-aml-cpp
     git checkout alpha
     ./build_arm.sh
+    sudo cp out/linux/armhf/release/libaml.so /usr/local/lib
 fi
 
 #build & install curl lib
