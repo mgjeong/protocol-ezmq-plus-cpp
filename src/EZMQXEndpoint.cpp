@@ -5,7 +5,7 @@ EZMQX::Endpoint::Endpoint()
 
 }
 
-EZMQX::Endpoint::Endpoint(const std::string addr, int port) : addr(addr), port(port)
+EZMQX::Endpoint::Endpoint(std::string addr, int port) : addr(addr), port(port)
 {
 
 }

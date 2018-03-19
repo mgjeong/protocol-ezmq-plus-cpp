@@ -19,6 +19,7 @@ else
     cd ./protocol-ezmq-cpp
     echo "build protocol-ezmq-cpp"
     scons TARGET_OS=linux TARGET_ARCH=armhf
+    sudo cp out/linux/armhf/release/libezmq.so /usr/local/lib
     echo "done"
 fi
 
@@ -29,23 +30,27 @@ if [ -a "./datamodel-aml-cpp" ] ; then
 else
     git clone git@github.sec.samsung.net:RS7-EdgeComputing/datamodel-aml-cpp.git
     cd datamodel-aml-cpp
+    git checkout alpha
     ./build_arm.sh
+    sudo cp out/linux/armhf/release/libaml.so /usr/local/lib
 fi
 
 #build & install curl lib
 cd $DEP_ROOT
-if [ -a "./curl-7.58.0.tar.gz" ] ; then
-    echo "curl exist"
+if [ -d "./curl-7.58.0" ] ; then
+    echo "curl lib exist"
 else
-    wget https://github.com/curl/curl/releases/download/curl-7_58_0/curl-7.58.0.tar.gz
-    tar xvf curl-7.58.0.tar.gz
-    cd curl-7.58.0
-    echo "build curl"
-    ./configure
-    make -j 8
-    sudo make install
-    sudo ldconfig
-    echo "done"
+    if [ -a "./curl-7.58.0.tar.gz" ] ; then
+        echo "curl file exist"
+    else
+        wget https://github.com/curl/curl/releases/download/curl-7_58_0/curl-7.58.0.tar.gz
+    fi
+        tar xvf curl-7.58.0.tar.gz
+        cd curl-7.58.0
+        ./configure
+        make -j 8
+        sudo make install
+        sudo ldconfig
 fi
 
 #build & install JsonCpp
