@@ -18,7 +18,7 @@ ezmq_plus_sample_env.AppendUnique(CPPPATH=[
 ezmq_plus_sample_env.AppendUnique(
     CXXFLAGS=['-O2', '-g', '-Wall', '-fmessage-length=0', '-std=c++11', '-I/usr/local/include'])
 
-ezmq_plus_sample_env.AppendUnique(LIBS=['ezmq_plus', 'aml'])
+ezmq_plus_sample_env.AppendUnique(LIBS=['aml', 'ezmq_plus'])
 
 ####################################################################
 # Source files and Targets

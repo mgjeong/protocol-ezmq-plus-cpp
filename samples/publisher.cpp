@@ -11,7 +11,7 @@ int main()
     try
     {
       // get config class instance & add aml model file path
-      std::list<std::string> amlPath(1, "/data_modeling.aml");
+      std::list<std::string> amlPath(1, "sample_data_model.aml");
       std::list<std::string> amlId(1);
       std::shared_ptr<EZMQX::Config> config = EZMQX::Config::getInstance();
       amlId = config->addAmlModel(amlPath);
