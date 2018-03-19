@@ -13,13 +13,12 @@ ezmq_plus_sample_env.AppendUnique(CPPPATH=[
     '../dependencies/protocol-ezmq-cpp/protobuf',
     '../dependencies/datamodel-aml-cpp/include',
     '../include'
-
 ])
 
 ezmq_plus_sample_env.AppendUnique(
     CXXFLAGS=['-O2', '-g', '-Wall', '-fmessage-length=0', '-std=c++11', '-I/usr/local/include'])
 
-ezmq_plus_sample_env.AppendUnique(LIBS=['ezmq_plus', 'protobuf'])
+ezmq_plus_sample_env.AppendUnique(LIBS=['ezmq_plus', 'aml'])
 
 ####################################################################
 # Source files and Targets
