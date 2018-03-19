@@ -2,11 +2,7 @@
 #include <EZMQXConfig.h>
 #include <EZMQXException.h>
 #include <EZMQXSubscriber.h>
-// #include <EZMQXTopic.h>
-// #include <EZMQXEndpoint.h>
 #include <signal.h>
-// #include <condition_variable>
-// #include <memory>
 
 bool isStarted;
 std::mutex m_mutex;
