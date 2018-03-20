@@ -4,19 +4,16 @@
 static const std::string FAKE_HOST_NAME = "localhost";
 static const std::string FAKE_HOST_ADDR = "localhost";
 static const std::string FAKE_REMOTE_ADDR = "localhost";
-static const int FAKE_RESERVE_PORT = 4000;
+
+static std::shared_ptr<EZMQX::Context> ctx = EZMQX::Context::getInstance();
 
 void EZMQX::FakeSingletonAccessor::setFake()
 {
     try
     {
-        std::map<int, int> fakePorts;
-        for (int i = 0; i < 100; i++)
-        {
-            fakePorts.insert(std::pair<int, int>(FAKE_RESERVE_PORT+i, FAKE_RESERVE_PORT+i));
-        }
-
-        EZMQX::Context::_instance.reset(new EZMQX::Context(FAKE_HOST_NAME, FAKE_HOST_ADDR, FAKE_REMOTE_ADDR, fakePorts));
+        ctx->setStandAloneMode(true);
+        ctx->setHostInfo(FAKE_HOST_NAME, FAKE_HOST_ADDR);
+        ctx->setTnsInfo(FAKE_REMOTE_ADDR);
     }
     catch(...)
     {

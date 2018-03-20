@@ -33,35 +33,44 @@ static const int LOCAL_PORT_MAX = 100;
 std::shared_ptr<EZMQX::Context> EZMQX::Context::_instance;
 
 // ctor
-EZMQX::Context::Context() : initialized(false), terminated(false), usedIdx(0), numOfPort(0)
+EZMQX::Context::Context() : initialized(false), terminated(false), usedIdx(0), numOfPort(0), standAlone(false), tnsEnabled(false)
 {
     ezmqCtx.reset(ezmq::EZMQAPI::getInstance());
     if (ezmq::EZMQ_OK != ezmqCtx->initialize())
     {
         throw new EZMQX::Exception("Could not start ezmq context", EZMQX::UnKnownState);
     }
-    //initialize();
-}
-
-// ctor for fake object that used in unittest
-EZMQX::Context::Context(std::string fakeHostname, std::string fakeHostAddr, std::string fakeRemoteAddr, std::map<int, int> fakePorts) : initialized(true), terminated(false), usedIdx(0)
-{
-    ezmqCtx.reset(ezmq::EZMQAPI::getInstance());
-    if (ezmq::EZMQ_OK != ezmqCtx->initialize())
-    {
-        throw new EZMQX::Exception("Could not start ezmq context", EZMQX::UnKnownState);
-    }
-
-    this->hostname = fakeHostname;
-    this->hostAddr = fakeHostAddr;
-    this->remoteAddr = fakeRemoteAddr;
-    this->ports = fakePorts;
 }
 
 // dtor
 EZMQX::Context::~Context()
 {
     terminate();
+}
+
+void EZMQX::Context::setStandAloneMode(bool mode)
+{
+    this->standAlone = mode;
+    if (this->standAlone)
+    {
+        initialized.store(true);
+    }
+    else
+    {
+        initialize();
+    }
+}
+
+void EZMQX::Context::setHostInfo(std::string hostName, std::string hostAddr)
+{
+    this->hostname = hostname;
+    this->hostAddr = hostAddr;
+}
+
+void EZMQX::Context::setTnsInfo(std::string remoteAddr)
+{
+    tnsEnabled = true;
+    this->remoteAddr = remoteAddr;
 }
 
 std::shared_ptr<EZMQX::Context> EZMQX::Context::getInstance()
@@ -76,10 +85,18 @@ std::shared_ptr<EZMQX::Context> EZMQX::Context::getInstance()
 
 EZMQX::Endpoint EZMQX::Context::getHostEp(int port)
 {
-    int hostPort = ports[port];
-    if (hostPort == 0)
+    int hostPort = 0;
+    if (standAlone)
     {
-        throw new EZMQX::Exception("Invalid Port", EZMQX::UnKnownState);
+        hostPort = port;
+    }
+    else
+    {
+        hostPort = ports[port];
+        if (hostPort == 0)
+        {
+            throw new EZMQX::Exception("Invalid Port", EZMQX::UnKnownState);
+        }
     }
 
     EZMQX::Endpoint ep(hostAddr, hostPort);
@@ -258,8 +275,7 @@ void EZMQX::Context::initialize()
 
                              if (props[i][CONF_NAME].asString() == CONF_REMOTE_ADDR)
                              {
-                                this->remoteAddr = props[i][CONF_VALUE].asString();
-
+                                setTnsInfo(props[i][CONF_VALUE].asString());
                              }
                              else if (props[i][CONF_NAME].asString() == CONF_NODE_ADDR )
                              {
@@ -347,6 +363,21 @@ bool EZMQX::Context::isTerminated()
     return terminated.load();
 }
 
+bool EZMQX::Context::isStandAlone()
+{
+    return standAlone;
+}
+
+bool EZMQX::Context::isTnsEnabled()
+{
+    return tnsEnabled;
+}
+
+std::string EZMQX::Context::getTnsAddr()
+{
+    return remoteAddr;
+}
+
 void EZMQX::Context::terminate()
 {   
     // throw exception
@@ -359,6 +390,7 @@ void EZMQX::Context::terminate()
         if (!terminated.load())
         {
             // send dead msg to tns server
+            if (!standAlone)
             {
                     EZMQX::SimpleRest rest;
                     // tns rest api not provide yet

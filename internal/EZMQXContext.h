@@ -14,10 +14,14 @@
 
 namespace EZMQX {
 class FakeSingletonAccessor;
+class Config;
 class Context
 {
     private:
         friend class FakeSingletonAccessor;
+        friend class Config;
+        bool standAlone;
+        bool tnsEnabled;
         std::mutex lock;
         std::atomic_bool initialized;
         std::atomic_bool terminated;
@@ -31,6 +35,9 @@ class Context
         int usedIdx;
         int numOfPort;
         std::map<std::string, std::shared_ptr<Representation>> amlRepDic;
+        void setStandAloneMode(bool mode);
+        void setHostInfo(std::string hostName, std::string hostAddr);
+        void setTnsInfo(std::string remoteAddr);
         void initialize();
         void terminate();
 
@@ -39,14 +46,14 @@ class Context
         Context(const Context&) = delete;
         Context& operator = (const Context&) = delete;
 
-        // ctor for fake object
-        Context(std::string fakeHostname, std::string fakeHostAddr, std::string fakeRemoteAddr, std::map<int, int> fakePorts);
-
     public:
         ~Context();
         static std::shared_ptr<EZMQX::Context> getInstance();
         bool isInitialized();
         bool isTerminated();
+        bool isStandAlone();
+        bool isTnsEnabled();
+        std::string getTnsAddr();
         int assignDynamicPort();
         void releaseDynamicPort(int port);
         EZMQX::Endpoint getHostEp(int port);

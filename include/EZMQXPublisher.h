@@ -29,7 +29,7 @@ class Publisher
 
         // delete default ctor
         Publisher();
-        Publisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo);
+        Publisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort);
 
         // make noncopyable        
         Publisher(const Publisher&) = delete;
@@ -37,7 +37,7 @@ class Publisher
 
     public:
         ~Publisher();
-        static std::shared_ptr<EZMQX::Publisher> getPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo);
+        static std::shared_ptr<EZMQX::Publisher> getPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort);
         void publish(const AMLObject& payload);
         bool isTerminated();
         void terminate();

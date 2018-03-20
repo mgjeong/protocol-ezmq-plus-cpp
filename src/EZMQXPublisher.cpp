@@ -3,22 +3,35 @@
 #include <EZMQXContext.h>
 #include <EZMQXErrorCode.h>
 #include <EZMQXException.h>
+#include <EZMQXRest.h>
 #include <Representation.h>
 #include <AMLException.h>
 #include <EZMQErrorCodes.h>
 #include <EZMQByteData.h>
 #include <iostream>
 
+static const std::string PREFIX = "/api/v1";
+static const std::string TOPIC = "/topic";
+static const std::string HEALTH = "/health";
+
 static std::shared_ptr<EZMQX::Context> ctx = EZMQX::Context::getInstance();
 static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQErrorCode code)->void{std::cout<<"errCb"<<std::endl; return;};
 
-EZMQX::Publisher::Publisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo)
+EZMQX::Publisher::Publisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
  : terminated(false), localPort(0), token("")
 {
+    bool isStandAlone = ctx->isStandAlone();
     //validate topic
     try
     {
-        localPort = ctx->assignDynamicPort();
+        if (isStandAlone)
+        {
+            localPort = optionalPort;
+        }
+        else
+        {
+            localPort = ctx->assignDynamicPort();
+        }
     }
     catch(...)
     {
@@ -70,9 +83,7 @@ EZMQX::Publisher::Publisher(const std::string &topic, const EZMQX::AmlModelInfo&
     EZMQX::Topic _topic;
     try
     {
-        //_topic = EZMQX::Topic(topic, modelId, ctx->getHostEp(localPort));
-        EZMQX::Endpoint ep("localhost", 4000);
-        _topic = EZMQX::Topic(topic, modelId, ep);
+        _topic = EZMQX::Topic(topic, modelId, ctx->getHostEp(localPort));
     }
     catch(...)
     {
@@ -80,8 +91,10 @@ EZMQX::Publisher::Publisher(const std::string &topic, const EZMQX::AmlModelInfo&
     }
 
     //register topic //throw exception
-    registerTopic(_topic);
-
+    if (ctx->isTnsEnabled())
+    {
+        registerTopic(_topic);
+    }
 
     //register here
     this->topic = _topic;
@@ -92,14 +105,24 @@ EZMQX::Publisher::~Publisher()
     terminate();
 }
 
-std::shared_ptr<EZMQX::Publisher> EZMQX::Publisher::getPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo)
+std::shared_ptr<EZMQX::Publisher> EZMQX::Publisher::getPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
 {
-    std::shared_ptr<EZMQX::Publisher> pubInstance(new Publisher(topic, infoType, amlModelInfo));
+    std::shared_ptr<EZMQX::Publisher> pubInstance(new Publisher(topic, infoType, amlModelInfo, optionalPort));
     return pubInstance;
 }
 
 void EZMQX::Publisher::registerTopic(const EZMQX::Topic& topic)
 {
+    try
+    {
+        EZMQX::SimpleRest rest;
+        std::string ret = rest.Get(ctx->getTnsAddr() + TOPIC);
+    }
+    catch(...)
+    {
+
+    }
+
     return;
 }
 

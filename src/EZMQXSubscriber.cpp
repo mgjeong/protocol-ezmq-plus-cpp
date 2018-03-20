@@ -16,7 +16,10 @@ EZMQX::Subscriber::Subscriber()
 EZMQX::Subscriber::Subscriber(const std::list<EZMQX::Topic> &topics, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb)
  : terminated(false), token(""), mSubCb(subCb), mSubErrCb(errCb)
 {
-    verifyTopics(topics);
+    if (ctx->isTnsEnabled())
+    {
+        verifyTopics(topics);
+    }
 
     try
     {
@@ -47,11 +50,15 @@ EZMQX::Subscriber::Subscriber(const std::list<std::string> &topics, EZMQX::SubCb
  : terminated(false), token(""), mSubCb(subCb), mSubErrCb(errCb)
 {
     std::list<EZMQX::Topic> verified;
-    verifyTopics(topics, verified);
 
-    if (verified.empty())
+    if (ctx->isTnsEnabled())
     {
-        // throw exception
+        verifyTopics(topics, verified);
+
+        if (verified.empty())
+        {
+            // throw exception
+        }
     }
 
     try
