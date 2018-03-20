@@ -4,6 +4,7 @@
 #include <EZMQXException.h>
 #include <EZMQErrorCodes.h>
 #include <EZMQByteData.h>
+#include <iostream>
 
 static std::shared_ptr<EZMQX::Context> ctx = EZMQX::Context::getInstance();
 
@@ -23,7 +24,7 @@ EZMQX::Subscriber::Subscriber(const std::list<EZMQX::Topic> &topics, EZMQX::SubC
     }
     catch(...)
     {
-        // throw exception
+        throw new EZMQX::Exception("Could not initialize subscriber", EZMQX::UnKnownState);
     }
 }
 void EZMQX::Subscriber::internalSubCb(std::string topic, const ezmq::EZMQMessage &event)
@@ -59,7 +60,7 @@ EZMQX::Subscriber::Subscriber(const std::list<std::string> &topics, EZMQX::SubCb
     }
     catch(...)
     {
-        // throw exception
+        throw new EZMQX::Exception("Could not initialize subscriber", EZMQX::UnKnownState);
     }
 }
 
@@ -77,11 +78,14 @@ void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics, EZMQX:
         // find Aml rep
         try
         {
+            std::cout << "topic: " << topic_str << " Model_Id: " << topic.getSchema() << std::endl;
+            std::shared_ptr<Representation> rep = ctx->getAmlRep(topic.getSchema());
+
             repDic.insert(std::make_pair(topic_str, ctx->getAmlRep(topic.getSchema())));
         }
         catch(...)
         {
-            // throw no Aml Representaion exception
+            throw new EZMQX::Exception("Could not found Aml Rep", EZMQX::UnKnownState);
         }
 
         EZMQX::Endpoint ep = topic.getEndpoint();
@@ -119,13 +123,16 @@ void EZMQX::Subscriber::handler()
             que.deQue(payload);
             if (payload.first.empty() || payload.second.empty())
             {
-                throw std::runtime_error("error");
+                throw std::runtime_error("empty payload");
+                //throw new EZMQX::Exception("empty payload", EZMQX::UnKnownState);
             }
 
             auto itr = repDic.find(payload.first);
+            std::cout << payload.first << std::endl;
             if (itr == repDic.end())
             {
-                throw std::runtime_error("error");
+                throw std::runtime_error("Could not find Aml rep");
+                //throw new EZMQX::Exception("Could not find Aml rep", EZMQX::UnKnownState);
             }
             else
             {
@@ -133,7 +140,8 @@ void EZMQX::Subscriber::handler()
 
                 if (!obj)
                 {
-                    throw std::runtime_error("error");
+                    throw std::runtime_error("Could not convert byte to AMLObject");
+                    //throw new EZMQX::Exception("Could not convert byte to AMLObject", EZMQX::UnKnownState);
                 }
 
                 // call subCb
@@ -141,9 +149,10 @@ void EZMQX::Subscriber::handler()
 
             }
         }
-        catch(...)
+        catch(const std::exception &e)
         {
             // call errCb
+            std::cout << e.what() << std::endl;
             mSubErrCb(payload.first, payload.first.empty() ? UnknownTopic : BrokenPayload);
         }
     }
@@ -152,7 +161,7 @@ void EZMQX::Subscriber::handler()
 }
 
 void EZMQX::Subscriber::verifyTopics(const std::list<std::string> &topics, std::list<EZMQX::Topic> &verified)
-{
+{   
     return;
 }
 

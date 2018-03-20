@@ -6,6 +6,69 @@
 #include <EZMQXConfig.h>
 #include <EZMQXException.h>
 
+void printAMLData(AMLData amlData, int depth)
+{
+    std::string indent;
+    for (int i = 0; i < depth; i++) indent += "    ";
+
+    std::cout << indent << "{" << std::endl;
+
+    std::vector<std::string> keys = amlData.getKeys();
+    for (std::string key : keys)
+    {
+        std::cout << indent << "    \"" << key << "\" : ";
+
+        AMLValueType type = amlData.getValueType(key);
+        if (AMLValueType::String == type)
+        {
+            std::string valStr = amlData.getValueToStr(key);
+            std::cout << valStr;
+        }
+        else if (AMLValueType::StringArray == type)
+        {
+            std::vector<std::string> valStrArr = amlData.getValueToStrArr(key);
+            std::cout << "[";
+            for (std::string val : valStrArr)
+            {
+                std::cout << val;
+                if (val != valStrArr.back()) std::cout << ", ";
+            }
+            std::cout << "]";
+        }
+        else if (AMLValueType::AMLData == type)
+        {
+            AMLData valAMLData = amlData.getValueToAMLData(key);
+            std::cout << std::endl;
+            printAMLData(valAMLData, depth + 1);
+        }
+
+        if (key != keys.back()) std::cout << ",";
+        std::cout << std::endl;
+    }
+    std::cout << indent << "}";
+}
+
+void printAMLObject(AMLObject amlObj)
+{
+    std::cout << "{" << std::endl;
+    std::cout << "    \"device\" : " << amlObj.getDeviceId() << "," << std::endl;
+    std::cout << "    \"timestamp\" : " << amlObj.getTimeStamp() << "," << std::endl;
+    std::cout << "    \"id\" : " << amlObj.getId() << "," << std::endl;
+
+    std::vector<std::string> dataNames = amlObj.getDataNames();
+
+    for (std::string n : dataNames)
+    {
+        AMLData data = amlObj.getData(n);
+
+        std::cout << "    \"" << n << "\" : " << std::endl;
+        printAMLData(data, 1);
+        if (n != dataNames.back()) std::cout << "," << std::endl;
+    }
+
+    std::cout << "\n}" << std::endl;
+}
+
 int main()
 {
     try
@@ -17,7 +80,7 @@ int main()
       amlId = config->addAmlModel(amlPath);
 
       // create publisher with test topic
-      std::shared_ptr<EZMQX::Publisher> publisher = EZMQX::Publisher::getPublisher("/test", EZMQX::AmlModelId, amlPath.front());
+      std::shared_ptr<EZMQX::Publisher> publisher = EZMQX::Publisher::getPublisher("/test/", EZMQX::AmlModelId, amlId.front());
       
       // create AMLObject
       std::string deviceId = "GTC001";
@@ -57,6 +120,8 @@ int main()
       {
           // publish AMLObject
           publisher->publish(amlObj);
+          std::cout << "Publish!!!" << std::endl;
+          printAMLObject(amlObj);
           std::this_thread::sleep_for(std::chrono::milliseconds(100));
       }
 

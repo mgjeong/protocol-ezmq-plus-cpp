@@ -35,12 +35,23 @@ std::shared_ptr<EZMQX::Context> EZMQX::Context::_instance;
 // ctor
 EZMQX::Context::Context() : initialized(false), terminated(false), usedIdx(0), numOfPort(0)
 {
-    initialize();
+    ezmqCtx.reset(ezmq::EZMQAPI::getInstance());
+    if (ezmq::EZMQ_OK != ezmqCtx->initialize())
+    {
+        throw new EZMQX::Exception("Could not start ezmq context", EZMQX::UnKnownState);
+    }
+    //initialize();
 }
 
 // ctor for fake object that used in unittest
 EZMQX::Context::Context(std::string fakeHostname, std::string fakeHostAddr, std::string fakeRemoteAddr, std::map<int, int> fakePorts) : initialized(true), terminated(false), usedIdx(0)
 {
+    ezmqCtx.reset(ezmq::EZMQAPI::getInstance());
+    if (ezmq::EZMQ_OK != ezmqCtx->initialize())
+    {
+        throw new EZMQX::Exception("Could not start ezmq context", EZMQX::UnKnownState);
+    }
+
     this->hostname = fakeHostname;
     this->hostAddr = fakeHostAddr;
     this->remoteAddr = fakeRemoteAddr;
@@ -99,7 +110,7 @@ std::list<std::string> EZMQX::Context::addAmlRep(const std::list<std::string>& a
                     try
                     {
                         std::shared_ptr<Representation> rep = std::make_shared<Representation>(path);
-                        std::string amlModelId = "temp";// rep -> getModelId();
+                        std::string amlModelId = rep->getRepresentationId();
                         if (amlModelId.empty())
                         {
                             // throw invalid aml model exception
@@ -138,7 +149,7 @@ std::shared_ptr<Representation> EZMQX::Context::getAmlRep(const std::string& aml
 
         if (itr == amlRepDic.end())
         {
-            // throw exception
+            throw new EZMQX::Exception("Could not matched Aml Rep", EZMQX::UnKnownState);
         }
         else
         {
@@ -174,6 +185,7 @@ int EZMQX::Context::assignDynamicPort()
             {
                 // mark
                 usedPorts[LOCAL_PORT_START + usedIdx] = true;
+                ret = LOCAL_PORT_START + usedIdx;
                 numOfPort++;
                 break;
             }

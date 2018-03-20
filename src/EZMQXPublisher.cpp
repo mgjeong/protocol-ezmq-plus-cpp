@@ -7,6 +7,7 @@
 #include <AMLException.h>
 #include <EZMQErrorCodes.h>
 #include <EZMQByteData.h>
+#include <iostream>
 
 static std::shared_ptr<EZMQX::Context> ctx = EZMQX::Context::getInstance();
 static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQErrorCode code)->void{std::cout<<"errCb"<<std::endl; return;};
@@ -27,6 +28,12 @@ EZMQX::Publisher::Publisher(const std::string &topic, const EZMQX::AmlModelInfo&
     // create ezmq publisher
     // ezmq error callback should provide shared pointer in callback
     pubCtx = std::make_shared<ezmq::EZMQPublisher>(localPort, ezmqCb, ezmqCb, ezmqCb);
+
+    // check error and throw exception
+    if (ezmq::EZMQ_OK != pubCtx->start())
+    {
+        throw new EZMQX::Exception("Could not start publisher", EZMQX::UnKnownState);
+    }
 
     //get Aml Model Id
     std::string modelId="";
@@ -63,7 +70,9 @@ EZMQX::Publisher::Publisher(const std::string &topic, const EZMQX::AmlModelInfo&
     EZMQX::Topic _topic;
     try
     {
-        _topic = EZMQX::Topic(topic, modelId, ctx->getHostEp(localPort));
+        //_topic = EZMQX::Topic(topic, modelId, ctx->getHostEp(localPort));
+        EZMQX::Endpoint ep("localhost", 4000);
+        _topic = EZMQX::Topic(topic, modelId, ep);
     }
     catch(...)
     {

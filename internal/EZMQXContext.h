@@ -10,6 +10,7 @@
 #include <EZMQXEndpoint.h>
 #include <Representation.h>
 #include <AMLException.h>
+#include <EZMQAPI.h>
 
 namespace EZMQX {
 class FakeSingletonAccessor;
@@ -24,6 +25,7 @@ class Context
         std::string hostAddr;
         std::string remoteAddr;
         static std::shared_ptr<EZMQX::Context> _instance;
+        std::shared_ptr<ezmq::EZMQAPI> ezmqCtx;
         std::map<int, int> ports;
         std::map<int, bool> usedPorts;
         int usedIdx;
