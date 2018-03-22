@@ -97,7 +97,7 @@ int main()
       std::list<std::string> amlId(1);
       std::shared_ptr<EZMQX::Config> config = EZMQX::Config::getInstance(EZMQX::StandAlone);
       config->setHostInfo("TestSubscriber", "10.113.77.33");
-      config->setTnsInfo("10.113.65.174:48323");
+      config->setTnsInfo("10.113.65.174:8323");
       amlId = config->addAmlModel(amlPath);
 
       // error callback
@@ -107,14 +107,14 @@ int main()
       EZMQX::SubErrCb errCb = [](std::string topic, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl;};
       
       // create subscriber with test topic
-      EZMQX::Endpoint ep("localhost", 4000);
+      // EZMQX::Endpoint ep("localhost", 4000);
 
       std::cout<<"subscriber created"<<std::endl;
-      EZMQX::Topic topic("/test/", amlId.front(), ep);
-      std::shared_ptr<EZMQX::Subscriber> subscriber = EZMQX::Subscriber::getSubscriber(topic, subCb, errCb);
+      //EZMQX::Topic topic("/test/", amlId.front(), ep);
+      std::shared_ptr<EZMQX::Subscriber> subscriber = EZMQX::Subscriber::getSubscriber("/test2/", subCb, errCb);
 
       // push to blocked
-      std::cout<<"push to blocked"<<std::endl;
+      std::cout<<"push main thread to blocked"<<std::endl;
       isStarted = true;
       std::unique_lock<std::mutex> lock(m_mutex);
       m_cv.wait(lock);

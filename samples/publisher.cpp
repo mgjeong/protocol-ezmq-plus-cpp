@@ -82,7 +82,9 @@ int main()
       amlId = config->addAmlModel(amlPath);
 
       // create publisher with test topic
-      std::shared_ptr<EZMQX::Publisher> publisher = EZMQX::Publisher::getPublisher("/test/", EZMQX::AmlModelId, amlId.front(), 4000);
+      std::shared_ptr<EZMQX::Publisher> publisherA = EZMQX::Publisher::getPublisher("/test2/A/", EZMQX::AmlModelId, amlId.front(), 4000);
+      std::shared_ptr<EZMQX::Publisher> publisherB = EZMQX::Publisher::getPublisher("/test2/B/", EZMQX::AmlModelId, amlId.front(), 4001);
+      std::shared_ptr<EZMQX::Publisher> publisherC = EZMQX::Publisher::getPublisher("/test2/C/", EZMQX::AmlModelId, amlId.front(), 4002);
       
       // create AMLObject
       std::string deviceId = "GTC001";
@@ -121,20 +123,24 @@ int main()
       while(1)
       {
           // publish AMLObject
-          publisher->publish(amlObj);
+          publisherA->publish(amlObj);
+          publisherB->publish(amlObj);
+          publisherC->publish(amlObj);
           std::cout << "Publish!!!" << std::endl;
           printAMLObject(amlObj);
           std::this_thread::sleep_for(std::chrono::milliseconds(100));
       }
 
       // condition check
-      if (!publisher->isTerminated())
+      if (!publisherA->isTerminated())
       {
-          publisher->terminate();
+          publisherA->terminate();
+          publisherB->terminate();
+          publisherC->terminate();
       }
 
       // occur exception
-      publisher->terminate();
+      publisherA->terminate();
     }
     catch(EZMQX::Exception& e)
     {
