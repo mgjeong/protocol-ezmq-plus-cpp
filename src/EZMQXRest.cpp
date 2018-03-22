@@ -46,13 +46,48 @@ std::string EZMQX::SimpleRest::Get(std::string url)
     return buff;
 }
 
+std::string EZMQX::SimpleRest::Get(std::string url, std::string query)
+{
+    std::string buff;
+    std::string addr = url + "?" + query;
+    CURLcode res;
+    curl_easy_setopt(curl, CURLOPT_URL, addr.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _writeCb);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buff);
+    res = curl_easy_perform(curl);
+    if(res != CURLE_OK)
+    {
+        // std::cout<<"curl res != CURLE_OK"<<std::endl;
+        // std::cout<<"curl res is " <<" "<<curl_easy_strerror(res)<<std::endl;
+        //throw exception
+    }
+
+    return buff;
+}
+
 std::string EZMQX::SimpleRest::Put(std::string url)
 {
 
 }
 
-std::string EZMQX::SimpleRest::Post(std::string url)
+std::string EZMQX::SimpleRest::Post(std::string url, std::string payload)
 {
+    std::string buff;
+    CURLcode res;
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _writeCb);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buff);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.c_str());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)(payload.size()));
+    res = curl_easy_perform(curl);
+    if(res != CURLE_OK)
+    {
+        // std::cout<<"curl res != CURLE_OK"<<std::endl;
+        // std::cout<<"curl res is " <<" "<<curl_easy_strerror(res)<<std::endl;
+        //throw exception
+    }
+
+    return buff;
 
 }
 
