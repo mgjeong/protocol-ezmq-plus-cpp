@@ -5,7 +5,7 @@ EZMQX::Topic::Topic()
 
 }
 
-EZMQX::Topic::Topic(std::string topic, std::string schema, const EZMQX::Endpoint &endpoint): endpoint(endpoint), topic(topic), schema(schema)
+EZMQX::Topic::Topic(std::string topic, std::string schema, EZMQX::Endpoint endpoint): endpoint(endpoint), topic(topic), schema(schema)
 {
 
 }
