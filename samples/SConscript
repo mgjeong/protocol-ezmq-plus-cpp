@@ -24,4 +24,5 @@ ezmq_plus_sample_env.AppendUnique(LIBS=['aml', 'ezmq_plus'])
 # Source files and Targets
 ######################################################################
 ezmqxpublisher = ezmq_plus_sample_env.Program('publisher', 'publisher.cpp')
-ezmqsubscriber = ezmq_plus_sample_env.Program('subscriber', 'subscriber.cpp')
+ezmqsubscriber = ezmq_plus_sample_env.Program('AmlSubscriber', 'AmlSubscriber.cpp')
+ezmqsubscriber = ezmq_plus_sample_env.Program('XmlSubscriber', 'XmlSubscriber.cpp')

@@ -1,5 +1,5 @@
 #include <EZMQXContext.h>
-#include <EZMQXSubscriber.h>
+#include <EZMQXAMLSubscriber.h>
 #include <EZMQXErrorCode.h>
 #include <EZMQXException.h>
 #include <EZMQErrorCodes.h>
@@ -7,6 +7,7 @@
 #include <EZMQXRest.h>
 #include <iostream>
 #include <json/reader.h>
+#include <EZMQXBlockingQue.h>
 
 static const std::string PREFIX = "/api/v1";
 static const std::string TOPIC = "/tns/topic";
@@ -18,13 +19,13 @@ static const std::string QUERY_PARAM = "topic=";
 
 static std::shared_ptr<EZMQX::Context> ctx = EZMQX::Context::getInstance();
 
-EZMQX::Subscriber::Subscriber()
+EZMQX::AmlSubscriber::AmlSubscriber()
 {
     // do nothing
 }
 
-EZMQX::Subscriber::Subscriber(const std::list<EZMQX::Topic> &topics, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb)
- : terminated(false), token(""), mSubCb(subCb), mSubErrCb(errCb)
+EZMQX::AmlSubscriber::AmlSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
+ : que(new EZMQX::BlockingQue()), terminated(false), token(""), mSubCb(subCb), mSubErrCb(errCb)
 {
     if (ctx->isTnsEnabled())
     {
@@ -41,8 +42,8 @@ EZMQX::Subscriber::Subscriber(const std::list<EZMQX::Topic> &topics, EZMQX::SubC
     }
 }
 
-EZMQX::Subscriber::Subscriber(const std::string &topic, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb)
- : terminated(false), token(""), mSubCb(subCb), mSubErrCb(errCb)
+EZMQX::AmlSubscriber::AmlSubscriber(const std::string &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
+ : que(new EZMQX::BlockingQue()), terminated(false), token(""), mSubCb(subCb), mSubErrCb(errCb)
 {
     std::list<EZMQX::Topic> verified;
 
@@ -66,14 +67,14 @@ EZMQX::Subscriber::Subscriber(const std::string &topic, EZMQX::SubCb &subCb, EZM
     }
 }
 
-void EZMQX::Subscriber::internalSubCb(std::string topic, const ezmq::EZMQMessage &event)
+void EZMQX::AmlSubscriber::internalSubCb(std::string topic, const ezmq::EZMQMessage &event)
 {
 
     if (event.getContentType() == ezmq::EZMQ_CONTENT_TYPE_BYTEDATA && !topic.empty())
     {
         const ezmq::EZMQByteData &bytes= dynamic_cast<const ezmq::EZMQByteData&>(event);
         std::string payload((const char*)(bytes.getByteData()), bytes.getLength());
-        this->que.inQue(std::make_pair(topic, payload));
+        this->que->inQue(std::make_pair(topic, payload));
     }
     else
     {
@@ -82,10 +83,10 @@ void EZMQX::Subscriber::internalSubCb(std::string topic, const ezmq::EZMQMessage
     return;
 }
 
-void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb)
+void EZMQX::AmlSubscriber::initialize(const std::list<EZMQX::Topic> &topics, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
     // create thread and push to blocked
-    mThread = std::thread(&EZMQX::Subscriber::handler, this);
+    mThread = std::thread(&EZMQX::AmlSubscriber::handler, this);
 
     for (std::list<EZMQX::Topic>::const_iterator itr = topics.cbegin(); itr != topics.cend(); itr++)
     {
@@ -108,7 +109,7 @@ void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics, EZMQX:
 
         EZMQX::Endpoint ep = topic.getEndpoint();
 
-        std::shared_ptr<ezmq::EZMQSubscriber> sub = std::make_shared<ezmq::EZMQSubscriber>(ep.getAddr(), ep.getPort(), [](const ezmq::EZMQMessage &event)->void{ return;}, std::bind(&EZMQX::Subscriber::internalSubCb, this, std::placeholders::_1, std::placeholders::_2));
+        std::shared_ptr<ezmq::EZMQSubscriber> sub = std::make_shared<ezmq::EZMQSubscriber>(ep.getAddr(), ep.getPort(), [](const ezmq::EZMQMessage &event)->void{ return;}, std::bind(&EZMQX::AmlSubscriber::internalSubCb, this, std::placeholders::_1, std::placeholders::_2));
         subscribers.push_back(sub);
 
         ezmq::EZMQErrorCode ret = sub->start();
@@ -129,7 +130,7 @@ void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics, EZMQX:
     return;
 }
 
-void EZMQX::Subscriber::handler()
+void EZMQX::AmlSubscriber::handler()
 {
     while(1)
     {
@@ -138,7 +139,7 @@ void EZMQX::Subscriber::handler()
         // aml parsing here
         try
         {
-            que.deQue(payload);
+            que->deQue(payload);
             if (payload.first.empty() || payload.second.empty())
             {
                 throw std::runtime_error("empty payload");
@@ -178,7 +179,7 @@ void EZMQX::Subscriber::handler()
     return;
 }
 
-void EZMQX::Subscriber::verifyTopics(const std::string &topic, std::list<EZMQX::Topic> &verified)
+void EZMQX::AmlSubscriber::verifyTopics(const std::string &topic, std::list<EZMQX::Topic> &verified)
 {   
     std::string tmp;
     // send rest
@@ -229,37 +230,37 @@ void EZMQX::Subscriber::verifyTopics(const std::string &topic, std::list<EZMQX::
 }
 
 // throw exception when topic is not mached
-void EZMQX::Subscriber::verifyTopics(const std::list<EZMQX::Topic> &topics)
+void EZMQX::AmlSubscriber::verifyTopics(const std::list<EZMQX::Topic> &topics)
 {
     return;
 }
 
-std::shared_ptr<EZMQX::Subscriber> EZMQX::Subscriber::getSubscriber(const std::string &topic, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb)
+std::shared_ptr<EZMQX::AmlSubscriber> EZMQX::AmlSubscriber::getSubscriber(const std::string &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
-    std::shared_ptr<EZMQX::Subscriber> subInstance(new Subscriber(topic, subCb, errCb));
+    std::shared_ptr<EZMQX::AmlSubscriber> subInstance(new AmlSubscriber(topic, subCb, errCb));
     return subInstance;
 }
 
-std::shared_ptr<EZMQX::Subscriber> EZMQX::Subscriber::getSubscriber(const EZMQX::Topic &topic, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb)
+std::shared_ptr<EZMQX::AmlSubscriber> EZMQX::AmlSubscriber::getSubscriber(const EZMQX::Topic &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
     std::list<EZMQX::Topic> topics(1, topic);
-    std::shared_ptr<EZMQX::Subscriber> subInstance(new Subscriber(topics, subCb, errCb));
+    std::shared_ptr<EZMQX::AmlSubscriber> subInstance(new AmlSubscriber(topics, subCb, errCb));
     return subInstance;
 }
 
-std::shared_ptr<EZMQX::Subscriber> EZMQX::Subscriber::getSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::SubCb &subCb, EZMQX::SubErrCb &errCb)
+std::shared_ptr<EZMQX::AmlSubscriber> EZMQX::AmlSubscriber::getSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
-    std::shared_ptr<EZMQX::Subscriber> subInstance(new Subscriber(topics, subCb, errCb));
+    std::shared_ptr<EZMQX::AmlSubscriber> subInstance(new AmlSubscriber(topics, subCb, errCb));
     return subInstance;
 }
 
-bool EZMQX::Subscriber::isTerminated()
+bool EZMQX::AmlSubscriber::isTerminated()
 {
     // atomically
     return terminated.load();
 }
 
-void EZMQX::Subscriber::terminate()
+void EZMQX::AmlSubscriber::terminate()
 {
     // mutex lock
     {
@@ -279,7 +280,7 @@ void EZMQX::Subscriber::terminate()
     return;
 }
 
-std::list<EZMQX::Topic> EZMQX::Subscriber::getTopics()
+std::list<EZMQX::Topic> EZMQX::AmlSubscriber::getTopics()
 {
     std::list<EZMQX::Topic> topics;
     return topics;

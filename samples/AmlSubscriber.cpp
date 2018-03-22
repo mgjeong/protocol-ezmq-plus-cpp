@@ -1,7 +1,8 @@
 #include <iostream>
 #include <EZMQXConfig.h>
 #include <EZMQXException.h>
-#include <EZMQXSubscriber.h>
+#include <EZMQXAMLSubscriber.h>
+#include <condition_variable>
 #include <signal.h>
 
 bool isStarted;
@@ -103,7 +104,7 @@ int main()
       // error callback
       // typedef std::function<void(std::string topic, const AMLObject& payload)> SubCb;
       // typedef std::function<void(std::string topic, EZMQX::ErrorCode errCode)> SubErrCb;
-      EZMQX::SubCb subCb = [](std::string topic, const AMLObject& payload){std::cout << "subCb called" << std::endl; printAMLObject(payload);};
+      EZMQX::AmlSubCb subCb = [](std::string topic, const AMLObject& payload){std::cout << "subCb called" << std::endl; printAMLObject(payload);};
       EZMQX::SubErrCb errCb = [](std::string topic, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl;};
       
       // create subscriber with test topic
@@ -111,7 +112,7 @@ int main()
 
       std::cout<<"subscriber created"<<std::endl;
       //EZMQX::Topic topic("/test/", amlId.front(), ep);
-      std::shared_ptr<EZMQX::Subscriber> subscriber = EZMQX::Subscriber::getSubscriber("/test2/", subCb, errCb);
+      std::shared_ptr<EZMQX::AmlSubscriber> subscriber = EZMQX::AmlSubscriber::getSubscriber("/test3/", subCb, errCb);
 
       // push to blocked
       std::cout<<"push main thread to blocked"<<std::endl;
