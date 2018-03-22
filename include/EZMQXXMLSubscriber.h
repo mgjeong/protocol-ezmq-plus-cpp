@@ -1,5 +1,5 @@
-#ifndef EZMQ_X_SUBSCRIBER_H
-#define EZMQ_X_SUBSCRIBER_H
+#ifndef EZMQ_X_XML_SUBSCRIBER_H
+#define EZMQ_X_XML_SUBSCRIBER_H
 
 #include <string>
 #include <list>
@@ -56,4 +56,4 @@ class XmlSubscriber
 
 }
 
-#endif //EZMQ_X_SUBSCRIBER_H
+#endif //EZMQ_X_XML_SUBSCRIBER_H
