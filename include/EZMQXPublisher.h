@@ -25,7 +25,7 @@ class Publisher
         EZMQX::Topic topic;
         std::string token;
 
-        virtual void registerTopic(const EZMQX::Topic& topic);
+        virtual void registerTopic(EZMQX::Topic& topic);
 
         // delete default ctor
         Publisher();

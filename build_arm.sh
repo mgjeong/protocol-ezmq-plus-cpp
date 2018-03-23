@@ -79,7 +79,8 @@ echo "done"
 
 #copy samples
 cp out/linux/armhf/release/samples/publisher ./publisher
-cp out/linux/armhf/release/samples/subscriber ./subscriber
+cp out/linux/armhf/release/samples/AmlSubscriber ./AmlSubscriber
+cp out/linux/armhf/release/samples/XmlSubscriber ./XmlSubscriber
 
 #copy libs
 mkdir libs

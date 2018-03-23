@@ -9,10 +9,20 @@
 #include <EZMQErrorCodes.h>
 #include <EZMQByteData.h>
 #include <iostream>
+#include <json/writer.h>
+#include <json/reader.h>
 
 static const std::string PREFIX = "/api/v1";
-static const std::string TOPIC = "/topic";
+static const std::string TOPIC = "/tns/topic";
 static const std::string HEALTH = "/health";
+
+static const std::string PAYLOAD_TOPIC = "topic";
+static const std::string PAYLOAD_ENDPOINT = "endpoint";
+static const std::string PAYLOAD_SCHEMA = "schema";
+
+static const std::string RESULT_KEY = "result";
+static const std::string RESULT_SUCCESS = "success";
+static const std::string RESULT_DUPLICATED = "duplicated";
 
 static std::shared_ptr<EZMQX::Context> ctx = EZMQX::Context::getInstance();
 static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQErrorCode code)->void{std::cout<<"errCb"<<std::endl; return;};
@@ -48,8 +58,6 @@ EZMQX::Publisher::Publisher(const std::string &topic, const EZMQX::AmlModelInfo&
         throw new EZMQX::Exception("Could not start publisher", EZMQX::UnKnownState);
     }
 
-    //get Aml Model Id
-    std::string modelId="";
     if (infoType == AmlModelId)
     {
         try
@@ -83,7 +91,7 @@ EZMQX::Publisher::Publisher(const std::string &topic, const EZMQX::AmlModelInfo&
     EZMQX::Topic _topic;
     try
     {
-        _topic = EZMQX::Topic(topic, modelId, ctx->getHostEp(localPort));
+        _topic = EZMQX::Topic(topic, rep->getRepresentationId(), ctx->getHostEp(localPort));
     }
     catch(...)
     {
@@ -111,16 +119,64 @@ std::shared_ptr<EZMQX::Publisher> EZMQX::Publisher::getPublisher(const std::stri
     return pubInstance;
 }
 
-void EZMQX::Publisher::registerTopic(const EZMQX::Topic& topic)
+void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
 {
+    std::string tmp;
+
+    try
+    {
+        Json::Value value;
+        value[PAYLOAD_TOPIC] = regTopic.getTopic();
+        value[PAYLOAD_ENDPOINT] = regTopic.getEndpoint().toString();
+        value[PAYLOAD_SCHEMA] = regTopic.getSchema();
+
+        Json::FastWriter writer;
+        tmp = writer.write(value);
+    }
+    catch (...)
+    {
+        throw new EZMQX::Exception("Could not build json payload", EZMQX::UnKnownState);
+    }
+
     try
     {
         EZMQX::SimpleRest rest;
-        std::string ret = rest.Get(ctx->getTnsAddr() + TOPIC);
+        tmp = rest.Post(ctx->getTnsAddr() + PREFIX + TOPIC, tmp);
     }
-    catch(...)
+    catch (...)
     {
+        throw new EZMQX::Exception("Could not send rest post request", EZMQX::UnKnownState);
+    }
 
+    try
+    {
+        Json::Value root;
+        Json::Reader reader;
+        if (!reader.parse(tmp, root))
+        {
+            throw new EZMQX::Exception("Could not parse json response", EZMQX::UnKnownState);
+        }
+        else
+        {
+            tmp = root[RESULT_KEY].asString();
+        }
+    }
+    catch (...)
+    {
+        throw new EZMQX::Exception("Could not parse json response", EZMQX::UnKnownState);
+    }
+
+    if (tmp.compare(RESULT_SUCCESS) == 0)
+    {
+        return;
+    }
+    else if (tmp.compare(RESULT_DUPLICATED) == 0)
+    {
+        throw new EZMQX::Exception("Could not register topic: duplicated topic", EZMQX::UnKnownState);
+    }
+    else
+    {
+        throw new EZMQX::Exception("Could not register topic: unknown state", EZMQX::UnKnownState);
     }
 
     return;

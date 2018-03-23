@@ -12,9 +12,11 @@ class Endpoint
         int port;
     public:
         Endpoint();
-        Endpoint(std::string addr, int port);
+        Endpoint(std::string address);
+        Endpoint(std::string address, int port);
         std::string getAddr();
         int getPort();
+        std::string toString();
 };
 
 } // namespace EZMQX

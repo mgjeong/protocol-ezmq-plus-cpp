@@ -12,7 +12,7 @@ if [ "publisher" = $1 ]; then
     ./publisher $2
 elif [ "subscriber" = $1 ]; then
     echo "start subscriber with topic $2"
-    ./subscriber $2
+    ./AmlSubscriber $2
 else
     echo "Wrong arguments!!!"
     echo "Example"

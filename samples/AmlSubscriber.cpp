@@ -1,7 +1,8 @@
 #include <iostream>
 #include <EZMQXConfig.h>
 #include <EZMQXException.h>
-#include <EZMQXSubscriber.h>
+#include <EZMQXAMLSubscriber.h>
+#include <condition_variable>
 #include <signal.h>
 
 bool isStarted;
@@ -90,6 +91,10 @@ int main()
     //this handler is added to check stop API
     signal(SIGINT, sigint);
 
+    std::string topic;
+    std::cout<<"Enter topic ex) /test/"<<std::endl;
+    std::cin>>topic;
+
     try
     {
       // get config class instance & add aml model file path
@@ -97,24 +102,24 @@ int main()
       std::list<std::string> amlId(1);
       std::shared_ptr<EZMQX::Config> config = EZMQX::Config::getInstance(EZMQX::StandAlone);
       config->setHostInfo("TestSubscriber", "10.113.77.33");
-      config->setTnsInfo("10.113.65.174:48323");
+      config->setTnsInfo("10.113.65.174:8323");
       amlId = config->addAmlModel(amlPath);
 
       // error callback
       // typedef std::function<void(std::string topic, const AMLObject& payload)> SubCb;
       // typedef std::function<void(std::string topic, EZMQX::ErrorCode errCode)> SubErrCb;
-      EZMQX::SubCb subCb = [](std::string topic, const AMLObject& payload){std::cout << "subCb called" << std::endl; printAMLObject(payload);};
+      EZMQX::AmlSubCb subCb = [](std::string topic, const AMLObject& payload){std::cout << "subCb called" << std::endl; printAMLObject(payload);};
       EZMQX::SubErrCb errCb = [](std::string topic, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl;};
       
       // create subscriber with test topic
-      EZMQX::Endpoint ep("localhost", 4000);
+      // EZMQX::Endpoint ep("localhost", 4000);
 
       std::cout<<"subscriber created"<<std::endl;
-      EZMQX::Topic topic("/test/", amlId.front(), ep);
-      std::shared_ptr<EZMQX::Subscriber> subscriber = EZMQX::Subscriber::getSubscriber(topic, subCb, errCb);
+      //EZMQX::Topic topic("/test/", amlId.front(), ep);
+      std::shared_ptr<EZMQX::AmlSubscriber> subscriber = EZMQX::AmlSubscriber::getSubscriber(topic, subCb, errCb);
 
       // push to blocked
-      std::cout<<"push to blocked"<<std::endl;
+      std::cout<<"push main thread to blocked"<<std::endl;
       isStarted = true;
       std::unique_lock<std::mutex> lock(m_mutex);
       m_cv.wait(lock);
