@@ -91,6 +91,10 @@ int main()
     //this handler is added to check stop API
     signal(SIGINT, sigint);
 
+    std::string topic;
+    std::cout<<"Enter topic ex) /test/"<<std::endl;
+    std::cin>>topic;
+
     try
     {
       // get config class instance & add aml model file path
@@ -112,7 +116,7 @@ int main()
 
       std::cout<<"subscriber created"<<std::endl;
       //EZMQX::Topic topic("/test/", amlId.front(), ep);
-      std::shared_ptr<EZMQX::AmlSubscriber> subscriber = EZMQX::AmlSubscriber::getSubscriber("/test4/", subCb, errCb);
+      std::shared_ptr<EZMQX::AmlSubscriber> subscriber = EZMQX::AmlSubscriber::getSubscriber(topic, subCb, errCb);
 
       // push to blocked
       std::cout<<"push main thread to blocked"<<std::endl;

@@ -71,6 +71,9 @@ void printAMLObject(AMLObject amlObj)
 
 int main()
 {
+  std::string topic;
+  std::cout<<"Enter topic ex) /test/"<<std::endl;
+  std::cin>>topic;
     try
     {
       // get config class instance & add aml model file path
@@ -82,9 +85,9 @@ int main()
       amlId = config->addAmlModel(amlPath);
 
       // create publisher with test topic
-      std::shared_ptr<EZMQX::Publisher> publisherA = EZMQX::Publisher::getPublisher("/test4/A/", EZMQX::AmlModelId, amlId.front(), 4000);
-      std::shared_ptr<EZMQX::Publisher> publisherB = EZMQX::Publisher::getPublisher("/test4/B/", EZMQX::AmlModelId, amlId.front(), 4001);
-      std::shared_ptr<EZMQX::Publisher> publisherC = EZMQX::Publisher::getPublisher("/test4/C/", EZMQX::AmlModelId, amlId.front(), 4002);
+      std::shared_ptr<EZMQX::Publisher> publisherA = EZMQX::Publisher::getPublisher(topic + "A/", EZMQX::AmlModelId, amlId.front(), 4000);
+      std::shared_ptr<EZMQX::Publisher> publisherB = EZMQX::Publisher::getPublisher(topic + "B/", EZMQX::AmlModelId, amlId.front(), 4001);
+      std::shared_ptr<EZMQX::Publisher> publisherC = EZMQX::Publisher::getPublisher(topic + "C/", EZMQX::AmlModelId, amlId.front(), 4002);
       
       // create AMLObject
       std::string deviceId = "GTC001";
