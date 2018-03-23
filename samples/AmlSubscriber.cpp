@@ -112,7 +112,7 @@ int main()
 
       std::cout<<"subscriber created"<<std::endl;
       //EZMQX::Topic topic("/test/", amlId.front(), ep);
-      std::shared_ptr<EZMQX::AmlSubscriber> subscriber = EZMQX::AmlSubscriber::getSubscriber("/test3/", subCb, errCb);
+      std::shared_ptr<EZMQX::AmlSubscriber> subscriber = EZMQX::AmlSubscriber::getSubscriber("/test4/", subCb, errCb);
 
       // push to blocked
       std::cout<<"push main thread to blocked"<<std::endl;
