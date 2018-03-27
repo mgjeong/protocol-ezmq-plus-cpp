@@ -22,6 +22,17 @@ static const std::string CONF_NAME = "name";
 static const std::string CONF_VALUE = "value";
 static const std::string CONF_REMOTE_ADDR = "anchoraddress";
 static const std::string CONF_NODE_ADDR = "nodeaddress";
+static const std::string APPS_PROPS = "apps";
+static const std::string APPS_ID = "id";
+static const std::string APPS_STATE = "state";
+static const std::string APPS_STATE_RUNNING = "running";
+static const std::string SERVICES_PROPS = "services";
+static const std::string SERVICES_CON_NAME = "name";
+static const std::string SERVICES_CON_ID = "cid";
+static const std::string SERVICES_CON_PORTS = "ports";
+static const std::string PORTS_PRIVATE = "PrivatePort";
+static const std::string PORTS_PUBLIC = "PublicPort";
+
 
 // hostname path
 static const std::string HOSTNAME = "/etc/hostname";
@@ -290,8 +301,6 @@ void EZMQX::Context::initialize()
                 throw new EZMQX::Exception("Internal rest service unavilable", EZMQX::ServiceUnavailable);
             }
 
-            // std::cout << nodeInfo <<std::endl;
-
             if (nodeInfo.empty())
             {
                 // do something
@@ -322,26 +331,141 @@ void EZMQX::Context::initialize()
             // parse port mapping table
             try
             {
-                int count = 0;
                 nodeInfo.clear();
                 // get apps info from node
+
                 {
                     EZMQX::SimpleRest rest;
-                    // rest api will change
-                    // nodeInfo = rest.Get(NODE+PREFIX+API_APPS);
-                    // get count
-
+                    nodeInfo = rest.Get(NODE+PREFIX+API_APPS);
                 }
 
-                for (int i = 0; i< count; i++)
-                {
-                    // get app detail info
-                    // rest api not provide yet
-                }
             }
             catch(...)
             {
                 throw new EZMQX::Exception("Internal rest service unavilable", EZMQX::ServiceUnavailable);
+            }
+
+            Json::Value root;
+            Json::Reader reader;
+            Json::Value props;
+            Json::Value portArray;
+            std::list<std::string> runningApps;
+
+            try
+            {
+                if (!reader.parse(nodeInfo, root))
+                {
+                    throw new EZMQX::Exception("Could not parse json", EZMQX::UnKnownState);
+                }
+                else
+                {
+                    props = root[APPS_PROPS];
+
+                    // apps
+                    for (Json::Value::ArrayIndex i = 0; i < props.size(); i ++)
+                    {
+                        if (props[i].isMember(APPS_ID)
+                            && props[i].isMember(APPS_STATE)
+                            && props[i][APPS_STATE].asString() == APPS_STATE_RUNNING)
+                        {
+                            std::string appId = props[i][APPS_ID].asString();
+                            if (appId.empty())
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                runningApps.push_back(appId);
+                            }
+                        }
+                    }
+                }
+            }
+            catch(...)
+            {
+                throw new EZMQX::Exception("There is no running application", EZMQX::ServiceUnavailable);
+            }
+
+            // get app info detail
+            try
+            {
+                bool found = false;
+
+                for (std::list<std::string>::iterator itr = runningApps.begin(); itr != runningApps.end(); itr++)
+                {
+                    if (found)
+                    {
+                        break;
+                    }
+
+                    std::string appId = *itr;
+                    nodeInfo.clear();
+                    {
+                        EZMQX::SimpleRest rest;
+                        nodeInfo = rest.Get(NODE+PREFIX+API_APPS+appId);
+                    }
+
+                    if (nodeInfo.empty())
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        root.clear();
+                        if (!reader.parse(nodeInfo, root))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            props.clear();
+                            props = root[SERVICES_PROPS];
+                            for (Json::Value::ArrayIndex i = 0; i < props.size(); i++)
+                            {
+                                if (props[i].isMember(SERVICES_CON_ID) && props[i].isMember(SERVICES_CON_PORTS))
+                                {
+                                    std::string conId = props[i][SERVICES_CON_ID].asString();
+                                    conId = conId.substr(0, cId.size());
+                                    if (conId != cId)
+                                    {
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        portArray = props[i][SERVICES_CON_PORTS];
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch(...)
+            {
+                throw new EZMQX::Exception("Could not parse app detail info", EZMQX::UnKnownState);
+            }
+
+            try
+            {
+                for (Json::Value::ArrayIndex i = 0; i < portArray.size(); i ++)
+                {
+                    if (portArray[i].isMember(PORTS_PRIVATE) && portArray[i].isMember(PORTS_PUBLIC))
+                    {
+                        int privatePort = std::stoi(portArray[i][PORTS_PRIVATE].asString());
+                        int publicPort = std::stoi(portArray[i][PORTS_PUBLIC].asString());
+
+                        if (privatePort > -1 && publicPort > -1)
+                        {
+                            ports[privatePort] = publicPort;
+                        }
+                    }
+                }
+            }
+            catch(...)
+            {
+                throw new EZMQX::Exception("Could not found port mapping info", EZMQX::UnKnownState);
             }
 
             initialized.store(true);
