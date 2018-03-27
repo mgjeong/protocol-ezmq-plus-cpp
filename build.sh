@@ -33,7 +33,7 @@ if [ -d "./datamodel-aml-cpp" ] ; then
 else
     git clone git@github.sec.samsung.net:RS7-EdgeComputing/datamodel-aml-cpp.git
     cd datamodel-aml-cpp
-    git checkout alpha
+#    git checkout alpha
     ./build.sh
     sudo cp out/linux/x86_64/release/libaml.so /usr/local/lib
     sudo ldconfig
