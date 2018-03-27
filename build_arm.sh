@@ -30,7 +30,7 @@ if [ -a "./datamodel-aml-cpp" ] ; then
 else
     git clone git@github.sec.samsung.net:RS7-EdgeComputing/datamodel-aml-cpp.git
     cd datamodel-aml-cpp
-    git checkout alpha
+#    git checkout alpha
     ./build_arm.sh
     sudo cp out/linux/armhf/release/libaml.so /usr/local/lib
 fi
