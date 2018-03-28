@@ -69,6 +69,7 @@ void EZMQX::Subscriber::handler()
         catch(const std::exception &e)
         {
             // call errCb
+            std::cout<<e.what()<<std::endl;
             AMLObject *obj = nullptr;
             cb(payload.first, obj);
         }

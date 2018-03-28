@@ -9,6 +9,9 @@
 #include <json/value.h>
 #include <json/reader.h>
 
+static const std::string COLLON = ":";
+static const std::string TNS_KNOWN_PORT = "48323";
+
 // Rest Endpoints
 static const std::string NODE = "http://172.17.0.1:48098";
 static const std::string PREFIX = "/api/v1";
@@ -286,7 +289,7 @@ void EZMQX::Context::initialize()
 
                              if (props[i][CONF_NAME].asString() == CONF_REMOTE_ADDR)
                              {
-                                setTnsInfo(props[i][CONF_VALUE].asString());
+                                setTnsInfo(props[i][CONF_VALUE].asString() + COLLON + TNS_KNOWN_PORT);
                              }
                              else if (props[i][CONF_NAME].asString() == CONF_NODE_ADDR )
                              {
