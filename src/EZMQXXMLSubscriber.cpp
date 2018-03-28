@@ -36,7 +36,7 @@ EZMQX::XmlSubscriber::XmlSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX
     }
     catch(...)
     {
-        throw new EZMQX::Exception("Could not initialize subscriber", EZMQX::UnKnownState);
+        throw EZMQX::Exception("Could not initialize subscriber", EZMQX::UnKnownState);
     }
 }
 
@@ -61,7 +61,7 @@ EZMQX::XmlSubscriber::XmlSubscriber(const std::string &topic, EZMQX::XmlSubCb &s
     }
     catch(...)
     {
-        throw new EZMQX::Exception("Could not initialize subscriber", EZMQX::UnKnownState);
+        throw EZMQX::Exception("Could not initialize subscriber", EZMQX::UnKnownState);
     }
 }
 
@@ -86,7 +86,7 @@ void EZMQX::XmlSubscriber::initialize(const std::list<EZMQX::Topic> &topics, EZM
         }
         catch(...)
         {
-            throw new EZMQX::Exception("Could not found Aml Rep", EZMQX::UnKnownState);
+            throw EZMQX::Exception("Could not found Aml Rep", EZMQX::UnKnownState);
         }
 
         EZMQX::Endpoint ep = topic.getEndpoint();
