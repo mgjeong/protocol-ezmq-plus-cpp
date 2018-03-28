@@ -37,9 +37,9 @@ int main()
       // get config class instance & add aml model file path
       std::list<std::string> amlPath(1, "sample_data_model.aml");
       std::list<std::string> amlId(1);
-      std::shared_ptr<EZMQX::Config> config = EZMQX::Config::getInstance(EZMQX::StandAlone);
-      config->setHostInfo("TestSubscriber", "10.113.77.33");
-      config->setTnsInfo("10.113.65.174:8323");
+      std::shared_ptr<EZMQX::Config> config = EZMQX::Config::getInstance(EZMQX::FullFeature);
+      //config->setHostInfo("TestSubscriber", "10.113.77.33");
+      //config->setTnsInfo("10.113.65.174:8323");
       amlId = config->addAmlModel(amlPath);
 
       // error callback
@@ -52,7 +52,9 @@ int main()
       // EZMQX::Endpoint ep("localhost", 4000);
 
       std::cout<<"subscriber created"<<std::endl;
-      //EZMQX::Topic topic("/test/", amlId.front(), ep);
+      std::cout<<"amlId: " << amlId.front() << std::endl;
+      //EZMQX::Topic knownTopic("/test/A/", amlId.front(), ep);
+      //std::shared_ptr<EZMQX::XmlSubscriber> subscriber = EZMQX::XmlSubscriber::getSubscriber(knownTopic, subCb, errCb);
       std::shared_ptr<EZMQX::XmlSubscriber> subscriber = EZMQX::XmlSubscriber::getSubscriber(topic, subCb, errCb);
 
       // push to blocked
