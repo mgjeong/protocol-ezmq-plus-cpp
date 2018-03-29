@@ -10,6 +10,22 @@ else
     mkdir dependencies
 fi
 
+#build zmq
+cd $DEP_ROOT
+if [ -d "./libzmq" ] ; then
+    echo "libzmq exist"
+else
+    git clone https://github.com/zeromq/libzmq.git
+    cd ./libzmq
+    git checkout v4.2.2
+    ./version.sh
+    ./autogen.sh
+    ./configure
+    make -j 8
+    sudo make install
+    sudo ldconfig
+fi
+
 #build ezmq-cpp
 cd $DEP_ROOT
 if [ -d "./protocol-ezmq-cpp" ] ; then
