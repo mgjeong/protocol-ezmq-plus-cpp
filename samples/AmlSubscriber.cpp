@@ -102,7 +102,7 @@ int main()
         std::shared_ptr<EZMQX::Config> config = EZMQX::Config::getInstance(EZMQX::FullFeature);
         //std::shared_ptr<EZMQX::Config> config = EZMQX::Config::getInstance(EZMQX::StandAlone);
 
-        config->setHostInfo("TestSubscriber", "10.113.77.33");
+        //config->setHostInfo("TestSubscriber", "10.113.77.33");
         //config->setTnsInfo("10.113.65.174:8323");
         std::list<std::string> amlId = config->addAmlModel(amlPath);
 
@@ -145,12 +145,11 @@ int main()
         // occur exception
         subscriber->terminate();
     }
-    catch(...)
+    catch(EZMQX::Exception &e)
     {
-      //(EZMQX::Exception &e)
         // catch terminated exception
-        //std::cout << "catch exception" << std::endl;
-        //std::cout << e.what() << std::endl;
+        std::cout << "catch exception" << std::endl;
+        std::cout << e.what() << std::endl;
     }
 
     std::cout << "done" << std::endl;
