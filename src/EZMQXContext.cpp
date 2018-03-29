@@ -21,8 +21,6 @@ static const std::string API_DETAIL = "/management/detail";
 
 // JSON Keys
 static const std::string CONF_PROPS = "properties";
-static const std::string CONF_NAME = "name";
-static const std::string CONF_VALUE = "value";
 static const std::string CONF_REMOTE_ADDR = "anchoraddress";
 static const std::string CONF_NODE_ADDR = "nodeaddress";
 static const std::string APPS_PROPS = "apps";
@@ -297,7 +295,6 @@ void EZMQX::Context::initialize()
                 else
                 {
                     Json::Value props = root[CONF_PROPS];
-
                     for (Json::Value::ArrayIndex i = 0; i < props.size(); i ++)
                     {
                         if (!this->remoteAddr.empty() && !this->hostAddr.empty())
@@ -305,17 +302,14 @@ void EZMQX::Context::initialize()
                             break;
                         }
 
-                        if (props[i].isMember(CONF_NAME))
+                        if (props[i].isMember(CONF_REMOTE_ADDR))
                         {
+                            setTnsInfo(props[i][CONF_REMOTE_ADDR].asString() + COLLON + TNS_KNOWN_PORT);
+                        }
 
-                             if (props[i][CONF_NAME].asString() == CONF_REMOTE_ADDR)
-                             {
-                                setTnsInfo(props[i][CONF_VALUE].asString() + COLLON + TNS_KNOWN_PORT);
-                             }
-                             else if (props[i][CONF_NAME].asString() == CONF_NODE_ADDR )
-                             {
-                                this->hostAddr = props[i][CONF_VALUE].asString();
-                             }
+                        if (props[i].isMember(CONF_NODE_ADDR))
+                        {
+                            this->hostAddr = props[i][CONF_NODE_ADDR].asString();
                         }
                     }
                 }
@@ -426,7 +420,7 @@ void EZMQX::Context::initialize()
                     nodeInfo.clear();
                     {
                         EZMQX::SimpleRest rest;
-                        nodeInfo = rest.Get(NODE+PREFIX+API_APPS+appId);
+                        nodeInfo = rest.Get(NODE + PREFIX + API_APPS + "/" + appId);
                     }
 
                     if (nodeInfo.empty())
@@ -449,16 +443,16 @@ void EZMQX::Context::initialize()
                                 if (props[i].isMember(SERVICES_CON_ID) && props[i].isMember(SERVICES_CON_PORTS))
                                 {
                                     std::string conId = props[i][SERVICES_CON_ID].asString();
-                                    conId = conId.substr(0, cId.size());
-                                    if (conId != cId)
-                                    {
-                                        continue;
-                                    }
-                                    else
+                                    conId = conId.substr(0, hostname.size());
+                                    if (!conId.compare(hostname))
                                     {
                                         portArray = props[i][SERVICES_CON_PORTS];
                                         found = true;
                                         break;
+                                    }
+                                    else
+                                    {
+                                        continue;
                                     }
                                 }
                             }
@@ -477,9 +471,9 @@ void EZMQX::Context::initialize()
                 {
                     if (portArray[i].isMember(PORTS_PRIVATE) && portArray[i].isMember(PORTS_PUBLIC))
                     {
+
                         int privatePort = std::stoi(portArray[i][PORTS_PRIVATE].asString());
                         int publicPort = std::stoi(portArray[i][PORTS_PUBLIC].asString());
-
                         if (privatePort > -1 && publicPort > -1)
                         {
                             ports[privatePort] = publicPort;
