@@ -9,6 +9,9 @@
 #include <json/value.h>
 #include <json/reader.h>
 
+static const std::string COLLON = ":";
+static const std::string TNS_KNOWN_PORT = "48323";
+
 // Rest Endpoints
 static const std::string NODE = "http://172.17.0.1:48098";
 static const std::string PREFIX = "/api/v1";
@@ -46,10 +49,9 @@ std::shared_ptr<EZMQX::Context> EZMQX::Context::_instance;
 // ctor
 EZMQX::Context::Context() : initialized(false), terminated(false), usedIdx(0), numOfPort(0), standAlone(false), tnsEnabled(false)
 {
-    ezmqCtx.reset(ezmq::EZMQAPI::getInstance());
-    if (ezmq::EZMQ_OK != ezmqCtx->initialize())
+    if (ezmq::EZMQ_OK != ezmq::EZMQAPI::getInstance()->initialize())
     {
-        throw new EZMQX::Exception("Could not start ezmq context", EZMQX::UnKnownState);
+        throw EZMQX::Exception("Could not start ezmq context", EZMQX::UnKnownState);
     }
 }
 
@@ -106,7 +108,7 @@ EZMQX::Endpoint EZMQX::Context::getHostEp(int port)
         hostPort = ports[port];
         if (hostPort == 0)
         {
-            throw new EZMQX::Exception("Invalid Port", EZMQX::UnKnownState);
+            throw EZMQX::Exception("Invalid Port", EZMQX::UnKnownState);
         }
     }
 
@@ -117,48 +119,70 @@ EZMQX::Endpoint EZMQX::Context::getHostEp(int port)
 std::list<std::string> EZMQX::Context::addAmlRep(const std::list<std::string>& amlModelInfo)
 {
     std::list<std::string> modelId;
+
+    if (amlModelInfo.empty())
+    {
+        return modelId;
+    }
+
     // mutex lock
     {
         std::lock_guard<std::mutex> scopedLock(lock);
-        if (amlModelInfo.empty())
-        {
-            // throw exceptionn
-        }
-        else
-        {
-            for (std::list<std::string>::const_iterator itr = amlModelInfo.cbegin(); itr != amlModelInfo.cend(); itr++)
-            {
-                std::string path = *itr;
-                if (path.empty())
-                {
-                    // throw exception
-                }
-                else
-                {
-                    try
-                    {
-                        std::shared_ptr<Representation> rep = std::make_shared<Representation>(path);
-                        std::string amlModelId = rep->getRepresentationId();
-                        if (amlModelId.empty())
-                        {
-                            // throw invalid aml model exception
-                        }
-                        else
-                        {
-                            // ignore duplicated rep
-                            if (amlRepDic.find(amlModelId) == amlRepDic.end())
-                            {
-                                amlRepDic.insert(std::pair<std::string, std::shared_ptr<Representation>>(amlModelId, rep));
-                            }
 
-                            modelId.insert(modelId.end(), amlModelId);
-                        }
-                    }
-                    catch(...)
+        for (std::list<std::string>::const_iterator itr = amlModelInfo.cbegin(); itr != amlModelInfo.cend(); itr++)
+        {
+            std::string path = *itr;
+            if (path.empty())
+            {
+                throw EZMQX::Exception("Invalid aml model path", EZMQX::UnKnownState);
+            }
+            else
+            {
+                std::string amlModelId;
+                Representation* repPtr = nullptr;
+                try
+                {
+                    repPtr = new Representation(path);
+                }
+                catch(...)
+                {
+                    throw EZMQX::Exception("Could not parse aml model file : " + path, EZMQX::UnKnownState);
+                }
+
+                if (!repPtr)
+                {
+                    throw EZMQX::Exception("Could not parse aml model file : " + path, EZMQX::UnKnownState);
+                }
+
+                std::shared_ptr<Representation> rep(repPtr);
+
+                try
+                {
+                    amlModelId = rep->getRepresentationId();
+                }
+                catch(...)
+                {
+                    throw EZMQX::Exception("Invalid aml model id", EZMQX::UnKnownState);
+                }
+
+                if (amlModelId.empty())
+                {
+                    throw EZMQX::Exception("Invalid aml model id", EZMQX::UnKnownState);
+                }
+
+                try
+                {
+                    // ignore duplicated rep
+                    if (amlRepDic.find(amlModelId) == amlRepDic.end())
                     {
-                        // throw invalid aml file path exception
-                        // throw invalid aml model exception
+                        amlRepDic.insert(std::pair<std::string, std::shared_ptr<Representation>>(amlModelId, rep));
                     }
+
+                    modelId.push_back(amlModelId);
+                }
+                catch(...)
+                {
+                    throw EZMQX::Exception("Unknown error", EZMQX::UnKnownState);
                 }
             }
         }
@@ -177,7 +201,7 @@ std::shared_ptr<Representation> EZMQX::Context::getAmlRep(const std::string& aml
 
         if (itr == amlRepDic.end())
         {
-            throw new EZMQX::Exception("Could not matched Aml Rep", EZMQX::UnKnownState);
+            throw EZMQX::Exception("Could not matched Aml Rep", EZMQX::UnKnownState);
         }
         else
         {
@@ -286,7 +310,7 @@ void EZMQX::Context::initialize()
 
                              if (props[i][CONF_NAME].asString() == CONF_REMOTE_ADDR)
                              {
-                                setTnsInfo(props[i][CONF_VALUE].asString());
+                                setTnsInfo(props[i][CONF_VALUE].asString() + COLLON + TNS_KNOWN_PORT);
                              }
                              else if (props[i][CONF_NAME].asString() == CONF_NODE_ADDR )
                              {
@@ -298,7 +322,7 @@ void EZMQX::Context::initialize()
             }
             catch(...)
             {
-                throw new EZMQX::Exception("Internal rest service unavilable", EZMQX::ServiceUnavailable);
+                throw EZMQX::Exception("Internal rest service unavilable", EZMQX::ServiceUnavailable);
             }
 
             if (nodeInfo.empty())
@@ -320,7 +344,7 @@ void EZMQX::Context::initialize()
             }
             catch(...)
             {
-                throw new EZMQX::Exception("Could not found hostname", EZMQX::UnKnownState);
+                throw EZMQX::Exception("Could not found hostname", EZMQX::UnKnownState);
             }
 
             // for logging
@@ -342,7 +366,7 @@ void EZMQX::Context::initialize()
             }
             catch(...)
             {
-                throw new EZMQX::Exception("Internal rest service unavilable", EZMQX::ServiceUnavailable);
+                throw EZMQX::Exception("Internal rest service unavilable", EZMQX::ServiceUnavailable);
             }
 
             Json::Value root;
@@ -355,7 +379,7 @@ void EZMQX::Context::initialize()
             {
                 if (!reader.parse(nodeInfo, root))
                 {
-                    throw new EZMQX::Exception("Could not parse json", EZMQX::UnKnownState);
+                    throw EZMQX::Exception("Could not parse json", EZMQX::UnKnownState);
                 }
                 else
                 {
@@ -383,7 +407,7 @@ void EZMQX::Context::initialize()
             }
             catch(...)
             {
-                throw new EZMQX::Exception("There is no running application", EZMQX::ServiceUnavailable);
+                throw EZMQX::Exception("There is no running application", EZMQX::ServiceUnavailable);
             }
 
             // get app info detail
@@ -444,7 +468,7 @@ void EZMQX::Context::initialize()
             }
             catch(...)
             {
-                throw new EZMQX::Exception("Could not parse app detail info", EZMQX::UnKnownState);
+                throw EZMQX::Exception("Could not parse app detail info", EZMQX::UnKnownState);
             }
 
             try
@@ -465,7 +489,7 @@ void EZMQX::Context::initialize()
             }
             catch(...)
             {
-                throw new EZMQX::Exception("Could not found port mapping info", EZMQX::UnKnownState);
+                throw EZMQX::Exception("Could not found port mapping info", EZMQX::UnKnownState);
             }
 
             initialized.store(true);
@@ -506,7 +530,6 @@ void EZMQX::Context::terminate()
 {   
     // throw exception
         // NotInitialized
-
     // mutex lock
     {
         std::lock_guard<std::mutex> scopedLock(lock);
@@ -522,10 +545,11 @@ void EZMQX::Context::terminate()
 
             // release resource
             ports.clear();
+            ezmq::EZMQAPI::getInstance()->terminate();
         }
         else
         {
-            throw new EZMQX::Exception("Context terminated", EZMQX::Terminated);
+            throw EZMQX::Exception("Context terminated", EZMQX::Terminated);
         }
 
         terminated.store(true);

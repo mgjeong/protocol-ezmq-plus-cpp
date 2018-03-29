@@ -55,7 +55,7 @@ EZMQX::Publisher::Publisher(const std::string &topic, const EZMQX::AmlModelInfo&
     // check error and throw exception
     if (ezmq::EZMQ_OK != pubCtx->start())
     {
-        throw new EZMQX::Exception("Could not start publisher", EZMQX::UnKnownState);
+        throw EZMQX::Exception("Could not start publisher", EZMQX::UnKnownState);
     }
 
     if (infoType == AmlModelId)
@@ -95,7 +95,7 @@ EZMQX::Publisher::Publisher(const std::string &topic, const EZMQX::AmlModelInfo&
     }
     catch(...)
     {
-        throw new EZMQX::Exception("Invalid Port", EZMQX::UnKnownState);
+        throw EZMQX::Exception("Invalid Port", EZMQX::UnKnownState);
     }
 
     //register topic //throw exception
@@ -135,7 +135,7 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
     }
     catch (...)
     {
-        throw new EZMQX::Exception("Could not build json payload", EZMQX::UnKnownState);
+        throw EZMQX::Exception("Could not build json payload", EZMQX::UnKnownState);
     }
 
     try
@@ -145,7 +145,7 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
     }
     catch (...)
     {
-        throw new EZMQX::Exception("Could not send rest post request", EZMQX::UnKnownState);
+        throw EZMQX::Exception("Could not send rest post request", EZMQX::UnKnownState);
     }
 
     try
@@ -154,7 +154,7 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
         Json::Reader reader;
         if (!reader.parse(tmp, root))
         {
-            throw new EZMQX::Exception("Could not parse json response", EZMQX::UnKnownState);
+            throw EZMQX::Exception("Could not parse json response", EZMQX::UnKnownState);
         }
         else
         {
@@ -163,7 +163,7 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
     }
     catch (...)
     {
-        throw new EZMQX::Exception("Could not parse json response", EZMQX::UnKnownState);
+        throw EZMQX::Exception("Could not parse json response", EZMQX::UnKnownState);
     }
 
     if (tmp.compare(RESULT_SUCCESS) == 0)
@@ -172,11 +172,11 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
     }
     else if (tmp.compare(RESULT_DUPLICATED) == 0)
     {
-        throw new EZMQX::Exception("Could not register topic: duplicated topic", EZMQX::UnKnownState);
+        throw EZMQX::Exception("Could not register topic: duplicated topic", EZMQX::UnKnownState);
     }
     else
     {
-        throw new EZMQX::Exception("Could not register topic: unknown state", EZMQX::UnKnownState);
+        throw EZMQX::Exception("Could not register topic: unknown state", EZMQX::UnKnownState);
     }
 
     return;
@@ -210,7 +210,7 @@ void EZMQX::Publisher::publish(const AMLObject& payload)
         }
         else
         {
-            throw new EZMQX::Exception("Publisher terminated", EZMQX::Terminated);
+            throw EZMQX::Exception("Publisher terminated", EZMQX::Terminated);
         }
     }
     // mutex unlock

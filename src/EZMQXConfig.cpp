@@ -38,7 +38,7 @@ void EZMQX::Config::initialize()
             }
             else
             {
-                throw new EZMQX::Exception("Invalid Operation", EZMQX::UnKnownState);
+                throw EZMQX::Exception("Invalid Operation", EZMQX::UnKnownState);
             }
 
             initialized.store(true);
@@ -57,7 +57,7 @@ void EZMQX::Config::setHostInfo(std::string hostName, std::string hostAddr)
 
         if (configMode != StandAlone)
         {
-            throw new EZMQX::Exception("Invalid Operation", EZMQX::UnKnownState);
+            throw EZMQX::Exception("Invalid Operation", EZMQX::UnKnownState);
         }
         else
         {
@@ -74,7 +74,7 @@ void EZMQX::Config::setTnsInfo(std::string remoteAddr)
 
         if (configMode != StandAlone)
         {
-            throw new EZMQX::Exception("Invalid Operation", EZMQX::UnKnownState);
+            throw EZMQX::Exception("Invalid Operation", EZMQX::UnKnownState);
         }
         else
         {

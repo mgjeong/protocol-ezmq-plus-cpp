@@ -7,4 +7,4 @@ COPY AmlSubscriber AmlSubscriber
 COPY XmlSubscriber XmlSubscriber
 COPY samples/sample_data_model.aml sample_data_model.aml
 COPY run.sh run.sh
-CMD ["./run.sh", "arg1", "arg2"]
+CMD ["./run.sh", "arg1", "arg2", "arg3"]

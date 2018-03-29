@@ -5,6 +5,7 @@
 #include <EZMQXPublisher.h>
 #include <EZMQXConfig.h>
 #include <EZMQXException.h>
+#include <EZMQAPI.h>
 
 void printAMLData(AMLData amlData, int depth)
 {
@@ -73,7 +74,7 @@ int main()
 {
   std::string topic;
   std::cout<<"Enter topic ex) /test/"<<std::endl;
-  std::cin>>topic;
+  //std::cin>>topic;
     try
     {
       // get config class instance & add aml model file path
@@ -81,7 +82,7 @@ int main()
       std::list<std::string> amlId(1);
       std::shared_ptr<EZMQX::Config> config = EZMQX::Config::getInstance(EZMQX::StandAlone);
       config->setHostInfo("TestPublisher", "10.113.77.33");
-      config->setTnsInfo("10.113.65.174:8323");
+      //config->setTnsInfo("10.113.65.174:8323");
       amlId = config->addAmlModel(amlPath);
 
       // create publisher with test topic

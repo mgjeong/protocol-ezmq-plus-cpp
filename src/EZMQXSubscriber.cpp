@@ -41,16 +41,14 @@ void EZMQX::Subscriber::handler()
             que->deQue(payload);
             if (payload.first.empty() || payload.second.empty())
             {
-                throw std::runtime_error("empty payload");
-                //throw new EZMQX::Exception("empty payload", EZMQX::UnKnownState);
+                throw EZMQX::Exception("empty payload", EZMQX::UnKnownState);
             }
 
             auto itr = repDic.find(payload.first);
             std::cout << payload.first << std::endl;
             if (itr == repDic.end())
             {
-                throw std::runtime_error("Could not find Aml rep");
-                //throw new EZMQX::Exception("Could not find Aml rep", EZMQX::UnKnownState);
+                throw EZMQX::Exception("Could not find Aml rep", EZMQX::UnKnownState);
             }
             else
             {
@@ -58,8 +56,7 @@ void EZMQX::Subscriber::handler()
 
                 if (!obj)
                 {
-                    throw std::runtime_error("Could not convert byte to AMLObject");
-                    //throw new EZMQX::Exception("Could not convert byte to AMLObject", EZMQX::UnKnownState);
+                    throw EZMQX::Exception("Could not convert byte to AMLObject", EZMQX::UnKnownState);
                 }
 
                 // call subCb
@@ -69,6 +66,7 @@ void EZMQX::Subscriber::handler()
         catch(const std::exception &e)
         {
             // call errCb
+            std::cout<<e.what()<<std::endl;
             AMLObject *obj = nullptr;
             cb(payload.first, obj);
         }
