@@ -10,6 +10,8 @@ else
     mkdir dependencies
 fi
 
+apt-get remove -y libzmq3 libzmq3-dev
+
 #build zmq
 cd $DEP_ROOT
 if [ -d "./libzmq" ] ; then
