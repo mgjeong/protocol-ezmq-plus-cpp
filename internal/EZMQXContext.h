@@ -28,7 +28,6 @@ class Context
         std::string hostname;
         std::string hostAddr;
         std::string remoteAddr;
-        std::string cId;
         static std::shared_ptr<EZMQX::Context> _instance;
         std::map<int, int> ports;
         std::map<int, bool> usedPorts;

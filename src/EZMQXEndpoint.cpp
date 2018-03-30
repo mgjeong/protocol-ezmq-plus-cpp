@@ -1,5 +1,7 @@
 #include<EZMQXEndpoint.h>
 
+static const std::string COLLON = ":";
+
 EZMQX::Endpoint::Endpoint() : addr(), port(-1)
 {
 
@@ -7,7 +9,7 @@ EZMQX::Endpoint::Endpoint() : addr(), port(-1)
 
 EZMQX::Endpoint::Endpoint(std::string address) : addr(), port(-1)
 {
-    std::size_t pos = address.find(":");
+    std::size_t pos = address.find(COLLON);
 
     if (pos == std::string::npos)
     {
@@ -44,5 +46,5 @@ int EZMQX::Endpoint::getPort()
 
 std::string EZMQX::Endpoint::toString()
 {
-    return port == -1 ? addr : addr + ":" + std::to_string(port);
+    return port == -1 ? addr : addr + COLLON + std::to_string(port);
 }

@@ -10,6 +10,7 @@
 #include <json/reader.h>
 
 static const std::string COLLON = ":";
+static const std::string SLASH = "/";
 static const std::string TNS_KNOWN_PORT = "48323";
 
 // Rest Endpoints
@@ -420,7 +421,7 @@ void EZMQX::Context::initialize()
                     nodeInfo.clear();
                     {
                         EZMQX::SimpleRest rest;
-                        nodeInfo = rest.Get(NODE + PREFIX + API_APPS + "/" + appId);
+                        nodeInfo = rest.Get(NODE + PREFIX + API_APPS + SLASH + appId);
                     }
 
                     if (nodeInfo.empty())
