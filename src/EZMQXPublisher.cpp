@@ -4,10 +4,6 @@
 #include <EZMQXErrorCode.h>
 #include <EZMQXException.h>
 #include <EZMQXRest.h>
-#include <Representation.h>
-#include <AMLException.h>
-#include <EZMQErrorCodes.h>
-#include <EZMQByteData.h>
 #include <iostream>
 #include <json/writer.h>
 #include <json/reader.h>
@@ -27,8 +23,7 @@ static const std::string RESULT_DUPLICATED = "duplicated";
 static std::shared_ptr<EZMQX::Context> ctx = EZMQX::Context::getInstance();
 static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQErrorCode code)->void{std::cout<<"errCb"<<std::endl; return;};
 
-EZMQX::Publisher::Publisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
- : terminated(false), localPort(0), token("")
+EZMQX::Publisher::Publisher(int optionalPort) : terminated(false), localPort(0), token("")
 {
     bool isStandAlone = ctx->isStandAlone();
     //validate topic
@@ -57,55 +52,6 @@ EZMQX::Publisher::Publisher(const std::string &topic, const EZMQX::AmlModelInfo&
     {
         throw EZMQX::Exception("Could not start publisher", EZMQX::UnKnownState);
     }
-
-    if (infoType == AmlModelId)
-    {
-        try
-        {
-            rep = ctx->getAmlRep(amlModelInfo);
-        }
-        catch(...)
-        {
-            //throw model not exist exception
-        }
-    }
-    else if (infoType == AmlFilePath)
-    {
-        try
-        {
-            std::list<std::string> tmp(1, amlModelInfo);
-            tmp = ctx->addAmlRep(tmp);
-            rep = ctx->getAmlRep(*(tmp.begin()));
-        }
-        catch(...)
-        {
-            //throw AML model parse error
-        }
-    }
-    else
-    {
-        // throw wrong option exception
-    }
-
-    //get Host Ep
-    EZMQX::Topic _topic;
-    try
-    {
-        _topic = EZMQX::Topic(topic, rep->getRepresentationId(), ctx->getHostEp(localPort));
-    }
-    catch(...)
-    {
-        throw EZMQX::Exception("Invalid Port", EZMQX::UnKnownState);
-    }
-
-    //register topic //throw exception
-    if (ctx->isTnsEnabled())
-    {
-        registerTopic(_topic);
-    }
-
-    //register here
-    this->topic = _topic;
 }
 
 EZMQX::Publisher::~Publisher()
@@ -113,14 +59,15 @@ EZMQX::Publisher::~Publisher()
     terminate();
 }
 
-std::shared_ptr<EZMQX::Publisher> EZMQX::Publisher::getPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
-{
-    std::shared_ptr<EZMQX::Publisher> pubInstance(new Publisher(topic, infoType, amlModelInfo, optionalPort));
-    return pubInstance;
-}
-
 void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
 {
+    this->topic = regTopic;
+
+    if (!ctx->isTnsEnabled())
+    {
+        return;
+    }
+
     std::string tmp;
 
     try
@@ -179,41 +126,6 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
         throw EZMQX::Exception("Could not register topic: unknown state", EZMQX::UnKnownState);
     }
 
-    return;
-}
-
-void EZMQX::Publisher::publish(const AMLObject& payload)
-{
-    // mutex lock
-    {
-        std::lock_guard<std::mutex> scopedLock(lock);
-        if (!terminated.load())
-        {
-            // get AML model id
-            // get AMLRep
-            if (!rep)
-            {
-                rep = ctx->getAmlRep(topic.getSchema());
-            }
-
-            // transform // throw exception
-            std::string byteAml = rep->DataToByte(payload);
-
-            // publish
-            if (!pubCtx)
-            {
-                // throw exception
-            }
-
-            ezmq::EZMQByteData data(reinterpret_cast<const uint8_t*>(byteAml.c_str()), byteAml.length());
-            pubCtx->publish(topic.getTopic(), data);
-        }
-        else
-        {
-            throw EZMQX::Exception("Publisher terminated", EZMQX::Terminated);
-        }
-    }
-    // mutex unlock
     return;
 }
 

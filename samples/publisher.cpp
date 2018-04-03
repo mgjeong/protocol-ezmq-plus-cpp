@@ -2,7 +2,7 @@
 #include <thread>
 #include <chrono>
 #include <vector>
-#include <EZMQXPublisher.h>
+#include <EZMQXAmlPublisher.h>
 #include <EZMQXConfig.h>
 #include <EZMQXException.h>
 #include <EZMQAPI.h>
@@ -86,9 +86,9 @@ int main()
       amlId = config->addAmlModel(amlPath);
 
       // create publisher with test topic
-      std::shared_ptr<EZMQX::Publisher> publisherA = EZMQX::Publisher::getPublisher(topic + "A/", EZMQX::AmlModelId, amlId.front(), 4000);
-      std::shared_ptr<EZMQX::Publisher> publisherB = EZMQX::Publisher::getPublisher(topic + "B/", EZMQX::AmlModelId, amlId.front(), 4001);
-      std::shared_ptr<EZMQX::Publisher> publisherC = EZMQX::Publisher::getPublisher(topic + "C/", EZMQX::AmlModelId, amlId.front(), 4002);
+      std::shared_ptr<EZMQX::AmlPublisher> publisherA = EZMQX::AmlPublisher::getPublisher(topic + "A/", EZMQX::AmlModelId, amlId.front(), 4000);
+      std::shared_ptr<EZMQX::AmlPublisher> publisherB = EZMQX::AmlPublisher::getPublisher(topic + "B/", EZMQX::AmlModelId, amlId.front(), 4001);
+      std::shared_ptr<EZMQX::AmlPublisher> publisherC = EZMQX::AmlPublisher::getPublisher(topic + "C/", EZMQX::AmlModelId, amlId.front(), 4002);
       
       // create AMLObject
       std::string deviceId = "GTC001";
@@ -135,16 +135,6 @@ int main()
           std::this_thread::sleep_for(std::chrono::milliseconds(100));
       }
 
-      // condition check
-      if (!publisherA->isTerminated())
-      {
-          publisherA->terminate();
-          publisherB->terminate();
-          publisherC->terminate();
-      }
-
-      // occur exception
-      publisherA->terminate();
     }
     catch(EZMQX::Exception& e)
     {
