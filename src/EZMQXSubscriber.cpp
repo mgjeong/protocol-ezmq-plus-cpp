@@ -29,6 +29,59 @@ EZMQX::Subscriber::~Subscriber()
     terminate();
 }
 
+void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics)
+{
+    // create thread and push to blocked
+    mThread = std::thread(&EZMQX::Subscriber::handler, this);
+
+    for (std::list<EZMQX::Topic>::const_iterator itr = topics.cbegin(); itr != topics.cend(); itr++)
+    {
+        // create subCtx with internal callback
+        EZMQX::Topic topic = *itr;
+        const std::string &topic_str = topic.getTopic();
+
+        // find Aml rep
+        try
+        {
+            std::cout << "Topic: " << topic_str << " Model_Id: " << topic.getSchema() << " Endpoint: " << topic.getEndpoint().toString() << std::endl;
+            std::shared_ptr<Representation> rep = ctx->getAmlRep(topic.getSchema());
+
+            repDic.insert(std::make_pair(topic_str, ctx->getAmlRep(topic.getSchema())));
+        }
+        catch(...)
+        {
+            throw EZMQX::Exception("Could not found Aml Rep", EZMQX::UnKnownState);
+        }
+
+        EZMQX::Endpoint ep = topic.getEndpoint();
+
+        ezmq::EZMQSubscriber* sub = new ezmq::EZMQSubscriber(ep.getAddr(), ep.getPort(), [](const ezmq::EZMQMessage &event)->void{ return;}, std::bind(&EZMQX::Subscriber::internalSubCb, this, std::placeholders::_1, std::placeholders::_2));
+
+        if (!sub)
+        {
+            // throw exception
+        }
+
+        subscribers.push_back(sub);
+
+        ezmq::EZMQErrorCode ret = sub->start();
+
+        if (ezmq::EZMQ_OK != ret)
+        {
+            // throw exception
+        }
+
+        ret = sub->subscribe(topic_str);
+
+        if (ezmq::EZMQ_OK != ret)
+        {
+            // throw exception
+        }
+    }
+
+    return;
+}
+
 void EZMQX::Subscriber::handler()
 {
     while(1)
@@ -38,7 +91,13 @@ void EZMQX::Subscriber::handler()
         // aml parsing here
         try
         {
+            if (!que)
+            {
+                throw EZMQX::Exception("que is not initiated", EZMQX::UnKnownState);
+            }
+
             que->deQue(payload);
+
             if (payload.first.empty() || payload.second.empty())
             {
                 throw EZMQX::Exception("empty payload", EZMQX::UnKnownState);
@@ -82,7 +141,7 @@ void EZMQX::Subscriber::internalSubCb(std::string topic, const ezmq::EZMQMessage
     {
         const ezmq::EZMQByteData &bytes= dynamic_cast<const ezmq::EZMQByteData&>(event);
         std::string payload((const char*)(bytes.getByteData()), bytes.getLength());
-        this->que->inQue(std::make_pair(topic, payload));
+        que->inQue(std::make_pair(topic, payload));
     }
     else
     {
@@ -161,6 +220,15 @@ void EZMQX::Subscriber::terminate()
         if (!terminated.load())
         {
             // release resource
+            for (std::list<ezmq::EZMQSubscriber*>::iterator itr = subscribers.begin() ; itr != subscribers.end(); itr++)
+            {
+                if (*itr)
+                {
+                    delete *itr;
+                }
+            }
+
+            delete que;
         }
         else
         {

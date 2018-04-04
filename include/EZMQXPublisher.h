@@ -15,7 +15,7 @@ class Publisher
     protected:
         std::mutex lock;
         std::atomic_bool terminated;
-        std::shared_ptr<ezmq::EZMQPublisher> pubCtx;
+        ezmq::EZMQPublisher* pubCtx;
         int localPort;
         EZMQX::Topic topic;
         std::string token;

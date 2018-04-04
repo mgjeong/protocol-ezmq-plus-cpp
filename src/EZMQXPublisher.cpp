@@ -45,10 +45,10 @@ EZMQX::Publisher::Publisher(int optionalPort) : terminated(false), localPort(0),
 
     // create ezmq publisher
     // ezmq error callback should provide shared pointer in callback
-    pubCtx = std::make_shared<ezmq::EZMQPublisher>(localPort, ezmqCb, ezmqCb, ezmqCb);
+    pubCtx = new ezmq::EZMQPublisher(localPort, ezmqCb, ezmqCb, ezmqCb);
 
     // check error and throw exception
-    if (ezmq::EZMQ_OK != pubCtx->start())
+    if (!pubCtx && ezmq::EZMQ_OK != pubCtx->start())
     {
         throw EZMQX::Exception("Could not start publisher", EZMQX::UnKnownState);
     }
@@ -144,6 +144,7 @@ void EZMQX::Publisher::terminate()
         {
             // release resource
             ctx->releaseDynamicPort(localPort);
+            delete pubCtx;
         }
         else
         {
