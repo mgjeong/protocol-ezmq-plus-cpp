@@ -1,5 +1,7 @@
 #include <EZMQXRest.h>
-// #include <iostream>
+#include <string>
+
+static const std::string DELETE = "DELETE";
 
 static size_t _writeCb(void *ptr, size_t size, size_t nmemb, void *userdata)
 {
@@ -93,5 +95,17 @@ std::string EZMQX::SimpleRest::Post(std::string url, std::string payload)
 
 std::string EZMQX::SimpleRest::Delete(std::string url)
 {
+    CURLcode res;
+    std::string buff;
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, DELETE.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _writeCb);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buff);
+    res = curl_easy_perform(curl);
+    if(res != CURLE_OK)
+    {
 
+    }
+
+    return buff;
 }
