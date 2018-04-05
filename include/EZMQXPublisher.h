@@ -9,12 +9,13 @@
 #include <EZMQXErrorCode.h>
 
 namespace EZMQX {
-
+class Context;
 class Publisher
 {
     protected:
         std::mutex lock;
         std::atomic_bool terminated;
+        EZMQX::Context* ctx;
         ezmq::EZMQPublisher* pubCtx;
         int localPort;
         EZMQX::Topic topic;

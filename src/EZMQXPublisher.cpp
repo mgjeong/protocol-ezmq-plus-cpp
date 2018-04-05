@@ -20,10 +20,9 @@ static const std::string RESULT_KEY = "result";
 static const std::string RESULT_SUCCESS = "success";
 static const std::string RESULT_DUPLICATED = "duplicated";
 
-static std::shared_ptr<EZMQX::Context> ctx = EZMQX::Context::getInstance();
 static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQErrorCode code)->void{std::cout<<"errCb"<<std::endl; return;};
 
-EZMQX::Publisher::Publisher(int optionalPort) : terminated(false), localPort(0), token("")
+EZMQX::Publisher::Publisher(int optionalPort) : terminated(false), localPort(0), token(""), ctx(EZMQX::Context::getInstance())
 {
     bool isStandAlone = ctx->isStandAlone();
     //validate topic
@@ -48,7 +47,12 @@ EZMQX::Publisher::Publisher(int optionalPort) : terminated(false), localPort(0),
     pubCtx = new ezmq::EZMQPublisher(localPort, ezmqCb, ezmqCb, ezmqCb);
 
     // check error and throw exception
-    if (!pubCtx && ezmq::EZMQ_OK != pubCtx->start())
+    if (!pubCtx)
+    {
+        throw EZMQX::Exception("Could not start publisher", EZMQX::UnKnownState);
+    }
+
+    if (ezmq::EZMQ_OK != pubCtx->start())
     {
         throw EZMQX::Exception("Could not start publisher", EZMQX::UnKnownState);
     }

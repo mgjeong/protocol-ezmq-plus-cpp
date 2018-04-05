@@ -17,9 +17,7 @@ static const std::string PAYLOAD_ENDPOINT = "endpoint";
 static const std::string PAYLOAD_SCHEMA = "schema";
 static const std::string QUERY_PARAM = "topic=";
 
-static std::shared_ptr<EZMQX::Context> ctx = EZMQX::Context::getInstance();
-
-EZMQX::Subscriber::Subscriber() : que(new EZMQX::BlockingQue()), terminated(false), token("")
+EZMQX::Subscriber::Subscriber() : que(new EZMQX::BlockingQue()), terminated(false), token(""), ctx(EZMQX::Context::getInstance())
 {
     // do nothing
 }
@@ -136,7 +134,6 @@ void EZMQX::Subscriber::handler()
 
 void EZMQX::Subscriber::internalSubCb(std::string topic, const ezmq::EZMQMessage &event)
 {
-
     if (event.getContentType() == ezmq::EZMQ_CONTENT_TYPE_BYTEDATA && !topic.empty())
     {
         const ezmq::EZMQByteData &bytes= dynamic_cast<const ezmq::EZMQByteData&>(event);

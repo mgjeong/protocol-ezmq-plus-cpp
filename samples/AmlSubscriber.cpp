@@ -99,8 +99,8 @@ int main()
     {
         // get config class instance & add aml model file path
         std::list<std::string> amlPath(1, "sample_data_model.aml");
-        std::shared_ptr<EZMQX::Config> config = EZMQX::Config::getInstance(EZMQX::FullFeature);
-        //std::shared_ptr<EZMQX::Config> config = EZMQX::Config::getInstance(EZMQX::StandAlone);
+        std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::FullFeature));
+        //std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::StandAlone));
 
         //config->setHostInfo("TestSubscriber", "10.113.77.33");
         //config->setTnsInfo("10.113.65.174:8323");
@@ -123,9 +123,8 @@ int main()
 
         std::cout<<"amlId: " << amlId.front() << std::endl;
         //EZMQX::Topic knownTopic("/test/A/", amlId.front(), ep);
-        EZMQX::Topic knownTopic("/test/", amlId.front(), ep);
-        //std::shared_ptr<EZMQX::AmlSubscriber> subscriber = EZMQX::AmlSubscriber::getSubscriber(knownTopic, subCb, errCb);
-        std::shared_ptr<EZMQX::AmlSubscriber> subscriber = EZMQX::AmlSubscriber::getSubscriber(topic, subCb, errCb);
+        //std::shared_ptr<EZMQX::AmlSubscriber> subscriber(EZMQX::AmlSubscriber::getSubscriber(knownTopic, subCb, errCb));
+        std::shared_ptr<EZMQX::AmlSubscriber> subscriber(EZMQX::AmlSubscriber::getSubscriber(topic, subCb, errCb));
 
         std::cout<<"subscriber created"<<std::endl;
 

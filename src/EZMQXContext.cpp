@@ -43,8 +43,6 @@ static const std::string HOSTNAME = "/etc/hostname";
 static const int LOCAL_PORT_START = 4000;
 static const int LOCAL_PORT_MAX = 100;
 
-std::shared_ptr<EZMQX::Context> EZMQX::Context::_instance;
-
 // ctor
 EZMQX::Context::Context() : initialized(false), terminated(false), usedIdx(0), numOfPort(0), standAlone(false), tnsEnabled(false)
 {
@@ -85,14 +83,10 @@ void EZMQX::Context::setTnsInfo(std::string remoteAddr)
     this->remoteAddr = remoteAddr;
 }
 
-std::shared_ptr<EZMQX::Context> EZMQX::Context::getInstance()
+EZMQX::Context* EZMQX::Context::getInstance()
 {
-    if (!_instance)
-    {
-        _instance.reset(new EZMQX::Context());
-    }
-
-    return _instance;
+    static EZMQX::Context _instance;
+    return &_instance;
 }
 
 EZMQX::Endpoint EZMQX::Context::getHostEp(int port)

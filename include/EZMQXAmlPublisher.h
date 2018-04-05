@@ -23,7 +23,7 @@ class AmlPublisher : public Publisher
 
     public:
         ~AmlPublisher();
-        static std::shared_ptr<EZMQX::AmlPublisher> getPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort);
+        static EZMQX::AmlPublisher* getPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort);
         void publish(const AMLObject& payload);
 };
 } // namespace EZMQX

@@ -47,7 +47,7 @@ class Context
 
     public:
         ~Context();
-        static std::shared_ptr<EZMQX::Context> getInstance();
+        static EZMQX::Context* getInstance();
         bool isInitialized();
         bool isTerminated();
         bool isStandAlone();

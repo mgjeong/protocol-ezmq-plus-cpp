@@ -16,11 +16,13 @@
 namespace EZMQX
 {
 class BlockingQue;
+class Context;
 class Subscriber
 {
     protected:
         std::mutex lock;
         std::atomic_bool terminated;
+        EZMQX::Context* ctx;
         std::list<ezmq::EZMQSubscriber*> subscribers;
         std::map<std::string, std::shared_ptr<Representation>> repDic;
         std::string token;

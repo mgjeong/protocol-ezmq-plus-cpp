@@ -6,8 +6,6 @@
 #include <EZMQErrorCodes.h>
 #include <EZMQByteData.h>
 
-static std::shared_ptr<EZMQX::Context> ctx = EZMQX::Context::getInstance();
-
 EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
  : Publisher(optionalPort)
 {
@@ -59,9 +57,9 @@ EZMQX::AmlPublisher::~AmlPublisher()
 
 }
 
-std::shared_ptr<EZMQX::AmlPublisher> EZMQX::AmlPublisher::getPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
+EZMQX::AmlPublisher* EZMQX::AmlPublisher::getPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
 {
-    std::shared_ptr<EZMQX::AmlPublisher> pubInstance(new AmlPublisher(topic, infoType, amlModelInfo, optionalPort));
+    EZMQX::AmlPublisher* pubInstance = new AmlPublisher(topic, infoType, amlModelInfo, optionalPort);
     return pubInstance;
 }
 

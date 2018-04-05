@@ -10,6 +10,8 @@
 
 namespace EZMQX {
 
+class Context;
+
 typedef enum
 {
     StandAlone,
@@ -22,19 +24,18 @@ class Config
         std::mutex lock;
         std::atomic_bool initialized;
         ModeOption configMode;
-        static std::shared_ptr<EZMQX::Config> _instance;
+        EZMQX::Context* ctx;
         virtual void initialize();
         virtual void terminate();
 
         // make noncopyable        
         Config();
-        Config(ModeOption mode);
         Config(const Config&) = delete;
         Config& operator = (const Config&) = delete;
 
     public:
+        Config(ModeOption mode);
         ~Config();
-        static std::shared_ptr<EZMQX::Config> getInstance(ModeOption mode);
         void setHostInfo(std::string hostName, std::string hostAddr);
         void setTnsInfo(std::string remoteAddr);
         std::list<std::string> addAmlModel(const std::list<std::string>& amlFilePath);

@@ -10,8 +10,6 @@
 #include <json/reader.h>
 #include <EZMQXBlockingQue.h>
 
-static std::shared_ptr<EZMQX::Context> ctx = EZMQX::Context::getInstance();
-
 EZMQX::AmlSubscriber::AmlSubscriber()
 {
     // do nothing
@@ -81,22 +79,22 @@ void EZMQX::AmlSubscriber::cb(const std::string &_topic, const AMLObject *obj)
     return;
 }
 
-std::shared_ptr<EZMQX::AmlSubscriber> EZMQX::AmlSubscriber::getSubscriber(const std::string &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
+EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const std::string &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
-    std::shared_ptr<EZMQX::AmlSubscriber> subInstance(new AmlSubscriber(topic, subCb, errCb));
+    EZMQX::AmlSubscriber* subInstance = new AmlSubscriber(topic, subCb, errCb);
     return subInstance;
 }
 
-std::shared_ptr<EZMQX::AmlSubscriber> EZMQX::AmlSubscriber::getSubscriber(const EZMQX::Topic &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
+EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const EZMQX::Topic &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
     std::list<EZMQX::Topic> topics(1, topic);
-    std::shared_ptr<EZMQX::AmlSubscriber> subInstance(new AmlSubscriber(topics, subCb, errCb));
+    EZMQX::AmlSubscriber* subInstance = new AmlSubscriber(topics, subCb, errCb);
     return subInstance;
 }
 
-std::shared_ptr<EZMQX::AmlSubscriber> EZMQX::AmlSubscriber::getSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
+EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
-    std::shared_ptr<EZMQX::AmlSubscriber> subInstance(new AmlSubscriber(topics, subCb, errCb));
+    EZMQX::AmlSubscriber* subInstance = new AmlSubscriber(topics, subCb, errCb);
     return subInstance;
 }
 

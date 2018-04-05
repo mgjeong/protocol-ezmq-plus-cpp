@@ -80,15 +80,16 @@ int main()
       // get config class instance & add aml model file path
       std::list<std::string> amlPath(1, "sample_data_model.aml");
       std::list<std::string> amlId(1);
-      std::shared_ptr<EZMQX::Config> config = EZMQX::Config::getInstance(EZMQX::FullFeature);
+      std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::FullFeature));
+      //std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::StandAlone));
       //config->setHostInfo("TestPublisher", "10.113.77.33");
       //config->setTnsInfo("10.113.65.174:8323");
       amlId = config->addAmlModel(amlPath);
 
       // create publisher with test topic
-      std::shared_ptr<EZMQX::AmlPublisher> publisherA = EZMQX::AmlPublisher::getPublisher(topic + "A/", EZMQX::AmlModelId, amlId.front(), 4000);
-      std::shared_ptr<EZMQX::AmlPublisher> publisherB = EZMQX::AmlPublisher::getPublisher(topic + "B/", EZMQX::AmlModelId, amlId.front(), 4001);
-      std::shared_ptr<EZMQX::AmlPublisher> publisherC = EZMQX::AmlPublisher::getPublisher(topic + "C/", EZMQX::AmlModelId, amlId.front(), 4002);
+      std::shared_ptr<EZMQX::AmlPublisher> publisherA(EZMQX::AmlPublisher::getPublisher(topic + "A/", EZMQX::AmlModelId, amlId.front(), 4000));
+      std::shared_ptr<EZMQX::AmlPublisher> publisherB(EZMQX::AmlPublisher::getPublisher(topic + "B/", EZMQX::AmlModelId, amlId.front(), 4001));
+      std::shared_ptr<EZMQX::AmlPublisher> publisherC(EZMQX::AmlPublisher::getPublisher(topic + "C/", EZMQX::AmlModelId, amlId.front(), 4002));
       
       // create AMLObject
       std::string deviceId = "GTC001";

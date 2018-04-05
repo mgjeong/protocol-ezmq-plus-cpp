@@ -25,9 +25,9 @@ class AmlSubscriber : public Subscriber
 
     public:
         ~AmlSubscriber();
-        static std::shared_ptr<EZMQX::AmlSubscriber> getSubscriber(const std::string &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb);
-        static std::shared_ptr<EZMQX::AmlSubscriber> getSubscriber(const EZMQX::Topic &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb);
-        static std::shared_ptr<EZMQX::AmlSubscriber> getSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb);
+        static EZMQX::AmlSubscriber* getSubscriber(const std::string &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb);
+        static EZMQX::AmlSubscriber* getSubscriber(const EZMQX::Topic &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb);
+        static EZMQX::AmlSubscriber* getSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb);
         bool isTerminated();
         void terminate();
         std::list<EZMQX::Topic> getTopics();
