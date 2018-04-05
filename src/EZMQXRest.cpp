@@ -2,6 +2,7 @@
 #include <string>
 
 static const std::string DELETE = "DELETE";
+static const std::string PUT = "PUT";
 
 static size_t _writeCb(void *ptr, size_t size, size_t nmemb, void *userdata)
 {
@@ -67,9 +68,22 @@ std::string EZMQX::SimpleRest::Get(std::string url, std::string query)
     return buff;
 }
 
-std::string EZMQX::SimpleRest::Put(std::string url)
+std::string EZMQX::SimpleRest::Put(std::string url, std::string payload)
 {
+    CURLcode res;
+    std::string buff;
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, PUT.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _writeCb);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buff);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.c_str());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)(payload.size()));
+    if(res != CURLE_OK)
+    {
 
+    }
+
+    return buff;
 }
 
 std::string EZMQX::SimpleRest::Post(std::string url, std::string payload)
