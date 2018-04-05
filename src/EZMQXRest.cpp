@@ -1,6 +1,8 @@
 #include <EZMQXRest.h>
 #include <string>
+#include <EZMQXException.h>
 
+static const std::string QUESTION_MARK = "?";
 static const std::string DELETE = "DELETE";
 static const std::string PUT = "PUT";
 
@@ -21,7 +23,7 @@ EZMQX::SimpleRest::SimpleRest() : curl(nullptr)
 
     if (!curl)
     {
-        // throw exception
+        throw EZMQX::Exception("Could not initialize curl lib", EZMQX::RestError);
     }
 
 }
@@ -41,9 +43,7 @@ std::string EZMQX::SimpleRest::Get(std::string url)
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)
     {
-        // std::cout<<"curl res != CURLE_OK"<<std::endl;
-        // std::cout<<"curl res is " <<" "<<curl_easy_strerror(res)<<std::endl;
-        //throw exception
+        throw EZMQX::Exception(curl_easy_strerror(res), EZMQX::RestError);
     }
 
     return buff;
@@ -52,7 +52,7 @@ std::string EZMQX::SimpleRest::Get(std::string url)
 std::string EZMQX::SimpleRest::Get(std::string url, std::string query)
 {
     std::string buff;
-    std::string addr = url + "?" + query;
+    std::string addr = url + QUESTION_MARK + query;
     CURLcode res;
     curl_easy_setopt(curl, CURLOPT_URL, addr.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _writeCb);
@@ -60,9 +60,7 @@ std::string EZMQX::SimpleRest::Get(std::string url, std::string query)
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)
     {
-        // std::cout<<"curl res != CURLE_OK"<<std::endl;
-        // std::cout<<"curl res is " <<" "<<curl_easy_strerror(res)<<std::endl;
-        //throw exception
+        throw EZMQX::Exception(curl_easy_strerror(res), EZMQX::RestError);
     }
 
     return buff;
@@ -80,7 +78,7 @@ std::string EZMQX::SimpleRest::Put(std::string url, std::string payload)
     curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)(payload.size()));
     if(res != CURLE_OK)
     {
-
+        throw EZMQX::Exception(curl_easy_strerror(res), EZMQX::RestError);
     }
 
     return buff;
@@ -98,9 +96,7 @@ std::string EZMQX::SimpleRest::Post(std::string url, std::string payload)
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)
     {
-        // std::cout<<"curl res != CURLE_OK"<<std::endl;
-        // std::cout<<"curl res is " <<" "<<curl_easy_strerror(res)<<std::endl;
-        //throw exception
+        throw EZMQX::Exception(curl_easy_strerror(res), EZMQX::RestError);
     }
 
     return buff;
@@ -118,7 +114,7 @@ std::string EZMQX::SimpleRest::Delete(std::string url)
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)
     {
-
+        throw EZMQX::Exception(curl_easy_strerror(res), EZMQX::RestError);
     }
 
     return buff;
