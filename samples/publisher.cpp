@@ -7,7 +7,7 @@
 #include <EZMQXException.h>
 #include <EZMQAPI.h>
 
-void printAMLData(AMLData amlData, int depth)
+void printAMLData(AML::AMLData amlData, int depth)
 {
     std::string indent;
     for (int i = 0; i < depth; i++) indent += "    ";
@@ -19,13 +19,13 @@ void printAMLData(AMLData amlData, int depth)
     {
         std::cout << indent << "    \"" << key << "\" : ";
 
-        AMLValueType type = amlData.getValueType(key);
-        if (AMLValueType::String == type)
+        AML::AMLValueType type = amlData.getValueType(key);
+        if (AML::AMLValueType::String == type)
         {
             std::string valStr = amlData.getValueToStr(key);
             std::cout << valStr;
         }
-        else if (AMLValueType::StringArray == type)
+        else if (AML::AMLValueType::StringArray == type)
         {
             std::vector<std::string> valStrArr = amlData.getValueToStrArr(key);
             std::cout << "[";
@@ -36,9 +36,9 @@ void printAMLData(AMLData amlData, int depth)
             }
             std::cout << "]";
         }
-        else if (AMLValueType::AMLData == type)
+        else if (AML::AMLValueType::AMLData == type)
         {
-            AMLData valAMLData = amlData.getValueToAMLData(key);
+            AML::AMLData valAMLData = amlData.getValueToAMLData(key);
             std::cout << std::endl;
             printAMLData(valAMLData, depth + 1);
         }
@@ -49,7 +49,7 @@ void printAMLData(AMLData amlData, int depth)
     std::cout << indent << "}";
 }
 
-void printAMLObject(AMLObject amlObj)
+void printAMLObject(AML::AMLObject amlObj)
 {
     std::cout << "{" << std::endl;
     std::cout << "    \"device\" : " << amlObj.getDeviceId() << "," << std::endl;
@@ -60,7 +60,7 @@ void printAMLObject(AMLObject amlObj)
 
     for (std::string n : dataNames)
     {
-        AMLData data = amlObj.getData(n);
+        AML::AMLData data = amlObj.getData(n);
 
         std::cout << "    \"" << n << "\" : " << std::endl;
         printAMLData(data, 1);
@@ -95,20 +95,20 @@ int main()
       std::string deviceId = "GTC001";
       std::string timeStamp = "123456789";
 
-      AMLObject amlObj(deviceId, timeStamp);
+      AML::AMLObject amlObj(deviceId, timeStamp);
 
       // create "Model" data
-      AMLData model;
+      AML::AMLData model;
       model.setValue("ctname", "Model_107.113.97.248");
       model.setValue("con", "SR-P7-970");
 
       // create "Sample" data
-      AMLData axis;
+      AML::AMLData axis;
       axis.setValue("x", "20");
       axis.setValue("y", "110");
       axis.setValue("z", "80");
 
-      AMLData info;
+      AML::AMLData info;
       info.setValue("id", "f437da3b");
       info.setValue("axis", axis);
 
@@ -117,7 +117,7 @@ int main()
       appendix.push_back("935");
       appendix.push_back("1442");
 
-      AMLData sample;
+      AML::AMLData sample;
       sample.setValue("info", info);
       sample.setValue("appendix", appendix);
 

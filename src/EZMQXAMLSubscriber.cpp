@@ -63,7 +63,7 @@ EZMQX::AmlSubscriber::AmlSubscriber(const std::string &topic, EZMQX::AmlSubCb &s
     }
 }
 
-void EZMQX::AmlSubscriber::cb(const std::string &_topic, const AMLObject *obj)
+void EZMQX::AmlSubscriber::cb(const std::string &_topic, const AML::AMLObject *obj)
 {
     if (!_topic.empty() && obj != NULL)
     {

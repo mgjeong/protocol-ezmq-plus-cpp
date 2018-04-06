@@ -13,7 +13,7 @@ class XmlSubscriber : public Subscriber
     private:
         EZMQX::XmlSubCb mSubCb;
         EZMQX::SubErrCb mSubErrCb;
-        void cb(const std::string &topic, const AMLObject* obj);
+        void cb(const std::string &topic, const AML::AMLObject* obj);
 
         // delete default ctor
         XmlSubscriber();

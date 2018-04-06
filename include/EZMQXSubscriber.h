@@ -24,13 +24,13 @@ class Subscriber
         std::atomic_bool terminated;
         EZMQX::Context* ctx;
         std::list<ezmq::EZMQSubscriber*> subscribers;
-        std::map<std::string, std::shared_ptr<Representation>> repDic;
+        std::map<std::string, std::shared_ptr<AML::Representation>> repDic;
         std::string token;
         EZMQX::BlockingQue* que;
         std::thread mThread;
 
         void handler();
-        virtual void cb(const std::string &_topic, const AMLObject* obj) = 0;
+        virtual void cb(const std::string &_topic, const AML::AMLObject* obj) = 0;
 
         void internalSubCb(std::string topic, const ezmq::EZMQMessage &event);
         void initialize(const std::list<EZMQX::Topic> &topics);

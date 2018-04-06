@@ -11,7 +11,7 @@ namespace EZMQX {
 class AmlPublisher : public Publisher
 {
     private:
-        std::shared_ptr<Representation> rep;
+        std::shared_ptr<AML::Representation> rep;
 
         // delete default ctor
         AmlPublisher();
@@ -24,7 +24,7 @@ class AmlPublisher : public Publisher
     public:
         ~AmlPublisher();
         static EZMQX::AmlPublisher* getPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort);
-        void publish(const AMLObject& payload);
+        void publish(const AML::AMLObject& payload);
 };
 } // namespace EZMQX
 

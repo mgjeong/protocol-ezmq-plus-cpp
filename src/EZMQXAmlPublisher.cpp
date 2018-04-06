@@ -63,7 +63,7 @@ EZMQX::AmlPublisher* EZMQX::AmlPublisher::getPublisher(const std::string &topic,
     return pubInstance;
 }
 
-void EZMQX::AmlPublisher::publish(const AMLObject& payload)
+void EZMQX::AmlPublisher::publish(const AML::AMLObject& payload)
 {
     // mutex lock
     {

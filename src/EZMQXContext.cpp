@@ -132,10 +132,10 @@ std::list<std::string> EZMQX::Context::addAmlRep(const std::list<std::string>& a
             else
             {
                 std::string amlModelId;
-                Representation* repPtr = nullptr;
+                AML::Representation* repPtr = nullptr;
                 try
                 {
-                    repPtr = new Representation(path);
+                    repPtr = new AML::Representation(path);
                 }
                 catch(...)
                 {
@@ -147,7 +147,7 @@ std::list<std::string> EZMQX::Context::addAmlRep(const std::list<std::string>& a
                     throw EZMQX::Exception("Could not parse aml model file : " + path, EZMQX::UnKnownState);
                 }
 
-                std::shared_ptr<Representation> rep(repPtr);
+                std::shared_ptr<AML::Representation> rep(repPtr);
 
                 try
                 {
@@ -168,7 +168,7 @@ std::list<std::string> EZMQX::Context::addAmlRep(const std::list<std::string>& a
                     // ignore duplicated rep
                     if (amlRepDic.find(amlModelId) == amlRepDic.end())
                     {
-                        amlRepDic.insert(std::pair<std::string, std::shared_ptr<Representation>>(amlModelId, rep));
+                        amlRepDic.insert(std::pair<std::string, std::shared_ptr<AML::Representation>>(amlModelId, rep));
                     }
 
                     modelId.push_back(amlModelId);
@@ -184,9 +184,9 @@ std::list<std::string> EZMQX::Context::addAmlRep(const std::list<std::string>& a
     return modelId;
 }
 
-std::shared_ptr<Representation> EZMQX::Context::getAmlRep(const std::string& amlModelId)
+std::shared_ptr<AML::Representation> EZMQX::Context::getAmlRep(const std::string& amlModelId)
 {
-    std::map<std::string, std::shared_ptr<Representation>>::iterator itr;
+    std::map<std::string, std::shared_ptr<AML::Representation>>::iterator itr;
     // mutex lock
     {
         std::lock_guard<std::mutex> scopedLock(lock);

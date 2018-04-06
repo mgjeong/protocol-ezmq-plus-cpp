@@ -64,7 +64,7 @@ EZMQX::XmlSubscriber::XmlSubscriber(const std::string &topic, EZMQX::XmlSubCb &s
 }
 
 
-void EZMQX::XmlSubscriber::cb(const std::string &_topic, const AMLObject *obj)
+void EZMQX::XmlSubscriber::cb(const std::string &_topic, const AML::AMLObject *obj)
 {
     bool isError = false;
     std::string xml;

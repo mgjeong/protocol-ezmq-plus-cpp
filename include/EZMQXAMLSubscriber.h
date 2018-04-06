@@ -5,7 +5,7 @@
 
 namespace EZMQX
 {
-typedef std::function<void(std::string topic, const AMLObject& payload)> AmlSubCb;
+typedef std::function<void(std::string topic, const AML::AMLObject& payload)> AmlSubCb;
 typedef std::function<void(std::string topic, EZMQX::ErrorCode errCode)> SubErrCb;
 
 class AmlSubscriber : public Subscriber
@@ -13,7 +13,7 @@ class AmlSubscriber : public Subscriber
     private:
         EZMQX::AmlSubCb mSubCb;
         EZMQX::SubErrCb mSubErrCb;
-        void cb(const std::string &topic, const AMLObject* obj);
+        void cb(const std::string &topic, const AML::AMLObject* obj);
 
         // delete default ctor
         AmlSubscriber();

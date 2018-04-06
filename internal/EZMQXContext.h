@@ -33,7 +33,7 @@ class Context
         std::map<int, bool> usedPorts;
         int usedIdx;
         int numOfPort;
-        std::map<std::string, std::shared_ptr<Representation>> amlRepDic;
+        std::map<std::string, std::shared_ptr<AML::Representation>> amlRepDic;
         void setStandAloneMode(bool mode);
         void setHostInfo(std::string hostName, std::string hostAddr);
         void setTnsInfo(std::string remoteAddr);
@@ -57,7 +57,7 @@ class Context
         void releaseDynamicPort(int port);
         EZMQX::Endpoint getHostEp(int port);
         std::list<std::string> addAmlRep(const std::list<std::string>& amlModelInfo);
-        std::shared_ptr<Representation> getAmlRep(const std::string& amlModelId);
+        std::shared_ptr<AML::Representation> getAmlRep(const std::string& amlModelId);
 
 };
 

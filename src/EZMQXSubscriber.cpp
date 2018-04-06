@@ -42,7 +42,7 @@ void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics)
         try
         {
             std::cout << "Topic: " << topic_str << " Model_Id: " << topic.getSchema() << " Endpoint: " << topic.getEndpoint().toString() << std::endl;
-            std::shared_ptr<Representation> rep = ctx->getAmlRep(topic.getSchema());
+            std::shared_ptr<AML::Representation> rep = ctx->getAmlRep(topic.getSchema());
 
             repDic.insert(std::make_pair(topic_str, ctx->getAmlRep(topic.getSchema())));
         }
@@ -109,7 +109,7 @@ void EZMQX::Subscriber::handler()
             }
             else
             {
-                AMLObject *obj = itr->second->ByteToData(payload.second);
+                AML::AMLObject *obj = itr->second->ByteToData(payload.second);
 
                 if (!obj)
                 {
@@ -124,7 +124,7 @@ void EZMQX::Subscriber::handler()
         {
             // call errCb
             std::cout<<e.what()<<std::endl;
-            AMLObject *obj = nullptr;
+            AML::AMLObject *obj = nullptr;
             cb(payload.first, obj);
         }
     }
