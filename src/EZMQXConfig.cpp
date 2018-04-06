@@ -3,12 +3,10 @@
 #include <EZMQXException.h>
 
 static const std::string LOCAL_ADDR = "localhost";
-static std::shared_ptr<EZMQX::Context> ctx = EZMQX::Context::getInstance();
-std::shared_ptr<EZMQX::Config> EZMQX::Config::_instance;
 
-EZMQX::Config::Config(): initialized(false){}
+EZMQX::Config::Config(): initialized(false), ctx(EZMQX::Context::getInstance()){}
 
-EZMQX::Config::Config(ModeOption mode): configMode(mode), initialized(false)
+EZMQX::Config::Config(ModeOption mode): configMode(mode), initialized(false), ctx(EZMQX::Context::getInstance())
 {
     initialize();
 }
@@ -94,16 +92,6 @@ void EZMQX::Config::terminate()
     // mutex unlock
 
     return;
-}
-
-std::shared_ptr<EZMQX::Config> EZMQX::Config::getInstance(ModeOption mode)
-{
-    if (!_instance)
-    {
-        _instance.reset(new EZMQX::Config(mode));
-    }
-
-    return _instance;
 }
 
 std::list<std::string> EZMQX::Config::addAmlModel(const std::list<std::string>& amlFilePath)

@@ -2,12 +2,12 @@
 #include <thread>
 #include <chrono>
 #include <vector>
-#include <EZMQXPublisher.h>
+#include <EZMQXAmlPublisher.h>
 #include <EZMQXConfig.h>
 #include <EZMQXException.h>
 #include <EZMQAPI.h>
 
-void printAMLData(AMLData amlData, int depth)
+void printAMLData(AML::AMLData amlData, int depth)
 {
     std::string indent;
     for (int i = 0; i < depth; i++) indent += "    ";
@@ -19,13 +19,13 @@ void printAMLData(AMLData amlData, int depth)
     {
         std::cout << indent << "    \"" << key << "\" : ";
 
-        AMLValueType type = amlData.getValueType(key);
-        if (AMLValueType::String == type)
+        AML::AMLValueType type = amlData.getValueType(key);
+        if (AML::AMLValueType::String == type)
         {
             std::string valStr = amlData.getValueToStr(key);
             std::cout << valStr;
         }
-        else if (AMLValueType::StringArray == type)
+        else if (AML::AMLValueType::StringArray == type)
         {
             std::vector<std::string> valStrArr = amlData.getValueToStrArr(key);
             std::cout << "[";
@@ -36,9 +36,9 @@ void printAMLData(AMLData amlData, int depth)
             }
             std::cout << "]";
         }
-        else if (AMLValueType::AMLData == type)
+        else if (AML::AMLValueType::AMLData == type)
         {
-            AMLData valAMLData = amlData.getValueToAMLData(key);
+            AML::AMLData valAMLData = amlData.getValueToAMLData(key);
             std::cout << std::endl;
             printAMLData(valAMLData, depth + 1);
         }
@@ -49,7 +49,7 @@ void printAMLData(AMLData amlData, int depth)
     std::cout << indent << "}";
 }
 
-void printAMLObject(AMLObject amlObj)
+void printAMLObject(AML::AMLObject amlObj)
 {
     std::cout << "{" << std::endl;
     std::cout << "    \"device\" : " << amlObj.getDeviceId() << "," << std::endl;
@@ -60,7 +60,7 @@ void printAMLObject(AMLObject amlObj)
 
     for (std::string n : dataNames)
     {
-        AMLData data = amlObj.getData(n);
+        AML::AMLData data = amlObj.getData(n);
 
         std::cout << "    \"" << n << "\" : " << std::endl;
         printAMLData(data, 1);
@@ -80,34 +80,35 @@ int main()
       // get config class instance & add aml model file path
       std::list<std::string> amlPath(1, "sample_data_model.aml");
       std::list<std::string> amlId(1);
-      std::shared_ptr<EZMQX::Config> config = EZMQX::Config::getInstance(EZMQX::FullFeature);
+      std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::FullFeature));
+      //std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::StandAlone));
       //config->setHostInfo("TestPublisher", "10.113.77.33");
       //config->setTnsInfo("10.113.65.174:8323");
       amlId = config->addAmlModel(amlPath);
 
       // create publisher with test topic
-      std::shared_ptr<EZMQX::Publisher> publisherA = EZMQX::Publisher::getPublisher(topic + "A/", EZMQX::AmlModelId, amlId.front(), 4000);
-      std::shared_ptr<EZMQX::Publisher> publisherB = EZMQX::Publisher::getPublisher(topic + "B/", EZMQX::AmlModelId, amlId.front(), 4001);
-      std::shared_ptr<EZMQX::Publisher> publisherC = EZMQX::Publisher::getPublisher(topic + "C/", EZMQX::AmlModelId, amlId.front(), 4002);
+      std::shared_ptr<EZMQX::AmlPublisher> publisherA(EZMQX::AmlPublisher::getPublisher(topic + "A/", EZMQX::AmlModelId, amlId.front(), 4000));
+      std::shared_ptr<EZMQX::AmlPublisher> publisherB(EZMQX::AmlPublisher::getPublisher(topic + "B/", EZMQX::AmlModelId, amlId.front(), 4001));
+      std::shared_ptr<EZMQX::AmlPublisher> publisherC(EZMQX::AmlPublisher::getPublisher(topic + "C/", EZMQX::AmlModelId, amlId.front(), 4002));
       
       // create AMLObject
       std::string deviceId = "GTC001";
       std::string timeStamp = "123456789";
 
-      AMLObject amlObj(deviceId, timeStamp);
+      AML::AMLObject amlObj(deviceId, timeStamp);
 
       // create "Model" data
-      AMLData model;
+      AML::AMLData model;
       model.setValue("ctname", "Model_107.113.97.248");
       model.setValue("con", "SR-P7-970");
 
       // create "Sample" data
-      AMLData axis;
+      AML::AMLData axis;
       axis.setValue("x", "20");
       axis.setValue("y", "110");
       axis.setValue("z", "80");
 
-      AMLData info;
+      AML::AMLData info;
       info.setValue("id", "f437da3b");
       info.setValue("axis", axis);
 
@@ -116,7 +117,7 @@ int main()
       appendix.push_back("935");
       appendix.push_back("1442");
 
-      AMLData sample;
+      AML::AMLData sample;
       sample.setValue("info", info);
       sample.setValue("appendix", appendix);
 
@@ -135,16 +136,6 @@ int main()
           std::this_thread::sleep_for(std::chrono::milliseconds(100));
       }
 
-      // condition check
-      if (!publisherA->isTerminated())
-      {
-          publisherA->terminate();
-          publisherB->terminate();
-          publisherC->terminate();
-      }
-
-      // occur exception
-      publisherA->terminate();
     }
     catch(EZMQX::Exception& e)
     {

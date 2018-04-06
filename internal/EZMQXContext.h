@@ -28,13 +28,12 @@ class Context
         std::string hostname;
         std::string hostAddr;
         std::string remoteAddr;
-        std::string cId;
         static std::shared_ptr<EZMQX::Context> _instance;
         std::map<int, int> ports;
         std::map<int, bool> usedPorts;
         int usedIdx;
         int numOfPort;
-        std::map<std::string, std::shared_ptr<Representation>> amlRepDic;
+        std::map<std::string, std::shared_ptr<AML::Representation>> amlRepDic;
         void setStandAloneMode(bool mode);
         void setHostInfo(std::string hostName, std::string hostAddr);
         void setTnsInfo(std::string remoteAddr);
@@ -48,7 +47,7 @@ class Context
 
     public:
         ~Context();
-        static std::shared_ptr<EZMQX::Context> getInstance();
+        static EZMQX::Context* getInstance();
         bool isInitialized();
         bool isTerminated();
         bool isStandAlone();
@@ -58,7 +57,7 @@ class Context
         void releaseDynamicPort(int port);
         EZMQX::Endpoint getHostEp(int port);
         std::list<std::string> addAmlRep(const std::list<std::string>& amlModelInfo);
-        std::shared_ptr<Representation> getAmlRep(const std::string& amlModelId);
+        std::shared_ptr<AML::Representation> getAmlRep(const std::string& amlModelId);
 
 };
 

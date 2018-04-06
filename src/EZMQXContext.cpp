@@ -10,6 +10,7 @@
 #include <json/reader.h>
 
 static const std::string COLLON = ":";
+static const std::string SLASH = "/";
 static const std::string TNS_KNOWN_PORT = "48323";
 
 // Rest Endpoints
@@ -41,8 +42,6 @@ static const std::string HOSTNAME = "/etc/hostname";
 // Dynamic port info
 static const int LOCAL_PORT_START = 4000;
 static const int LOCAL_PORT_MAX = 100;
-
-std::shared_ptr<EZMQX::Context> EZMQX::Context::_instance;
 
 // ctor
 EZMQX::Context::Context() : initialized(false), terminated(false), usedIdx(0), numOfPort(0), standAlone(false), tnsEnabled(false)
@@ -84,14 +83,10 @@ void EZMQX::Context::setTnsInfo(std::string remoteAddr)
     this->remoteAddr = remoteAddr;
 }
 
-std::shared_ptr<EZMQX::Context> EZMQX::Context::getInstance()
+EZMQX::Context* EZMQX::Context::getInstance()
 {
-    if (!_instance)
-    {
-        _instance.reset(new EZMQX::Context());
-    }
-
-    return _instance;
+    static EZMQX::Context _instance;
+    return &_instance;
 }
 
 EZMQX::Endpoint EZMQX::Context::getHostEp(int port)
@@ -137,10 +132,10 @@ std::list<std::string> EZMQX::Context::addAmlRep(const std::list<std::string>& a
             else
             {
                 std::string amlModelId;
-                Representation* repPtr = nullptr;
+                AML::Representation* repPtr = nullptr;
                 try
                 {
-                    repPtr = new Representation(path);
+                    repPtr = new AML::Representation(path);
                 }
                 catch(...)
                 {
@@ -152,7 +147,7 @@ std::list<std::string> EZMQX::Context::addAmlRep(const std::list<std::string>& a
                     throw EZMQX::Exception("Could not parse aml model file : " + path, EZMQX::UnKnownState);
                 }
 
-                std::shared_ptr<Representation> rep(repPtr);
+                std::shared_ptr<AML::Representation> rep(repPtr);
 
                 try
                 {
@@ -173,7 +168,7 @@ std::list<std::string> EZMQX::Context::addAmlRep(const std::list<std::string>& a
                     // ignore duplicated rep
                     if (amlRepDic.find(amlModelId) == amlRepDic.end())
                     {
-                        amlRepDic.insert(std::pair<std::string, std::shared_ptr<Representation>>(amlModelId, rep));
+                        amlRepDic.insert(std::pair<std::string, std::shared_ptr<AML::Representation>>(amlModelId, rep));
                     }
 
                     modelId.push_back(amlModelId);
@@ -189,9 +184,9 @@ std::list<std::string> EZMQX::Context::addAmlRep(const std::list<std::string>& a
     return modelId;
 }
 
-std::shared_ptr<Representation> EZMQX::Context::getAmlRep(const std::string& amlModelId)
+std::shared_ptr<AML::Representation> EZMQX::Context::getAmlRep(const std::string& amlModelId)
 {
-    std::map<std::string, std::shared_ptr<Representation>>::iterator itr;
+    std::map<std::string, std::shared_ptr<AML::Representation>>::iterator itr;
     // mutex lock
     {
         std::lock_guard<std::mutex> scopedLock(lock);
@@ -420,7 +415,7 @@ void EZMQX::Context::initialize()
                     nodeInfo.clear();
                     {
                         EZMQX::SimpleRest rest;
-                        nodeInfo = rest.Get(NODE + PREFIX + API_APPS + "/" + appId);
+                        nodeInfo = rest.Get(NODE + PREFIX + API_APPS + SLASH + appId);
                     }
 
                     if (nodeInfo.empty())

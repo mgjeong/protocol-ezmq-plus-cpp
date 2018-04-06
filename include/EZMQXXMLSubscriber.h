@@ -13,8 +13,7 @@ class XmlSubscriber : public Subscriber
     private:
         EZMQX::XmlSubCb mSubCb;
         EZMQX::SubErrCb mSubErrCb;
-        void initialize(const std::list<EZMQX::Topic> &topics, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
-        void cb(const std::string &topic, const AMLObject* obj);
+        void cb(const std::string &topic, const AML::AMLObject* obj);
 
         // delete default ctor
         XmlSubscriber();
@@ -26,9 +25,9 @@ class XmlSubscriber : public Subscriber
 
     public:
         ~XmlSubscriber();
-        static std::shared_ptr<EZMQX::XmlSubscriber> getSubscriber(const std::string &topic, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
-        static std::shared_ptr<EZMQX::XmlSubscriber> getSubscriber(const EZMQX::Topic &topic, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
-        static std::shared_ptr<EZMQX::XmlSubscriber> getSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
+        static EZMQX::XmlSubscriber* getSubscriber(const std::string &topic, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
+        static EZMQX::XmlSubscriber* getSubscriber(const EZMQX::Topic &topic, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
+        static EZMQX::XmlSubscriber* getSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
         bool isTerminated();
         void terminate();
         std::list<EZMQX::Topic> getTopics();

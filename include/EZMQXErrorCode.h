@@ -13,7 +13,8 @@ namespace EZMQX
         DuplicatedTopic,
         UnknownTopic,
         InvalidEndpoint,
-        BrokenPayload
+        BrokenPayload,
+        RestError
     }ErrorCode;
 }
 

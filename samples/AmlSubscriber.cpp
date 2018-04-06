@@ -9,7 +9,7 @@ bool isStarted;
 std::mutex m_mutex;
 std::condition_variable m_cv;
 
-void printAMLData(AMLData amlData, int depth)
+void printAMLData(AML::AMLData amlData, int depth)
 {
     std::string indent;
     for (int i = 0; i < depth; i++) indent += "    ";
@@ -21,13 +21,13 @@ void printAMLData(AMLData amlData, int depth)
     {
         std::cout << indent << "    \"" << key << "\" : ";
 
-        AMLValueType type = amlData.getValueType(key);
-        if (AMLValueType::String == type)
+        AML::AMLValueType type = amlData.getValueType(key);
+        if (AML::AMLValueType::String == type)
         {
             std::string valStr = amlData.getValueToStr(key);
             std::cout << valStr;
         }
-        else if (AMLValueType::StringArray == type)
+        else if (AML::AMLValueType::StringArray == type)
         {
             std::vector<std::string> valStrArr = amlData.getValueToStrArr(key);
             std::cout << "[";
@@ -38,9 +38,9 @@ void printAMLData(AMLData amlData, int depth)
             }
             std::cout << "]";
         }
-        else if (AMLValueType::AMLData == type)
+        else if (AML::AMLValueType::AMLData == type)
         {
-            AMLData valAMLData = amlData.getValueToAMLData(key);
+            AML::AMLData valAMLData = amlData.getValueToAMLData(key);
             std::cout << std::endl;
             printAMLData(valAMLData, depth + 1);
         }
@@ -51,7 +51,7 @@ void printAMLData(AMLData amlData, int depth)
     std::cout << indent << "}";
 }
 
-void printAMLObject(AMLObject amlObj)
+void printAMLObject(AML::AMLObject amlObj)
 {
     std::cout << "{" << std::endl;
     std::cout << "    \"device\" : " << amlObj.getDeviceId() << "," << std::endl;
@@ -62,7 +62,7 @@ void printAMLObject(AMLObject amlObj)
 
     for (std::string n : dataNames)
     {
-        AMLData data = amlObj.getData(n);
+        AML::AMLData data = amlObj.getData(n);
 
         std::cout << "    \"" << n << "\" : " << std::endl;
         printAMLData(data, 1);
@@ -99,17 +99,17 @@ int main()
     {
         // get config class instance & add aml model file path
         std::list<std::string> amlPath(1, "sample_data_model.aml");
-        std::shared_ptr<EZMQX::Config> config = EZMQX::Config::getInstance(EZMQX::FullFeature);
-        //std::shared_ptr<EZMQX::Config> config = EZMQX::Config::getInstance(EZMQX::StandAlone);
+        std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::FullFeature));
+        //std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::StandAlone));
 
         //config->setHostInfo("TestSubscriber", "10.113.77.33");
         //config->setTnsInfo("10.113.65.174:8323");
         std::list<std::string> amlId = config->addAmlModel(amlPath);
 
         // error callback
-        // typedef std::function<void(std::string topic, const AMLObject& payload)> SubCb;
+        // typedef std::function<void(std::string topic, const AML::AMLObject& payload)> SubCb;
         // typedef std::function<void(std::string topic, EZMQX::ErrorCode errCode)> SubErrCb;
-        EZMQX::AmlSubCb subCb = [](std::string topic, const AMLObject& payload){std::cout << "subCb called" << std::endl; printAMLObject(payload);};
+        EZMQX::AmlSubCb subCb = [](std::string topic, const AML::AMLObject& payload){std::cout << "subCb called" << std::endl; printAMLObject(payload);};
         EZMQX::SubErrCb errCb = [](std::string topic, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl;};
 
         // create subscriber with test topic
@@ -123,9 +123,8 @@ int main()
 
         std::cout<<"amlId: " << amlId.front() << std::endl;
         //EZMQX::Topic knownTopic("/test/A/", amlId.front(), ep);
-        EZMQX::Topic knownTopic("/test/", amlId.front(), ep);
-        //std::shared_ptr<EZMQX::AmlSubscriber> subscriber = EZMQX::AmlSubscriber::getSubscriber(knownTopic, subCb, errCb);
-        std::shared_ptr<EZMQX::AmlSubscriber> subscriber = EZMQX::AmlSubscriber::getSubscriber(topic, subCb, errCb);
+        //std::shared_ptr<EZMQX::AmlSubscriber> subscriber(EZMQX::AmlSubscriber::getSubscriber(knownTopic, subCb, errCb));
+        std::shared_ptr<EZMQX::AmlSubscriber> subscriber(EZMQX::AmlSubscriber::getSubscriber(topic, subCb, errCb));
 
         std::cout<<"subscriber created"<<std::endl;
 
