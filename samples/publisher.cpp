@@ -5,7 +5,6 @@
 #include <EZMQXAmlPublisher.h>
 #include <EZMQXConfig.h>
 #include <EZMQXException.h>
-#include <EZMQAPI.h>
 
 void printAMLData(AML::AMLData amlData, int depth)
 {
