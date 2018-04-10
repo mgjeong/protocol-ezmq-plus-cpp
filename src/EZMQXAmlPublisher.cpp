@@ -9,6 +9,8 @@
 EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
  : Publisher(optionalPort)
 {
+    validateTopic(topic);
+
     if (infoType == AmlModelId)
     {
         try

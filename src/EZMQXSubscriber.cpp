@@ -9,6 +9,13 @@
 #include <json/reader.h>
 #include <EZMQXBlockingQue.h>
 
+#define SLASH '/'
+#define DOUBLE_SLASH "//"
+#define START_POS 0
+#define OFFSET 1
+
+static const std::string TOPIC_PATTERN = "(\/[a-zA-Z0-9-_*+.]+)+";
+
 static const std::string PREFIX = "/api/v1";
 static const std::string TOPIC = "/tns/topic";
 
@@ -147,10 +154,34 @@ void EZMQX::Subscriber::internalSubCb(std::string topic, const ezmq::EZMQMessage
     return;
 }
 
+void EZMQX::Subscriber::validateTopic(const std::string& topic)
+{
+    //validate topic
+    std::string tmp = topic;
+
+    // simple grammer check
+    if (tmp.front() != SLASH || tmp.back() != SLASH || tmp.find(DOUBLE_SLASH) != std::string::npos)
+    {
+        throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
+    }
+
+//Regex support is supported from  gcc-4.9 and higher
+#if defined(EZMQX_GCC_VERSION) && EZMQX_GCC_VERSION >= 40900
+    std::regex pattern(TOPIC_PATTERN);
+
+    // remove last slash
+    tmp = tmp.substr(START_POS, tmp.length() - OFFSET);
+    if (!std::regex_match(tmp, pattern))
+    {
+        throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
+    }
+#endif
+}
+
 void EZMQX::Subscriber::verifyTopics(const std::string &topic, std::list<EZMQX::Topic> &verified)
 {   
-    std::string tmp;
     // send rest
+    std::string tmp;
     try
     {
         EZMQX::SimpleRest rest;

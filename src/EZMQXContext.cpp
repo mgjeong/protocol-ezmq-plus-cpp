@@ -8,6 +8,9 @@
 #include <json/json.h>
 #include <json/value.h>
 #include <json/reader.h>
+#include <EZMQXLogger.h>
+
+#define TAG "EZMQXContext"
 
 static const std::string COLLON = ":";
 static const std::string SLASH = "/";
@@ -48,6 +51,7 @@ EZMQX::Context::Context() : initialized(false), terminated(false), usedIdx(0), n
 {
     if (ezmq::EZMQ_OK != ezmq::EZMQAPI::getInstance()->initialize())
     {
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not start ezmq context", __func__);
         throw EZMQX::Exception("Could not start ezmq context", EZMQX::UnKnownState);
     }
 }
@@ -60,6 +64,7 @@ EZMQX::Context::~Context()
 
 void EZMQX::Context::setStandAloneMode(bool mode)
 {
+    EZMQX_LOG_V(INFO, TAG, "%s StandAlone mode enabled", __func__);
     this->standAlone = mode;
     if (this->standAlone)
     {
@@ -73,12 +78,14 @@ void EZMQX::Context::setStandAloneMode(bool mode)
 
 void EZMQX::Context::setHostInfo(std::string hostName, std::string hostAddr)
 {
+    EZMQX_LOG_V(INFO, TAG, "%s Host infomation setted manually Hostname: %s Hostaddr: %s", __func__, hostName, hostAddr);
     this->hostname = hostname;
     this->hostAddr = hostAddr;
 }
 
 void EZMQX::Context::setTnsInfo(std::string remoteAddr)
 {
+    EZMQX_LOG_V(INFO, TAG, "%s TNS addr setted manually Addr: %s", __func__, remoteAddr);
     tnsEnabled = true;
     this->remoteAddr = remoteAddr;
 }
@@ -106,6 +113,9 @@ EZMQX::Endpoint EZMQX::Context::getHostEp(int port)
     }
 
     EZMQX::Endpoint ep(hostAddr, hostPort);
+
+    EZMQX_LOG_V(DEBUG, TAG, "%s Port: %d, Host Addr: %s", __func__, port, ep.toString());
+
     return ep;
 }
 
@@ -115,6 +125,7 @@ std::list<std::string> EZMQX::Context::addAmlRep(const std::list<std::string>& a
 
     if (amlModelInfo.empty())
     {
+        EZMQX_LOG_V(DEBUG, TAG, "%s given list is empty", __func__);
         return modelId;
     }
 

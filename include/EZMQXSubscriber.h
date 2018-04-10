@@ -35,6 +35,7 @@ class Subscriber
         void internalSubCb(std::string topic, const ezmq::EZMQMessage &event);
         void initialize(const std::list<EZMQX::Topic> &topics);
 
+        void validateTopic(const std::string& topic);
         virtual void verifyTopics(const std::string &topic, std::list<EZMQX::Topic> &verified);
         virtual void verifyTopics(const std::list<EZMQX::Topic> &topics);
 
