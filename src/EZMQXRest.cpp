@@ -103,7 +103,7 @@ std::string EZMQX::SimpleRest::Post(std::string url, std::string payload)
 
 }
 
-std::string EZMQX::SimpleRest::Delete(std::string url)
+std::string EZMQX::SimpleRest::Delete(std::string url, std::string payload)
 {
     CURLcode res;
     std::string buff;
@@ -111,6 +111,8 @@ std::string EZMQX::SimpleRest::Delete(std::string url)
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, DELETE.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _writeCb);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buff);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.c_str());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)(payload.size()));
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)
     {
