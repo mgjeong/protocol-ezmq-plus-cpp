@@ -19,11 +19,13 @@ class KeepAlive
 private:
     EZMQX::BlockingQue* que;
     std::thread mThread;
+    std::string remoteAddr;
+    KeepAlive();
     void handler();
 
 public:
-    void inQue(TaskOption opt, std::string payload);
-    KeepAlive();
+    void inQue(EZMQX::TaskOption opt, std::string payload);
+    KeepAlive(std::string addr);
     ~KeepAlive();
 };
 
