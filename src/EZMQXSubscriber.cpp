@@ -255,7 +255,7 @@ void EZMQX::Subscriber::terminate()
                     delete *itr;
                 }
             }
-
+            mThread.join();
             delete que;
         }
         else
