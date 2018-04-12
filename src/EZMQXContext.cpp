@@ -8,10 +8,11 @@
 #include <json/json.h>
 #include <json/value.h>
 #include <json/reader.h>
+#include <json/writer.h>
 #include <EZMQXLogger.h>
+#include <EZMQXKeepAlive.h>
 
 #define TAG "EZMQXContext"
-
 static const std::string COLLON = ":";
 static const std::string SLASH = "/";
 static const std::string TNS_KNOWN_PORT = "48323";
@@ -38,6 +39,7 @@ static const std::string SERVICES_CON_PORTS = "ports";
 static const std::string PORTS_PRIVATE = "PrivatePort";
 static const std::string PORTS_PUBLIC = "PublicPort";
 
+static const std::string PAYLOAD_TOPIC = "topic";
 
 // hostname path
 static const std::string HOSTNAME = "/etc/hostname";
@@ -47,7 +49,7 @@ static const int LOCAL_PORT_START = 4000;
 static const int LOCAL_PORT_MAX = 100;
 
 // ctor
-EZMQX::Context::Context() : initialized(false), terminated(false), usedIdx(0), numOfPort(0), standAlone(false), tnsEnabled(false)
+EZMQX::Context::Context() : keepAlive(nullptr), initialized(false), terminated(false), usedIdx(0), numOfPort(0), standAlone(false), tnsEnabled(false)
 {
     if (ezmq::EZMQ_OK != ezmq::EZMQAPI::getInstance()->initialize())
     {
@@ -88,6 +90,7 @@ void EZMQX::Context::setTnsInfo(std::string remoteAddr)
     EZMQX_LOG_V(INFO, TAG, "%s TNS addr setted manually Addr: %s", __func__, remoteAddr);
     tnsEnabled = true;
     this->remoteAddr = remoteAddr;
+    keepAlive = new EZMQX::KeepAlive(this->remoteAddr);
 }
 
 EZMQX::Context* EZMQX::Context::getInstance()
@@ -536,11 +539,9 @@ void EZMQX::Context::terminate()
 
         if (!terminated.load())
         {
-            // send dead msg to tns server
-            if (!standAlone)
+            if (keepAlive)
             {
-                    EZMQX::SimpleRest rest;
-                    // tns rest api not provide yet
+                delete keepAlive;
             }
 
             // release resource
@@ -579,6 +580,26 @@ void EZMQX::Context::deleteTopic(std::string topic)
         if (itr != topicList.end())
         {
             topicList.erase(itr);
+
+            if (keepAlive)
+            {
+                try
+                {
+                    Json::Value value;
+                    value[PAYLOAD_TOPIC] = topic;
+
+                    Json::FastWriter writer;
+                    std::string payload = writer.write(value);
+                    if (!payload.empty())
+                    {
+                        keepAlive->inQue(EZMQX::UnregisterTopic, payload);
+                    }
+                }
+                catch(...)
+                {
+                    EZMQX_LOG_V(ERROR, TAG, "%s Could not request UnregisterTopic", __func__);
+                }
+            }
         }
     }
     // mutex unlock

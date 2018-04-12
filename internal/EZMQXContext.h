@@ -15,11 +15,13 @@
 namespace EZMQX {
 class FakeSingletonAccessor;
 class Config;
+class KeepAlive;
 class Context
 {
     private:
         friend class FakeSingletonAccessor;
         friend class Config;
+        KeepAlive *keepAlive;
         bool standAlone;
         bool tnsEnabled;
         std::mutex lock;

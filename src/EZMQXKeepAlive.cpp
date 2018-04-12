@@ -3,8 +3,11 @@
 #include <EZMQXBlockingQue.h>
 #include <EZMQXException.h>
 #include <EZMQXRest.h>
+#include <algorithm>
 #include <json/writer.h>
 #include <json/reader.h>
+#include <EZMQXContext.h>
+#include <chrono>
 
 // Rest Option
 const static std::string KEEP_ALIVE = "KEEP_ALIVE";
@@ -20,6 +23,7 @@ static const std::string TNS_UNREGISTER = "/tns/topic";
 // Json keys
 static const std::string PAYLOAD_CID = "c_id";
 static const std::string PAYLOAD_TOPIC = "topic";
+static const std::string PAYLOAD_TOPICS = "topics";
 static const std::string PAYLOAD_ENDPOINT = "endpoint";
 static const std::string PAYLOAD_SCHEMA = "schema";
 static const std::string RESULT_KEY = "result";
@@ -31,7 +35,7 @@ void EZMQX::KeepAlive::inQue(EZMQX::TaskOption opt, std::string payload)
 {
     std::string restOpt;
 
-    if (opt == EZMQX::KeepAlive)
+    if (opt == EZMQX::TopicKeepAlive)
     {
         restOpt = KEEP_ALIVE;
     }
@@ -47,7 +51,7 @@ void EZMQX::KeepAlive::inQue(EZMQX::TaskOption opt, std::string payload)
     que->inQue(std::make_pair(restOpt, payload));
 }
 
-void EZMQX::KeepAlive::handler()
+void EZMQX::KeepAlive::queHandler()
 {
     while(1)
     {
@@ -112,20 +116,48 @@ void EZMQX::KeepAlive::handler()
     return;
 }
 
-EZMQX::KeepAlive::KeepAlive() : remoteAddr("")
+void EZMQX::KeepAlive::timerHandler()
 {
-    que = new EZMQX::BlockingQue();
-    mThread = std::thread(&EZMQX::KeepAlive::handler, this);
+    while(1)
+    {
+        // get list of current topic
+        std::list<std::string> topicList = EZMQX::Context::getInstance()->getTopicList();
+        if (!topicList.empty())
+        {
+            Json::Value root;
+            root[PAYLOAD_TOPICS] = Json::Value(Json::arrayValue);
+            // add task for rest
+            for (auto itr = topicList.begin(); itr != topicList.end(); itr++)
+            {
+                Json::Value value;
+                value[PAYLOAD_TOPIC] = *itr;
+                root[PAYLOAD_TOPICS].append(value);
+            }
+
+            Json::FastWriter writer;
+            std::string payload = writer.write(root);
+
+            // queing here
+            inQue(EZMQX::TopicKeepAlive, payload);
+        }
+
+        // sleep for ....
+        std::this_thread::sleep_for(std::chrono::minutes(3));
+    }
 }
+
+EZMQX::KeepAlive::KeepAlive(){/*DoNotUseIt*/}
 
 EZMQX::KeepAlive::KeepAlive(std::string addr) : remoteAddr(addr)
 {
     que = new EZMQX::BlockingQue();
-    mThread = std::thread(&EZMQX::KeepAlive::handler, this);
+    queThread = std::thread(&EZMQX::KeepAlive::queHandler, this);
+    timerThread = std::thread(&EZMQX::KeepAlive::timerHandler, this);
 }
 
 EZMQX::KeepAlive::~KeepAlive()
 {
-    mThread.join();
+    queThread.join();
+    timerThread.join();
     delete que;
 }

@@ -3,14 +3,14 @@
 
 #include <string>
 #include <thread>
+#include <list>
 
 namespace EZMQX {
 
 class BlockingQue;
-
 typedef enum
 {
-    KeepAlive,
+    TopicKeepAlive,
     UnregisterTopic
 }TaskOption;
 
@@ -18,10 +18,12 @@ class KeepAlive
 {
 private:
     EZMQX::BlockingQue* que;
-    std::thread mThread;
+    std::thread queThread;
+    std::thread timerThread;
     std::string remoteAddr;
     KeepAlive();
-    void handler();
+    void queHandler();
+    void timerHandler();
 
 public:
     void inQue(EZMQX::TaskOption opt, std::string payload);
