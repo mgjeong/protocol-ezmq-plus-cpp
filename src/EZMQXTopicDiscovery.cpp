@@ -21,6 +21,8 @@ static const std::string PAYLOAD_ENDPOINT = "endpoint";
 static const std::string PAYLOAD_SCHEMA = "schema";
 
 static const std::string TOPIC_PATTERN = "(\/[a-zA-Z0-9-_*.]+)+";
+static const std::string TOPIC_WILD_CARD = "*";
+static const std::string TOPIC_WILD_PATTERNN = "/*/";
 
 
 #ifdef __GNUC__
@@ -37,6 +39,11 @@ void EZMQX::TopicDiscovery::validateTopic(std::string& topic)
 
     // simple grammer check
     if (tmp.front() != SLASH || tmp.back() != SLASH || tmp.find(DOUBLE_SLASH) != std::string::npos)
+    {
+        throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
+    }
+
+    if (tmp.find(TOPIC_WILD_CARD) != std::string::npos && tmp.find(TOPIC_WILD_PATTERNN) == std::string::npos)
     {
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }

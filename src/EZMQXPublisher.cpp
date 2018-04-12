@@ -27,6 +27,9 @@ static const std::string RESULT_DUPLICATED = "duplicated";
 
 static const std::string TOPIC_PATTERN = "(\/[a-zA-Z0-9-_*.]+)+";
 
+static const std::string TOPIC_WILD_CARD = "*";
+static const std::string TOPIC_WILD_PATTERNN = "/*/";
+
 static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQErrorCode code)->void{std::cout<<"errCb"<<std::endl; return;};
 
 EZMQX::Publisher::Publisher(int optionalPort) : terminated(false), localPort(0), token(""), ctx(EZMQX::Context::getInstance())
@@ -77,6 +80,11 @@ void EZMQX::Publisher::validateTopic(const std::string topic)
 
     // simple grammer check
     if (tmp.front() != SLASH || tmp.back() != SLASH || tmp.find(DOUBLE_SLASH) != std::string::npos)
+    {
+        throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
+    }
+
+    if (tmp.find(TOPIC_WILD_CARD) != std::string::npos && tmp.find(TOPIC_WILD_PATTERNN) == std::string::npos)
     {
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
