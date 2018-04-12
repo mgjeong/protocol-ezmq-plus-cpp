@@ -14,7 +14,10 @@ namespace EZMQX
         UnknownTopic,
         InvalidEndpoint,
         BrokenPayload,
-        RestError
+        RestError,
+        MaximumPortExceed,
+        ReleaseWrongPort
+
     }ErrorCode;
 }
 
