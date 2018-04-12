@@ -14,7 +14,7 @@
 #define START_POS 0
 #define OFFSET 1
 
-static const std::string TOPIC_PATTERN = "(\/[a-zA-Z0-9-_*+.]+)+";
+static const std::string TOPIC_PATTERN = "(\/[a-zA-Z0-9-_*.]+)+";
 
 static const std::string PREFIX = "/api/v1";
 static const std::string TOPIC = "/tns/topic";

@@ -20,7 +20,7 @@ static const std::string PAYLOAD_TOPIC = "topic";
 static const std::string PAYLOAD_ENDPOINT = "endpoint";
 static const std::string PAYLOAD_SCHEMA = "schema";
 
-static const std::string TOPIC_PATTERN = "(\/[a-zA-Z0-9-_*+.]+)+";
+static const std::string TOPIC_PATTERN = "(\/[a-zA-Z0-9-_*.]+)+";
 
 
 #ifdef __GNUC__

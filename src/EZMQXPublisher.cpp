@@ -25,7 +25,7 @@ static const std::string RESULT_KEY = "result";
 static const std::string RESULT_SUCCESS = "success";
 static const std::string RESULT_DUPLICATED = "duplicated";
 
-static const std::string TOPIC_PATTERN = "(\/[a-zA-Z0-9-_*+.]+)+";
+static const std::string TOPIC_PATTERN = "(\/[a-zA-Z0-9-_*.]+)+";
 
 static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQErrorCode code)->void{std::cout<<"errCb"<<std::endl; return;};
 
