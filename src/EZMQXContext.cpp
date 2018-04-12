@@ -541,11 +541,30 @@ void EZMQX::Context::terminate()
         {
             if (keepAlive)
             {
-                delete keepAlive;
+                if (topicList.empty())
+                {
+                    delete keepAlive;
+                }
+                else
+                {
+                    // throw exception
+                    EZMQX_LOG_V(ERROR, TAG, "%s Could not terminate context threre are active topic", __func__);
+                    throw EZMQX::Exception("Could not terminate context threre are active topic", EZMQX::UnKnownState);
+                }
+                
             }
 
             // release resource
             ports.clear();
+            usedPorts.clear();
+            amlRepDic.clear();
+            hostname.clear();
+            hostAddr.clear();
+            remoteAddr.clear();
+            usedIdx = 0;
+            numOfPort = 0;
+            standAlone = false;
+            tnsEnabled = false;
             ezmq::EZMQAPI::getInstance()->terminate();
         }
         else

@@ -39,6 +39,7 @@ class Config
         void setHostInfo(std::string hostName, std::string hostAddr);
         void setTnsInfo(std::string remoteAddr);
         std::list<std::string> addAmlModel(const std::list<std::string>& amlFilePath);
+        void reset(ModeOption mode);
 
 };
 

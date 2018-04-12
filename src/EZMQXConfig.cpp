@@ -88,6 +88,7 @@ void EZMQX::Config::terminate()
     // mutex lock
     {
         std::lock_guard<std::mutex> scopedLock(lock);
+        ctx->terminate();
     }
     // mutex unlock
 
@@ -97,4 +98,38 @@ void EZMQX::Config::terminate()
 std::list<std::string> EZMQX::Config::addAmlModel(const std::list<std::string>& amlFilePath)
 {
     return ctx->addAmlRep(amlFilePath);
+}
+
+void EZMQX::Config::reset(ModeOption mode)
+{
+    terminate();
+    
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+        // terminate
+        ctx->terminate();
+
+        // clear config
+        this->configMode = mode;
+        initialized.store(false);
+
+        // initialize again
+        if (StandAlone == configMode)
+        {
+            ctx->setStandAloneMode(true);
+            ctx->setHostInfo("localhost", "localhost");
+        }
+        else if(FullFeature == configMode)
+        {
+            ctx->initialize();
+        }
+        else
+        {
+            throw EZMQX::Exception("Invalid Operation", EZMQX::UnKnownState);
+        }
+
+        initialized.store(true);
+    }
+
+    return;
 }
