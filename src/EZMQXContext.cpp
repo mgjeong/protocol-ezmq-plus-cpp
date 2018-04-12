@@ -558,3 +558,39 @@ void EZMQX::Context::terminate()
     
     return;
 }
+
+void EZMQX::Context::insertTopic(std::string topic)
+{
+    // mutex lock
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+        topicList.push_back(topic);
+    }
+    // mutex unlock
+}
+
+void EZMQX::Context::deleteTopic(std::string topic)
+{
+    // mutex lock
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+        auto itr = std::find(topicList.begin(), topicList.end(), topic);
+
+        if (itr != topicList.end())
+        {
+            topicList.erase(itr);
+        }
+    }
+    // mutex unlock
+}
+
+std::list<std::string> EZMQX::Context::getTopicList()
+{
+    // mutex lock
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+        return topicList;
+    }
+    // mutex unlock
+    return topicList;
+}

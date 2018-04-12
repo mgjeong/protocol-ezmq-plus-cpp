@@ -150,6 +150,7 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
 
     if (tmp.compare(RESULT_SUCCESS) == 0)
     {
+        ctx->insertTopic(regTopic.getTopic());
         return;
     }
     else if (tmp.compare(RESULT_DUPLICATED) == 0)
@@ -179,6 +180,12 @@ void EZMQX::Publisher::terminate()
         {
             // release resource
             ctx->releaseDynamicPort(localPort);
+
+            if (ctx->isTnsEnabled())
+            {
+                ctx->deleteTopic(topic.getTopic());
+            }
+
             delete pubCtx;
         }
         else
