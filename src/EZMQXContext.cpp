@@ -74,6 +74,7 @@ void EZMQX::Context::setStandAloneMode(bool mode)
     if (this->standAlone)
     {
         initialized.store(true);
+        terminated.store(false);
     }
     else
     {
@@ -534,6 +535,7 @@ void EZMQX::Context::initialize()
             }
 
             initialized.store(true);
+            terminated.store(false);
         }
     }
     // mutex unlock
@@ -622,6 +624,7 @@ void EZMQX::Context::terminate()
         }
 
         terminated.store(true);
+        initialized.store(false);
     }
     // mutex unlock
     
