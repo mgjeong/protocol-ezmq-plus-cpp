@@ -8,6 +8,9 @@
 #include <json/reader.h>
 #include <EZMQXContext.h>
 #include <chrono>
+#include <EZMQXLogger.h>
+
+#define TAG "EZMQXKeepAlive"
 
 // Rest Option
 const static std::string KEEP_ALIVE = "KEEP_ALIVE";
@@ -33,6 +36,7 @@ static const std::string RESULT_DUPLICATED = "duplicated";
 
 void EZMQX::KeepAlive::inQue(EZMQX::TaskOption opt, std::string payload)
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     std::string restOpt;
 
     if (opt == EZMQX::TopicKeepAlive)
@@ -48,11 +52,13 @@ void EZMQX::KeepAlive::inQue(EZMQX::TaskOption opt, std::string payload)
         return;
     }
 
+    EZMQX_LOG_V(DEBUG, TAG, "%s inQue %s %s ", __func__, (opt == EZMQX::TopicKeepAlive ? KEEP_ALIVE : UNREGISTER_TOPIC), payload);
     que->inQue(std::make_pair(restOpt, payload));
 }
 
 void EZMQX::KeepAlive::queHandler()
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     while(1)
     {
         std::pair<std::string, std::string> payload;
@@ -61,6 +67,7 @@ void EZMQX::KeepAlive::queHandler()
         {
             if (!que)
             {
+                EZMQX_LOG_V(ERROR, TAG, "%s que is not initiated", __func__);
                 throw EZMQX::Exception("que is not initiated", EZMQX::UnKnownState);
             }
 
@@ -68,6 +75,7 @@ void EZMQX::KeepAlive::queHandler()
 
             if (payload.first.empty() || payload.second.empty())
             {
+                EZMQX_LOG_V(ERROR, TAG, "%s empty payload", __func__);
                 throw EZMQX::Exception("empty payload", EZMQX::UnKnownState);
             }
 
@@ -76,13 +84,17 @@ void EZMQX::KeepAlive::queHandler()
 
             if (payload.first.compare(KEEP_ALIVE) == 0)
             {
+                EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request %s", __func__, remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE, payload.second);
                 EZMQX::SimpleRest rest;
                 ret = rest.Post(remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE, payload.second);
+                EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, ret);
             }
             else if (payload.first.compare(UNREGISTER_TOPIC) == 0)
             {
+                EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request %s", __func__, remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER, payload.second);
                 EZMQX::SimpleRest rest;
                 ret = rest.Delete(remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER, payload.second);
+                EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, ret);
             }
             else
             {
@@ -97,11 +109,13 @@ void EZMQX::KeepAlive::queHandler()
 
                 if (ret.compare(RESULT_SUCCESS) == 0)
                 {
+                    EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result is Success", __func__);
                     continue;
                 }
                 else
                 {
                     // try again
+                    EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result is %s, try again", __func__, ret);
                     que->inQue(payload);
                 }
             }
@@ -118,12 +132,14 @@ void EZMQX::KeepAlive::queHandler()
 
 void EZMQX::KeepAlive::timerHandler()
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     while(1)
     {
         // get list of current topic
         std::list<std::string> topicList = EZMQX::Context::getInstance()->getTopicList();
         if (!topicList.empty())
         {
+            EZMQX_LOG_V(DEBUG, TAG, "%s Build KeepAlive Rest payload", __func__);
             Json::Value root;
             root[PAYLOAD_TOPICS] = Json::Value(Json::arrayValue);
             // add task for rest
@@ -136,6 +152,7 @@ void EZMQX::KeepAlive::timerHandler()
 
             Json::FastWriter writer;
             std::string payload = writer.write(root);
+            EZMQX_LOG_V(DEBUG, TAG, "%s Payload: %s", __func__, payload);
 
             // queing here
             inQue(EZMQX::TopicKeepAlive, payload);
@@ -150,6 +167,7 @@ EZMQX::KeepAlive::KeepAlive(){/*DoNotUseIt*/}
 
 EZMQX::KeepAlive::KeepAlive(std::string addr) : remoteAddr(addr)
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     que = new EZMQX::BlockingQue();
     queThread = std::thread(&EZMQX::KeepAlive::queHandler, this);
     timerThread = std::thread(&EZMQX::KeepAlive::timerHandler, this);
@@ -157,6 +175,7 @@ EZMQX::KeepAlive::KeepAlive(std::string addr) : remoteAddr(addr)
 
 EZMQX::KeepAlive::~KeepAlive()
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     queThread.join();
     timerThread.join();
     delete que;
