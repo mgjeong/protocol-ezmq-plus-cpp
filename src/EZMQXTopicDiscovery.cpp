@@ -35,16 +35,19 @@ EZMQX::TopicDiscovery::~TopicDiscovery(){}
 
 void EZMQX::TopicDiscovery::validateTopic(std::string& topic)
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     std::string tmp = topic;
 
     // simple grammer check
     if (tmp.front() != SLASH || tmp.back() != SLASH || tmp.find(DOUBLE_SLASH) != std::string::npos)
     {
+        EZMQX_LOG_V(ERROR, TAG, "%s Invalid topic %s", __func__, topic);
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
 
     if (tmp.find(TOPIC_WILD_CARD) != std::string::npos && tmp.find(TOPIC_WILD_PATTERNN) == std::string::npos)
     {
+        EZMQX_LOG_V(ERROR, TAG, "%s Invalid topic %s", __func__, topic);
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
 
@@ -56,6 +59,7 @@ void EZMQX::TopicDiscovery::validateTopic(std::string& topic)
     tmp = tmp.substr(START_POS, tmp.length() - OFFSET);
     if (!std::regex_match(tmp, pattern))
     {
+        EZMQX_LOG_V(ERROR, TAG, "%s Invalid topic %s", __func__, topic);
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
 #endif
@@ -63,6 +67,7 @@ void EZMQX::TopicDiscovery::validateTopic(std::string& topic)
 
 void EZMQX::TopicDiscovery::verifyTopic(std::string& topic, std::list<EZMQX::Topic>& topics)
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     std::string tmp;
     // send rest
     try
@@ -72,6 +77,7 @@ void EZMQX::TopicDiscovery::verifyTopic(std::string& topic, std::list<EZMQX::Top
     }
     catch (...)
     {
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not send rest get request", __func__);
         throw EZMQX::Exception("Could not send rest get request", EZMQX::UnKnownState);
     }
 
@@ -84,6 +90,7 @@ void EZMQX::TopicDiscovery::verifyTopic(std::string& topic, std::list<EZMQX::Top
         // try parse json
         if((!reader.parse(tmp, props)) && props.type() != Json::arrayValue)
         {
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json object", __func__);
             throw EZMQX::Exception("Could not parse json object", EZMQX::UnKnownState);
         }
         else
@@ -102,20 +109,24 @@ void EZMQX::TopicDiscovery::verifyTopic(std::string& topic, std::list<EZMQX::Top
     }
     catch(...)
     {
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json object", __func__);
         throw EZMQX::Exception("Could not parse json object", EZMQX::UnKnownState);
     }
 }
 
 std::list<EZMQX::Topic> EZMQX::TopicDiscovery::query(std::string topic)
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     if (!ctx)
     {
+        EZMQX_LOG_V(ERROR, TAG, "%s Coould not initialize context", __func__);
         throw EZMQX::Exception("Could not initialize context", EZMQX::UnKnownState);
     }
 
     // TODO validation check
     if (topic.empty())
     {
+        EZMQX_LOG_V(ERROR, TAG, "%s Invalid topic %s", __func__, topic);
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
     else
@@ -126,7 +137,8 @@ std::list<EZMQX::Topic> EZMQX::TopicDiscovery::query(std::string topic)
     // mode check
     if (ctx->isStandAlone() && !ctx->isTnsEnabled())
     {
-        throw EZMQX::Exception("Could not use discovery with out tns server", EZMQX::InvalidTopic);
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not use discovery without tns server", __func__);
+        throw EZMQX::Exception("Could not use discovery with outtns server", EZMQX::InvalidTopic);
     }
 
     //tns server addr check
