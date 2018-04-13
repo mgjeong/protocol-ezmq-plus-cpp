@@ -1,0 +1,32 @@
+################ EZMQ Plus sample build script ##################
+Import('env')
+
+target_os = env.get('TARGET_OS')
+ezmq_plus_unittest_env = env.Clone()
+
+######################################################################
+# Build flags
+######################################################################
+ezmq_plus_unittest_env.AppendUnique(CPPPATH=[
+	'../dependencies/protocol-ezmq-cpp/include',
+    '../dependencies/protocol-ezmq-cpp/extlibs/zmq',
+    '../dependencies/protocol-ezmq-cpp/protobuf',
+    '../dependencies/datamodel-aml-cpp/include',
+    '../dependencies/googletest-release-1.8.0/googletest/include/gtest',
+    '../dependencies/googletest-release-1.8.0/googlemock/include/gmock',
+    '../include'
+])
+
+ezmq_plus_unittest_env.AppendUnique(
+    CXXFLAGS=['-O2', '-g', '-Wall', '-fmessage-length=0', '-std=c++11', '-I/usr/local/include'])
+
+ezmq_plus_unittest_env.AppendUnique(LIBS=['aml', 'ezmq_plus'])
+
+####################################################################
+# Source files and Targets
+######################################################################
+ezmqx_config_test = ezmq_plus_unittest_env.Program('ezmqx_config_test', 'ezmqx_config_test.cpp')
+ezmqx_publisher_test = ezmq_plus_unittest_env.Program('ezmqx_publisher_test', 'ezmqx_publisher_test.cpp')
+ezmqx_subscriber_test = ezmq_plus_unittest_env.Program('ezmqx_subscriber_test', 'ezmqx_subscriber_test.cpp')
+ezmqx_topicdiscovery_test = ezmq_plus_unittest_env.Program('ezmqx_topicdiscovery_test', 'ezmqx_topicdiscovery_test.cpp')
+ezmqx_topicvalidate_test = ezmq_plus_unittest_env.Program('ezmqx_topicvalidate_test', 'ezmqx_topicvalidate_test.cpp')
