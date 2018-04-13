@@ -41,6 +41,8 @@ EZMQX::XmlSubscriber::XmlSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX
 EZMQX::XmlSubscriber::XmlSubscriber(const std::string &topic, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb)
  : Subscriber(), mSubCb(subCb), mSubErrCb(errCb)
 {
+    validateTopic(topic);
+
     std::list<EZMQX::Topic> verified;
 
     if (ctx->isTnsEnabled())

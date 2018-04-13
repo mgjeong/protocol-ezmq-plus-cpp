@@ -15,11 +15,13 @@
 namespace EZMQX {
 class FakeSingletonAccessor;
 class Config;
+class KeepAlive;
 class Context
 {
     private:
         friend class FakeSingletonAccessor;
         friend class Config;
+        KeepAlive *keepAlive;
         bool standAlone;
         bool tnsEnabled;
         std::mutex lock;
@@ -28,6 +30,7 @@ class Context
         std::string hostname;
         std::string hostAddr;
         std::string remoteAddr;
+        std::list<std::string> topicList;
         static std::shared_ptr<EZMQX::Context> _instance;
         std::map<int, int> ports;
         std::map<int, bool> usedPorts;
@@ -58,6 +61,9 @@ class Context
         EZMQX::Endpoint getHostEp(int port);
         std::list<std::string> addAmlRep(const std::list<std::string>& amlModelInfo);
         std::shared_ptr<AML::Representation> getAmlRep(const std::string& amlModelId);
+        void insertTopic(std::string topic);
+        void deleteTopic(std::string topic);
+        std::list<std::string> getTopicList();
 
 };
 

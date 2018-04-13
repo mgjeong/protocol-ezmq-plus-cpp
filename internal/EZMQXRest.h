@@ -20,7 +20,7 @@ public:
     std::string Get(std::string url, std::string query);
     std::string Put(std::string url, std::string payload);
     std::string Post(std::string url, std::string payload);
-    std::string Delete(std::string url);
+    std::string Delete(std::string url, std::string payload);
 };
 
 } // namespace EZMQX
