@@ -79,7 +79,7 @@ int main()
       // get config class instance & add aml model file path
       std::list<std::string> amlPath(1, "sample_data_model.aml");
       std::list<std::string> amlId(1);
-      std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::FullFeature));
+      std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::Docker));
       //std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::StandAlone));
       //config->setHostInfo("TestPublisher", "10.113.77.33");
       //config->setTnsInfo("10.113.65.174:8323");

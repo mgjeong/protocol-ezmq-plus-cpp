@@ -37,9 +37,9 @@ void EZMQX::Config::initialize()
                 ctx->setStandAloneMode(true);
                 ctx->setHostInfo("localhost", "localhost");
             }
-            else if(FullFeature == configMode)
+            else if(Docker == configMode)
             {
-                EZMQX_LOG_V(DEBUG, TAG, "%s Set as FullFeature", __func__);
+                EZMQX_LOG_V(DEBUG, TAG, "%s Set as Docker", __func__);
                 ctx->initialize();
             }
             else
@@ -138,7 +138,7 @@ void EZMQX::Config::reset(ModeOption mode)
             ctx->setStandAloneMode(true);
             ctx->setHostInfo("localhost", "localhost");
         }
-        else if(FullFeature == configMode)
+        else if(Docker == configMode)
         {
             ctx->initialize();
         }

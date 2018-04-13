@@ -5,7 +5,7 @@
 
 int main()
 {
-    std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::FullFeature));
+    std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::Docker));
     // std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::StandAlone));
     //config->setHostInfo("TestPublisher", "10.113.77.33");
     // config->setTnsInfo("10.113.66.234:48323");
