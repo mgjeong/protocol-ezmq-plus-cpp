@@ -222,3 +222,8 @@ void EZMQX::Publisher::terminate()
     // mutex unlock
     return;
 }
+
+EZMQX::Topic EZMQX::Publisher::getTopic()
+{
+    return topic;
+}
