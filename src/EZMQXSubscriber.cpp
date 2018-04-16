@@ -11,8 +11,6 @@
 
 #define SLASH '/'
 #define DOUBLE_SLASH "//"
-#define START_POS 0
-#define OFFSET 1
 
 static const std::string TOPIC_PATTERN = "(\/[a-zA-Z0-9-_*.]+)+";
 
@@ -163,7 +161,7 @@ void EZMQX::Subscriber::validateTopic(const std::string& topic)
     std::string tmp = topic;
 
     // simple grammer check
-    if (tmp.front() != SLASH || tmp.back() != SLASH || tmp.find(DOUBLE_SLASH) != std::string::npos)
+    if (tmp.front() != SLASH || tmp.back() == SLASH || tmp.find(DOUBLE_SLASH) != std::string::npos)
     {
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
@@ -177,8 +175,6 @@ void EZMQX::Subscriber::validateTopic(const std::string& topic)
 #if defined(EZMQX_GCC_VERSION) && EZMQX_GCC_VERSION >= 40900
     std::regex pattern(TOPIC_PATTERN);
 
-    // remove last slash
-    tmp = tmp.substr(START_POS, tmp.length() - OFFSET);
     if (!std::regex_match(tmp, pattern))
     {
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
