@@ -598,7 +598,6 @@ void EZMQX::Context::terminate()
                     EZMQX_LOG_V(ERROR, TAG, "%s Could not terminate context threre are active topic", __func__);
                     throw EZMQX::Exception("Could not terminate context threre are active topic", EZMQX::UnKnownState);
                 }
-                
             }
 
             // release resource
@@ -619,8 +618,7 @@ void EZMQX::Context::terminate()
         }
         else
         {
-            EZMQX_LOG_V(ERROR, TAG, "%s Context terminated", __func__);
-            throw EZMQX::Exception("Context terminated", EZMQX::Terminated);
+            EZMQX_LOG_V(INFO, TAG, "%s Context already terminated", __func__);
         }
 
         terminated.store(true);
