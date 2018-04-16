@@ -23,11 +23,6 @@ EZMQX::AmlSubscriber::~AmlSubscriber()
 EZMQX::AmlSubscriber::AmlSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
  : Subscriber(), mSubCb(subCb), mSubErrCb(errCb)
 {
-    if (ctx->isTnsEnabled())
-    {
-        verifyTopics(topics);
-    }
-
     try
     {
         Subscriber::initialize(topics);

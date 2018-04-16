@@ -232,12 +232,6 @@ void EZMQX::Subscriber::verifyTopics(const std::string &topic, std::list<EZMQX::
     return;
 }
 
-// throw exception when topic is not mached
-void EZMQX::Subscriber::verifyTopics(const std::list<EZMQX::Topic> &topics)
-{
-    return;
-}
-
 bool EZMQX::Subscriber::isTerminated()
 {
     // atomically
