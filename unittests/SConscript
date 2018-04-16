@@ -14,13 +14,14 @@ ezmq_plus_unittest_env.AppendUnique(CPPPATH=[
     '../dependencies/datamodel-aml-cpp/include',
     '../dependencies/googletest-release-1.8.0/googletest/include/gtest',
     '../dependencies/googletest-release-1.8.0/googlemock/include/gmock',
-    '../include'
+    '../include',
+    './'
 ])
 
 ezmq_plus_unittest_env.AppendUnique(
     CXXFLAGS=['-O2', '-g', '-Wall', '-fmessage-length=0', '-std=c++11', '-I/usr/local/include'])
 
-ezmq_plus_unittest_env.AppendUnique(LIBS=['aml', 'ezmq_plus'])
+ezmq_plus_unittest_env.AppendUnique(LIBS=['aml', 'ezmq_plus', 'gtest', 'gtest_main', 'gmock'])
 
 ####################################################################
 # Source files and Targets
