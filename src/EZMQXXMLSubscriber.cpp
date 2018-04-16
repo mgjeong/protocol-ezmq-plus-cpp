@@ -46,8 +46,12 @@ EZMQX::XmlSubscriber::XmlSubscriber(const std::string &topic, EZMQX::XmlSubCb &s
 
         if (verified.empty())
         {
-            // throw exception
+            throw EZMQX::Exception("Could not find matched topic", EZMQX::NoTopicMatched);
         }
+    }
+    else
+    {
+        throw EZMQX::Exception("TNS not available", EZMQX::TnsNotAvailable);
     }
 
     try

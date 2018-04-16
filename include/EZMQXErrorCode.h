@@ -16,8 +16,9 @@ namespace EZMQX
         BrokenPayload,
         RestError,
         MaximumPortExceed,
-        ReleaseWrongPort
-
+        ReleaseWrongPort,
+        NoTopicMatched,
+        TnsNotAvailable
     }ErrorCode;
 }
 
