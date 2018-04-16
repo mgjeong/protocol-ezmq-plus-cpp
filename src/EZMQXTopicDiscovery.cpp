@@ -129,11 +129,11 @@ std::list<EZMQX::Topic> EZMQX::TopicDiscovery::query(std::string topic)
         validateTopic(topic);
     }
 
-    // mode check
-    if (ctx->isStandAlone() && !ctx->isTnsEnabled())
+    // tns check
+    if (!ctx->isTnsEnabled())
     {
         EZMQX_LOG_V(ERROR, TAG, "%s Could not use discovery without tns server", __func__);
-        throw EZMQX::Exception("Could not use discovery with outtns server", EZMQX::InvalidTopic);
+        throw EZMQX::Exception("Could not use discovery with out tns server", EZMQX::TnsNotAvailable);
     }
 
     //tns server addr check
