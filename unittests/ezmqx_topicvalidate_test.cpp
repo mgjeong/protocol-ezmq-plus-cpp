@@ -6,10 +6,10 @@
 #include <UnitTestHelper.h>
 #include <string>
 
-#define FALSE_TC_SIZE 16
-#define TRUE_TC_SIZE 6
+#define NAGATIVE_TC_SIZE 16
+#define POSITIVE_TC_SIZE 6
 
-static std::string FALSE_TC[FALSE_TC_SIZE] = {
+static std::string NAGATIVE_TC[NAGATIVE_TC_SIZE] = {
     "/",
     "//////)///(///////////",
     "//3/1/2/1/2/3",
@@ -29,7 +29,7 @@ static std::string FALSE_TC[FALSE_TC_SIZE] = {
 };
 
 
-static std::string TRUE_TC[TRUE_TC_SIZE] = {
+static std::string POSITIVE_TC[POSITIVE_TC_SIZE] = {
     "/sdf/sdf/sdfgfg/12",
     "/sdfsdf/123sdfs/t312xsdf/213lkj_",
     "/-0/ssd............fdfadsf/fdsg-/-0-",
@@ -41,114 +41,114 @@ static std::string TRUE_TC[TRUE_TC_SIZE] = {
 namespace
 {
 
-TEST_F(TopicTest, FAIL1)
+TEST_F(TopicTest, Negative1)
 {
-    EXPECT_TRUE(topicTest(FALSE_TC[0]) == EZMQX::InvalidTopic);
+    EXPECT_TRUE(topicTest(NAGATIVE_TC[0]) == EZMQX::InvalidTopic);
 }
 
-TEST_F(TopicTest, FAIL2)
+TEST_F(TopicTest, Negative2)
 {
-    EXPECT_TRUE(topicTest(FALSE_TC[1]) == EZMQX::InvalidTopic);
+    EXPECT_TRUE(topicTest(NAGATIVE_TC[1]) == EZMQX::InvalidTopic);
 }
 
-TEST_F(TopicTest, FAIL3)
+TEST_F(TopicTest, Negative3)
 {
-    EXPECT_TRUE(topicTest(FALSE_TC[2]) == EZMQX::InvalidTopic);
+    EXPECT_TRUE(topicTest(NAGATIVE_TC[2]) == EZMQX::InvalidTopic);
 }
 
-TEST_F(TopicTest, FAIL4)
+TEST_F(TopicTest, Negative4)
 {
-    EXPECT_TRUE(topicTest(FALSE_TC[3]) == EZMQX::InvalidTopic);
+    EXPECT_TRUE(topicTest(NAGATIVE_TC[3]) == EZMQX::InvalidTopic);
 }
 
-TEST_F(TopicTest, FAIL5)
+TEST_F(TopicTest, Negative5)
 {
-    EXPECT_TRUE(topicTest(FALSE_TC[4]) == EZMQX::InvalidTopic);
+    EXPECT_TRUE(topicTest(NAGATIVE_TC[4]) == EZMQX::InvalidTopic);
 }
 
-TEST_F(TopicTest, FAIL6)
+TEST_F(TopicTest, Negative6)
 {
-    EXPECT_TRUE(topicTest(FALSE_TC[5]) == EZMQX::InvalidTopic);
+    EXPECT_TRUE(topicTest(NAGATIVE_TC[5]) == EZMQX::InvalidTopic);
 }
 
-TEST_F(TopicTest, FAIL7)
+TEST_F(TopicTest, Negative7)
 {
-    EXPECT_TRUE(topicTest(FALSE_TC[6]) == EZMQX::InvalidTopic);
+    EXPECT_TRUE(topicTest(NAGATIVE_TC[6]) == EZMQX::InvalidTopic);
 }
 
-TEST_F(TopicTest, FAIL8)
+TEST_F(TopicTest, Negative8)
 {
-    EXPECT_TRUE(topicTest(FALSE_TC[7]) == EZMQX::InvalidTopic);
+    EXPECT_TRUE(topicTest(NAGATIVE_TC[7]) == EZMQX::InvalidTopic);
 }
 
-TEST_F(TopicTest, FAIL9)
+TEST_F(TopicTest, Negative9)
 {
-    EXPECT_TRUE(topicTest(FALSE_TC[8]) == EZMQX::InvalidTopic);
+    EXPECT_TRUE(topicTest(NAGATIVE_TC[8]) == EZMQX::InvalidTopic);
 }
 
-TEST_F(TopicTest, FAIL10)
+TEST_F(TopicTest, Negative10)
 {
-    EXPECT_TRUE(topicTest(FALSE_TC[9]) == EZMQX::InvalidTopic);
+    EXPECT_TRUE(topicTest(NAGATIVE_TC[9]) == EZMQX::InvalidTopic);
 }
 
-TEST_F(TopicTest, FAIL11)
+TEST_F(TopicTest, Negative11)
 {
-    EXPECT_TRUE(topicTest(FALSE_TC[10]) == EZMQX::InvalidTopic);
+    EXPECT_TRUE(topicTest(NAGATIVE_TC[10]) == EZMQX::InvalidTopic);
 }
 
-TEST_F(TopicTest, FAIL12)
+TEST_F(TopicTest, Negative12)
 {
-    EXPECT_TRUE(topicTest(FALSE_TC[11]) == EZMQX::InvalidTopic);
+    EXPECT_TRUE(topicTest(NAGATIVE_TC[11]) == EZMQX::InvalidTopic);
 }
 
-TEST_F(TopicTest, FAIL13)
+TEST_F(TopicTest, Negative13)
 {
-    EXPECT_TRUE(topicTest(FALSE_TC[12]) == EZMQX::InvalidTopic);
+    EXPECT_TRUE(topicTest(NAGATIVE_TC[12]) == EZMQX::InvalidTopic);
 }
 
-TEST_F(TopicTest, FAIL14)
+TEST_F(TopicTest, Negative14)
 {
-    EXPECT_TRUE(topicTest(FALSE_TC[13]) == EZMQX::InvalidTopic);
+    EXPECT_TRUE(topicTest(NAGATIVE_TC[13]) == EZMQX::InvalidTopic);
 }
 
-TEST_F(TopicTest, FAIL15)
+TEST_F(TopicTest, Negative15)
 {
-    EXPECT_TRUE(topicTest(FALSE_TC[14]) == EZMQX::InvalidTopic);
+    EXPECT_TRUE(topicTest(NAGATIVE_TC[14]) == EZMQX::InvalidTopic);
 }
 
-TEST_F(TopicTest, FAIL16)
+TEST_F(TopicTest, Negative16)
 {
-    EXPECT_TRUE(topicTest(FALSE_TC[15]) == EZMQX::InvalidTopic);
+    EXPECT_TRUE(topicTest(NAGATIVE_TC[15]) == EZMQX::InvalidTopic);
 }
 
-TEST_F(TopicTest, PASS1)
+TEST_F(TopicTest, POSITIVE1)
 {
-    EXPECT_TRUE(topicTest(TRUE_TC[0]) == EZMQX::TnsNotAvailable);
+    EXPECT_TRUE(topicTest(POSITIVE_TC[0]) == EZMQX::TnsNotAvailable);
 }
 
-TEST_F(TopicTest, PASS2)
+TEST_F(TopicTest, POSITIVE2)
 {
-    EXPECT_TRUE(topicTest(TRUE_TC[1]) == EZMQX::TnsNotAvailable);
+    EXPECT_TRUE(topicTest(POSITIVE_TC[1]) == EZMQX::TnsNotAvailable);
 }
 
-TEST_F(TopicTest, PASS3)
+TEST_F(TopicTest, POSITIVE3)
 {
-    EXPECT_TRUE(topicTest(TRUE_TC[2]) == EZMQX::TnsNotAvailable);
+    EXPECT_TRUE(topicTest(POSITIVE_TC[2]) == EZMQX::TnsNotAvailable);
 }
 
-TEST_F(TopicTest, PASS4)
+TEST_F(TopicTest, POSITIVE4)
 {
-    EXPECT_TRUE(topicTest(TRUE_TC[3]) == EZMQX::TnsNotAvailable);
+    EXPECT_TRUE(topicTest(POSITIVE_TC[3]) == EZMQX::TnsNotAvailable);
 }
 
-TEST_F(TopicTest, PASS5)
+TEST_F(TopicTest, POSITIVE5)
 {
-    EXPECT_TRUE(topicTest(TRUE_TC[4]) == EZMQX::TnsNotAvailable);
+    EXPECT_TRUE(topicTest(POSITIVE_TC[4]) == EZMQX::TnsNotAvailable);
 }
 
-TEST_F(TopicTest, PASS6)
+TEST_F(TopicTest, POSITIVE6)
 {
-    EXPECT_TRUE(topicTest(TRUE_TC[5]) == EZMQX::TnsNotAvailable);
+    EXPECT_TRUE(topicTest(POSITIVE_TC[5]) == EZMQX::TnsNotAvailable);
 }
 
 }
