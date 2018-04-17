@@ -5,9 +5,37 @@
 #include <gtest.h>
 #include <gmock.h>
 
+class MockTopicDiscovery : public EZMQX::TopicDiscovery
+{
+public:
+    MOCK_METHOD2(verifyTopic, void(std::string& topic, std::list<EZMQX::Topic>& topics));
+};
+
+class DiscoveryTest : public testing::Test
+{
+protected:
+    EZMQX::Config *config;
+    MockTopicDiscovery mock;
+    virtual void SetUp()
+    {
+        config = new EZMQX::Config(EZMQX::StandAlone);
+    }
+
+    void setDummyTns()
+    {
+        // config->setHostInfo("TestPublisher", "10.113.77.33");
+        config->setTnsInfo("localhost:48323");
+    }
+
+    virtual void TearDown()
+    {
+        delete config;
+        config = nullptr;
+    }
+};
+
 class TopicTest : public testing::Test
 {
-
 protected:
     EZMQX::Config* config;
     EZMQX::TopicDiscovery* discovery;
