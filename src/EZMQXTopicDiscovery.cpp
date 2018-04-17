@@ -26,9 +26,15 @@ static const std::string TOPIC_WILD_PATTERNN = "/*/";
 #define EZMQX_GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #endif
 
-EZMQX::TopicDiscovery::TopicDiscovery() : ctx(EZMQX::Context::getInstance()){}
+EZMQX::TopicDiscovery::TopicDiscovery() : ctx(EZMQX::Context::getInstance())
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+}
 
-EZMQX::TopicDiscovery::~TopicDiscovery(){}
+EZMQX::TopicDiscovery::~TopicDiscovery()
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+}
 
 void EZMQX::TopicDiscovery::validateTopic(std::string& topic)
 {

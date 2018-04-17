@@ -16,15 +16,29 @@ private:
     std::queue<std::pair<std::string, std::string>> que;
     std::mutex mlock;
     std::condition_variable cond;
+    std::atomic_bool terminate;
 
 public:
-    BlockingQue(): que(), mlock(), cond(){}
+    BlockingQue(): que(), mlock(), cond(), terminate(false){}
 
-    ~BlockingQue(){}
+    ~BlockingQue()
+    {
+        while(!que.empty())
+        {
+            que.pop();
+        }
+    }
 
     void inQue(const std::pair<std::string, std::string> &payload)
     {
         std::lock_guard<std::mutex> lock(mlock);
+
+        if (terminate.load())
+        {
+            cond.notify_all();
+            return;
+        }
+
         que.push(payload);
         cond.notify_all();
         return;
@@ -33,13 +47,30 @@ public:
     void deQue(std::pair<std::string, std::string> &payload)
     {
         std::unique_lock<std::mutex> lock(mlock);
-        while(que.empty())
+        while(terminate.load() == false && que.empty())
         {
             cond.wait(lock);
         }
+
+        if (terminate.load())
+        {
+            return;
+        }
+
         payload = que.front();
         que.pop();
         return;
+    }
+
+    void stop()
+    {
+        terminate.store(true);
+        cond.notify_all();
+    }
+
+    bool isTerminated()
+    {
+        return terminate.load();
     }
 };
 

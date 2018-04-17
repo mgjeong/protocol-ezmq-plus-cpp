@@ -73,6 +73,11 @@ void EZMQX::KeepAlive::queHandler()
 
             que->deQue(payload);
 
+            if (que->isTerminated())
+            {
+                return;
+            }
+
             if (payload.first.empty() || payload.second.empty())
             {
                 EZMQX_LOG_V(ERROR, TAG, "%s empty payload", __func__);
@@ -135,6 +140,11 @@ void EZMQX::KeepAlive::timerHandler()
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     while(1)
     {
+        if (timerIsTerminate.load())
+        {
+            return;
+        }
+        std::unique_lock<std::mutex> timerLock(timerMutex);
         // get list of current topic
         std::list<std::string> topicList = EZMQX::Context::getInstance()->getTopicList();
         if (!topicList.empty())
@@ -159,13 +169,22 @@ void EZMQX::KeepAlive::timerHandler()
         }
 
         // sleep for ....
-        std::this_thread::sleep_for(std::chrono::minutes(3));
+        timerCond.wait_for(timerLock, std::chrono::minutes(3));
+        //std::this_thread::sleep_for(std::chrono::minutes(3));
     }
+}
+
+void EZMQX::KeepAlive::stopTimer()
+{
+    // push to terminate
+    timerIsTerminate.store(true);
+    timerCond.notify_all();
+    return;
 }
 
 EZMQX::KeepAlive::KeepAlive(){/*DoNotUseIt*/}
 
-EZMQX::KeepAlive::KeepAlive(std::string addr) : remoteAddr(addr)
+EZMQX::KeepAlive::KeepAlive(std::string addr) : remoteAddr(addr), timerIsTerminate(false), timerCond()
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     que = new EZMQX::BlockingQue();
@@ -176,7 +195,11 @@ EZMQX::KeepAlive::KeepAlive(std::string addr) : remoteAddr(addr)
 EZMQX::KeepAlive::~KeepAlive()
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+    que->stop();
     queThread.join();
+    EZMQX_LOG_V(DEBUG, TAG, "%s que thread stoped", __func__);
+    stopTimer();
     timerThread.join();
+    EZMQX_LOG_V(DEBUG, TAG, "%s timer thread stoped", __func__);
     delete que;
 }
