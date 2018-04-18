@@ -85,7 +85,7 @@ void EZMQX::Context::setStandAloneMode(bool mode)
 void EZMQX::Context::setHostInfo(std::string hostName, std::string hostAddr)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
-    EZMQX_LOG_V(INFO, TAG, "%s Host infomation setted manually Hostname: %s Hostaddr: %s", __func__, hostName, hostAddr);
+    EZMQX_LOG_V(INFO, TAG, "%s Host infomation setted manually Hostname: %s Hostaddr: %s", __func__, hostName.c_str(), hostAddr.c_str());
     this->hostname = hostname;
     this->hostAddr = hostAddr;
 }
@@ -93,7 +93,7 @@ void EZMQX::Context::setHostInfo(std::string hostName, std::string hostAddr)
 void EZMQX::Context::setTnsInfo(std::string remoteAddr)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
-    EZMQX_LOG_V(INFO, TAG, "%s TNS addr setted manually Addr: %s", __func__, remoteAddr);
+    EZMQX_LOG_V(INFO, TAG, "%s TNS addr setted manually Addr: %s", __func__, remoteAddr.c_str());
     tnsEnabled = true;
     this->remoteAddr = remoteAddr;
     keepAlive = new EZMQX::KeepAlive(this->remoteAddr);
@@ -125,7 +125,7 @@ EZMQX::Endpoint EZMQX::Context::getHostEp(int port)
 
     EZMQX::Endpoint ep(hostAddr, hostPort);
 
-    EZMQX_LOG_V(DEBUG, TAG, "%s Port: %d, Host Addr: %s", __func__, port, ep.toString());
+    EZMQX_LOG_V(DEBUG, TAG, "%s Port: %d, Host Addr: %s", __func__, port, ep.toString().c_str());
 
     return ep;
 }
@@ -150,7 +150,7 @@ std::list<std::string> EZMQX::Context::addAmlRep(const std::list<std::string>& a
             std::string path = *itr;
             if (path.empty())
             {
-                EZMQX_LOG_V(ERROR, TAG, "%s Invalid aml model path %s", __func__, path);
+                EZMQX_LOG_V(ERROR, TAG, "%s Invalid aml model path %s", __func__, path.c_str());
                 throw EZMQX::Exception("Invalid aml model path", EZMQX::UnKnownState);
             }
             else
@@ -163,13 +163,13 @@ std::list<std::string> EZMQX::Context::addAmlRep(const std::list<std::string>& a
                 }
                 catch(...)
                 {
-                    EZMQX_LOG_V(ERROR, TAG, "%s Could not parse aml model file:", __func__, path);
+                    EZMQX_LOG_V(ERROR, TAG, "%s Could not parse aml model file:", __func__, path.c_str());
                     throw EZMQX::Exception("Could not parse aml model file : " + path, EZMQX::UnKnownState);
                 }
 
                 if (!repPtr)
                 {
-                    EZMQX_LOG_V(ERROR, TAG, "%s Could not parse aml model file: %s", __func__, path);
+                    EZMQX_LOG_V(ERROR, TAG, "%s Could not parse aml model file: %s", __func__, path.c_str());
                     throw EZMQX::Exception("Could not parse aml model file : " + path, EZMQX::UnKnownState);
                 }
 
@@ -224,7 +224,7 @@ std::shared_ptr<AML::Representation> EZMQX::Context::getAmlRep(const std::string
 
         if (itr == amlRepDic.end())
         {
-            EZMQX_LOG_V(ERROR, TAG, "%s Could not find matched Aml Rep: %s", __func__, amlModelId);
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not find matched Aml Rep: %s", __func__, amlModelId.c_str());
             throw EZMQX::Exception("Could not find matched Aml Rep", EZMQX::UnKnownState);
         }
         else
@@ -320,7 +320,7 @@ void EZMQX::Context::initialize()
                     EZMQX::SimpleRest rest;
                     nodeInfo = rest.Get(NODE+PREFIX+API_CONFIG);
                 }
-                EZMQX_LOG_V(DEBUG, TAG, "%s Rest result \n %s \n", __func__, nodeInfo);
+                EZMQX_LOG_V(DEBUG, TAG, "%s Rest result \n %s \n", __func__, nodeInfo.c_str());
 
                 Json::Value root;
                 Json::Reader reader;
@@ -340,13 +340,13 @@ void EZMQX::Context::initialize()
 
                         if (props[i].isMember(CONF_REMOTE_ADDR))
                         {
-                            EZMQX_LOG_V(DEBUG, TAG, "%s TNS info found", __func__, props[i][CONF_REMOTE_ADDR].asString() + COLLON + TNS_KNOWN_PORT);
+                            EZMQX_LOG_V(DEBUG, TAG, "%s TNS info found", __func__, (props[i][CONF_REMOTE_ADDR].asString() + COLLON + TNS_KNOWN_PORT).c_str());
                             setTnsInfo(props[i][CONF_REMOTE_ADDR].asString() + COLLON + TNS_KNOWN_PORT);
                         }
 
                         if (props[i].isMember(CONF_NODE_ADDR))
                         {
-                            EZMQX_LOG_V(DEBUG, TAG, "%s Host info found", __func__, props[i][CONF_NODE_ADDR].asString());
+                            EZMQX_LOG_V(DEBUG, TAG, "%s Host info found", __func__, props[i][CONF_NODE_ADDR].asString().c_str());
                             this->hostAddr = props[i][CONF_NODE_ADDR].asString();
                         }
                     }
@@ -433,7 +433,7 @@ void EZMQX::Context::initialize()
                             }
                             else
                             {
-                                EZMQX_LOG_V(DEBUG, TAG, "%s Found running application ID: %s", __func__, appId);
+                                EZMQX_LOG_V(DEBUG, TAG, "%s Found running application ID: %s", __func__, appId.c_str());
                                 runningApps.push_back(appId);
                             }
                         }
@@ -459,13 +459,14 @@ void EZMQX::Context::initialize()
                     }
 
                     std::string appId = *itr;
+                    std::string addr = NODE + PREFIX + API_APPS + SLASH + appId;
                     nodeInfo.clear();
-                    EZMQX_LOG_V(DEBUG, TAG, "%s try send Get request to %s", __func__, NODE + PREFIX + API_APPS + SLASH + appId);
+                    EZMQX_LOG_V(DEBUG, TAG, "%s try send Get request to %s", __func__, addr.c_str());
                     {
                         EZMQX::SimpleRest rest;
-                        nodeInfo = rest.Get(NODE + PREFIX + API_APPS + SLASH + appId);
+                        nodeInfo = rest.Get(addr);
                     }
-                    EZMQX_LOG_V(DEBUG, TAG, "%s Rest result is \n %s \n", __func__, nodeInfo);
+                    EZMQX_LOG_V(DEBUG, TAG, "%s Rest result is \n %s \n", __func__, nodeInfo.c_str());
 
                     if (nodeInfo.empty())
                     {
@@ -492,7 +493,7 @@ void EZMQX::Context::initialize()
                                     {
                                         portArray = props[i][SERVICES_CON_PORTS];
                                         found = true;
-                                        EZMQX_LOG_V(DEBUG, TAG, "%s Application found!!! %s ", __func__, conId);
+                                        EZMQX_LOG_V(DEBUG, TAG, "%s Application found!!! %s ", __func__, conId.c_str());
                                         break;
                                     }
                                     else
