@@ -5,6 +5,8 @@ namespace EZMQX
 {
     typedef enum
     {
+        OK = 0,
+        InvalidParam,
         NotInitialized,
         Terminated,
         UnKnownState,
