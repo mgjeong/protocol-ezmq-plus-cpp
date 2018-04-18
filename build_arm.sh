@@ -85,35 +85,6 @@ else
     sudo ldconfig
 fi
 
-#build & install googletest
-cd $DEP_ROOT
-if [ -a "./release-1.8.0.tar.gz" ] ; then
-    if [ -d "./googletest-release-1.8.0" ] ; then
-        echo "googletest exist"
-    else
-        tar xvf release-1.8.0.tar.gz
-        cd googletest-release-1.8.0
-        mkdir build
-        cd build
-        cmake -DCMAKE_BUILD_TYPE=release -DBUILD_STATIC_LIBS=OFF -DBUILD_SHARED_LIBS=ON -DARCHIVE_INSTALL_DIR=./ -G "Unix Makefiles" ../
-        sudo make -j 8
-        sudo make install
-        sudo ldconfig
-    fi
-else
-    git clone https://github.com/google/googletest.git googletest-release-1.8.0
-    cd googletest-release-1.8.0
-    git checkout release-1.8.0
-    mkdir build
-    cd build
-    cmake -DCMAKE_BUILD_TYPE=release -DBUILD_STATIC_LIBS=OFF -DBUILD_SHARED_LIBS=ON -DARCHIVE_INSTALL_DIR=./ -G "Unix Makefiles" ../
-    sudo make -j 8
-    sudo make install
-    sudo ldconfig
-fi
-
-
-
 #build ezmq-plus-cpp
 cd $PROJECT_ROOT
 #scons TARGET_OS=linux TARGET_ARCH=x86_64
