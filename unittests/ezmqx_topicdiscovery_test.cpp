@@ -36,8 +36,21 @@ using testing::make_tuple;
 using testing::tuple;
 using testing::tuple_element;
 
-TEST_F(DiscoveryTest, WithTns)
+using testing::SetArgReferee;
+
+TEST_F(DiscoveryTest, WithOutMock)
 {
+
+    EXPECT_THROW(mock.query(""), EZMQX::Exception);
+    EXPECT_THROW(mock.query("////"), EZMQX::Exception);
+    EXPECT_THROW(mock.query("/aaa"), EZMQX::Exception);
+
+}
+
+TEST_F(DiscoveryTest, MockFuncCallTest)
+{
+
+
     EXPECT_CALL(mock, verifyTopic(_, _))
     .Times(1);
 
@@ -53,19 +66,37 @@ TEST_F(DiscoveryTest, WithTns)
     
 }
 
-TEST_F(DiscoveryTest, WithTns2)
+TEST_F(DiscoveryTest, MockQueryTest)
 {
     EXPECT_CALL(mock, verifyTopic(_, _))
-    .Times(1);
+    .Times(1)
+    .WillOnce(SetArgReferee<1>(getDummyTopics()));
 
-    try
-    {
-        setDummyTns();
-        mock.query("/abc");
-    }
-    catch(...)
-    {
+    setDummyTns();
+    std::list<EZMQX::Topic> result = mock.query("/TEST");
+    EXPECT_TRUE(result.size() == 3);
 
-    }
-    
+    EZMQX::Topic first = result.front();
+    EXPECT_TRUE(first.getTopic().compare("/TEST/A") == 0);
+    EXPECT_TRUE(first.getSchema().compare("dummy1") == 0);
+    EXPECT_TRUE(first.getEndpoint().toString().compare("8.8.8.8:1") == 0);
+    result.pop_front();
+
+    EZMQX::Topic second = result.front();
+    EXPECT_TRUE(second.getTopic().compare("/TEST/B") == 0);
+    EXPECT_TRUE(second.getSchema().compare("dummy2") == 0);
+    EXPECT_TRUE(second.getEndpoint().toString().compare("8.8.8.8:2") == 0);
+    result.pop_front();
+
+    EZMQX::Topic third = result.front();
+    EXPECT_TRUE(third.getTopic().compare("/TEST/C") == 0);
+    EXPECT_TRUE(third.getSchema().compare("dummy3") == 0);
+    EXPECT_TRUE(third.getEndpoint().toString().compare("8.8.8.8:3") == 0);
+    result.pop_front();
 }
+
+// ToDo
+// TEST_F(DiscoveryTest, DockerMockTest)
+// {
+
+// }

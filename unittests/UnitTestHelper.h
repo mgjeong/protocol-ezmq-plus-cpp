@@ -4,6 +4,7 @@
 #include <EZMQXException.h>
 #include <gtest.h>
 #include <gmock.h>
+#include <string>
 
 class MockTopicDiscovery : public EZMQX::TopicDiscovery
 {
@@ -25,6 +26,15 @@ protected:
     {
         // config->setHostInfo("TestPublisher", "10.113.77.33");
         config->setTnsInfo("localhost:48323");
+    }
+
+    std::list<EZMQX::Topic> getDummyTopics()
+    {
+        std::list<EZMQX::Topic> dummy;
+        dummy.push_back(EZMQX::Topic("/TEST/A", "dummy1", EZMQX::Endpoint("8.8.8.8", 1)));
+        dummy.push_back(EZMQX::Topic("/TEST/B", "dummy2", EZMQX::Endpoint("8.8.8.8", 2)));
+        dummy.push_back(EZMQX::Topic("/TEST/C", "dummy3", EZMQX::Endpoint("8.8.8.8", 3)));
+        return dummy;
     }
 
     virtual void TearDown()
