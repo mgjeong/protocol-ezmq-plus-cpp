@@ -9,23 +9,33 @@
 #include <iostream>
 #include <json/reader.h>
 #include <EZMQXBlockingQue.h>
+#include <EZMQXLogger.h>
 
-EZMQX::AmlSubscriber::AmlSubscriber()
+#define TAG "EZMQXAmlSubscriber"
+
+EZMQX::AmlSubscriber::AmlSubscriber() : Subscriber(), mSubCb([](std::string topic, const AML::AMLObject& payload){}), mSubErrCb([](std::string topic, EZMQX::ErrorCode errCode){})
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     // do nothing
 }
 
 EZMQX::AmlSubscriber::~AmlSubscriber()
 {
-    // do nothing
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+    terminate();
 }
 
 EZMQX::AmlSubscriber::AmlSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
  : Subscriber(), mSubCb(subCb), mSubErrCb(errCb)
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     try
     {
         Subscriber::initialize(topics);
+    }
+    catch(const EZMQX::Exception& e)
+    {
+        throw e;
     }
     catch(...)
     {
@@ -36,27 +46,14 @@ EZMQX::AmlSubscriber::AmlSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX
 EZMQX::AmlSubscriber::AmlSubscriber(const std::string &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
  : Subscriber(), mSubCb(subCb), mSubErrCb(errCb)
 {
-    validateTopic(topic);
-
-    std::list<EZMQX::Topic> verified;
-
-    if (ctx->isTnsEnabled())
-    {
-        verifyTopics(topic, verified);
-
-        if (verified.empty())
-        {
-            throw EZMQX::Exception("Could not find matched topic", EZMQX::NoTopicMatched);
-        }
-    }
-    else
-    {
-        throw EZMQX::Exception("TNS not available", EZMQX::TnsNotAvailable);
-    }
-
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     try
     {
-        Subscriber::initialize(verified);
+        Subscriber::initialize(topic);
+    }
+    catch(const EZMQX::Exception& e)
+    {
+        throw e;
     }
     catch(...)
     {
@@ -66,6 +63,7 @@ EZMQX::AmlSubscriber::AmlSubscriber(const std::string &topic, EZMQX::AmlSubCb &s
 
 void EZMQX::AmlSubscriber::cb(const std::string &_topic, const AML::AMLObject *obj)
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     if (!_topic.empty() && obj != NULL)
     {
         // call subCb
@@ -82,12 +80,14 @@ void EZMQX::AmlSubscriber::cb(const std::string &_topic, const AML::AMLObject *o
 
 EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const std::string &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     EZMQX::AmlSubscriber* subInstance = new AmlSubscriber(topic, subCb, errCb);
     return subInstance;
 }
 
 EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const EZMQX::Topic &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     std::list<EZMQX::Topic> topics(1, topic);
     EZMQX::AmlSubscriber* subInstance = new AmlSubscriber(topics, subCb, errCb);
     return subInstance;
@@ -95,21 +95,25 @@ EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const EZMQX::Topic &to
 
 EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     EZMQX::AmlSubscriber* subInstance = new AmlSubscriber(topics, subCb, errCb);
     return subInstance;
 }
 
 bool EZMQX::AmlSubscriber::isTerminated()
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     return EZMQX::Subscriber::isTerminated();
 }
 
 void EZMQX::AmlSubscriber::terminate()
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     return EZMQX::Subscriber::terminate();
 }
 
 std::list<EZMQX::Topic> EZMQX::AmlSubscriber::getTopics()
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     return EZMQX::Subscriber::getTopics();
 }
