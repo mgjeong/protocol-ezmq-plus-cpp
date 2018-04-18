@@ -27,12 +27,13 @@ class Subscriber
         std::map<std::string, std::shared_ptr<AML::Representation>> repDic;
         std::string token;
         EZMQX::BlockingQue* que;
-        std::thread mThread;
+        std::thread* mThread;
 
         void handler();
         virtual void cb(const std::string &_topic, const AML::AMLObject* obj) = 0;
 
         void internalSubCb(std::string topic, const ezmq::EZMQMessage &event);
+        void initialize(const std::string &topic);
         void initialize(const std::list<EZMQX::Topic> &topics);
 
         void validateTopic(const std::string& topic);

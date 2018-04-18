@@ -8,7 +8,9 @@
 #include <iostream>
 #include <json/reader.h>
 #include <EZMQXBlockingQue.h>
+#include <EZMQXLogger.h>
 
+#define TAG "EZMQXSubscriber"
 #define SLASH '/'
 #define DOUBLE_SLASH "//"
 
@@ -27,18 +29,55 @@ static const std::string TOPIC_WILD_PATTERNN = "/*/";
 
 EZMQX::Subscriber::Subscriber() : que(new EZMQX::BlockingQue()), terminated(false), token(""), ctx(EZMQX::Context::getInstance())
 {
-    // do nothing
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
 }
 
 EZMQX::Subscriber::~Subscriber()
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     terminate();
+}
+
+void EZMQX::Subscriber::initialize(const std::string &topic)
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+    validateTopic(topic);
+
+    std::list<EZMQX::Topic> verified;
+
+    if (ctx->isTnsEnabled())
+    {
+        verifyTopics(topic, verified);
+
+        if (verified.empty())
+        {
+            throw EZMQX::Exception("Could not find matched topic", EZMQX::NoTopicMatched);
+        }
+    }
+    else
+    {
+        throw EZMQX::Exception("TNS not available", EZMQX::TnsNotAvailable);
+    }
+
+    try
+    {
+        Subscriber::initialize(verified);
+    }
+    catch(const EZMQX::Exception& e)
+    {
+        throw e;
+    }
+    catch(...)
+    {
+        throw EZMQX::Exception("Could not initialize subscriber", EZMQX::UnKnownState);
+    }    
 }
 
 void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics)
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     // create thread and push to blocked
-    mThread = std::thread(&EZMQX::Subscriber::handler, this);
+    mThread = new std::thread(&EZMQX::Subscriber::handler, this);
 
     for (std::list<EZMQX::Topic>::const_iterator itr = topics.cbegin(); itr != topics.cend(); itr++)
     {
@@ -92,7 +131,14 @@ void EZMQX::Subscriber::handler()
 {
     while(1)
     {
+        EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
         std::pair<std::string, std::string> payload;
+
+        if (!que || que->isTerminated())
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s Que is terminated exit handler", __func__);
+            return;
+        }
 
         // aml parsing here
         try
@@ -103,6 +149,12 @@ void EZMQX::Subscriber::handler()
             }
 
             que->deQue(payload);
+
+            if (que->isTerminated())
+            {
+                EZMQX_LOG_V(DEBUG, TAG, "%s Que is terminated exit handler", __func__);
+                return;
+            }
 
             if (payload.first.empty() || payload.second.empty())
             {
@@ -131,7 +183,7 @@ void EZMQX::Subscriber::handler()
         catch(const std::exception &e)
         {
             // call errCb
-            std::cout<<e.what()<<std::endl;
+            EZMQX_LOG_V(DEBUG, TAG, "%s exception on subscriber callback thread: %s", __func__, e.what());
             AML::AMLObject *obj = nullptr;
             cb(payload.first, obj);
         }
@@ -142,6 +194,7 @@ void EZMQX::Subscriber::handler()
 
 void EZMQX::Subscriber::internalSubCb(std::string topic, const ezmq::EZMQMessage &event)
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     if (event.getContentType() == ezmq::EZMQ_CONTENT_TYPE_BYTEDATA && !topic.empty())
     {
         const ezmq::EZMQByteData &bytes= dynamic_cast<const ezmq::EZMQByteData&>(event);
@@ -157,6 +210,7 @@ void EZMQX::Subscriber::internalSubCb(std::string topic, const ezmq::EZMQMessage
 
 void EZMQX::Subscriber::validateTopic(const std::string& topic)
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     //validate topic
     std::string tmp = topic;
 
@@ -183,7 +237,8 @@ void EZMQX::Subscriber::validateTopic(const std::string& topic)
 }
 
 void EZMQX::Subscriber::verifyTopics(const std::string &topic, std::list<EZMQX::Topic> &verified)
-{   
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     // send rest
     std::string tmp;
     try
@@ -234,34 +289,44 @@ void EZMQX::Subscriber::verifyTopics(const std::string &topic, std::list<EZMQX::
 
 bool EZMQX::Subscriber::isTerminated()
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     // atomically
     return terminated.load();
 }
 
 void EZMQX::Subscriber::terminate()
 {
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     // mutex lock
     {
         std::lock_guard<std::mutex> scopedLock(lock);
         if (!terminated.load())
         {
+            EZMQX_LOG_V(DEBUG, TAG, "%s try terminate ezmq subscribers", __func__);
             // release resource
             for (std::list<ezmq::EZMQSubscriber*>::iterator itr = subscribers.begin() ; itr != subscribers.end(); itr++)
             {
                 if (*itr)
                 {
+                    EZMQX_LOG_V(DEBUG, TAG, "%s try ezmq subscribers terminated", __func__);
                     delete *itr;
                 }
             }
-            mThread.join();
+
+            EZMQX_LOG_V(DEBUG, TAG, "%s try stop callback thread", __func__);
+            que->stop();
+            if (mThread)
+            {
+                mThread->join();
+            }
+            EZMQX_LOG_V(DEBUG, TAG, "%s callback thread stoped", __func__);
             delete que;
+            terminated.store(true);
         }
         else
         {
-            throw EZMQX::Exception("Subscriber terminated", EZMQX::Terminated);
+            EZMQX_LOG_V(INFO, TAG, "%s Subscriber already terminated", __func__);
         }
-
-        terminated.store(true);
     }
     // mutex unlock
     return;
