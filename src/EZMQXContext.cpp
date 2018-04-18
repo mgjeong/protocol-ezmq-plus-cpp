@@ -163,7 +163,7 @@ std::list<std::string> EZMQX::Context::addAmlRep(const std::list<std::string>& a
                 }
                 catch(...)
                 {
-                    EZMQX_LOG_V(ERROR, TAG, "%s Could not parse aml model file:", __func__, path.c_str());
+                    EZMQX_LOG_V(ERROR, TAG, "%s Could not parse aml model file: %s", __func__, path.c_str());
                     throw EZMQX::Exception("Could not parse aml model file : " + path, EZMQX::UnKnownState);
                 }
 
@@ -340,13 +340,13 @@ void EZMQX::Context::initialize()
 
                         if (props[i].isMember(CONF_REMOTE_ADDR))
                         {
-                            EZMQX_LOG_V(DEBUG, TAG, "%s TNS info found", __func__, (props[i][CONF_REMOTE_ADDR].asString() + COLLON + TNS_KNOWN_PORT).c_str());
+                            EZMQX_LOG_V(DEBUG, TAG, "%s TNS info found %s", __func__, (props[i][CONF_REMOTE_ADDR].asString() + COLLON + TNS_KNOWN_PORT).c_str());
                             setTnsInfo(props[i][CONF_REMOTE_ADDR].asString() + COLLON + TNS_KNOWN_PORT);
                         }
 
                         if (props[i].isMember(CONF_NODE_ADDR))
                         {
-                            EZMQX_LOG_V(DEBUG, TAG, "%s Host info found", __func__, props[i][CONF_NODE_ADDR].asString().c_str());
+                            EZMQX_LOG_V(DEBUG, TAG, "%s Host info found %s", __func__, props[i][CONF_NODE_ADDR].asString().c_str());
                             this->hostAddr = props[i][CONF_NODE_ADDR].asString();
                         }
                     }
