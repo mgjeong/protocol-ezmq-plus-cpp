@@ -1,8 +1,10 @@
 ################ EZMQ Plus sample build script ##################
 Import('env')
 
-target_os = env.get('TARGET_OS')
-ezmq_plus_unittest_env = env.Clone()
+gtest_env = SConscript('#extlibs/gtest/SConscript')
+lib_env = gtest_env.Clone()
+ezmq_plus_unittest_env = lib_env.Clone()
+target_os = ezmq_plus_unittest_env.get('TARGET_OS')
 
 ######################################################################
 # Build flags
@@ -21,7 +23,10 @@ ezmq_plus_unittest_env.AppendUnique(CPPPATH=[
 ezmq_plus_unittest_env.AppendUnique(
     CXXFLAGS=['-O2', '-g', '-Wall', '-fmessage-length=0', '-std=c++11', '-I/usr/local/include'])
 
-ezmq_plus_unittest_env.AppendUnique(LIBS=['aml', 'ezmq_plus', 'gtest', 'gtest_main', 'gmock'])
+ezmq_plus_unittest_env.AppendUnique(LIBPATH=[lib_env.get('BUILD_DIR')])
+
+#ezmq_plus_unittest_env.AppendUnique(LIBS=['aml', 'ezmq_plus', 'gtest', 'gtest_main', 'gmock'])
+ezmq_plus_unittest_env.AppendUnique(LIBS=['aml', 'ezmq_plus', 'gmock'])
 
 ####################################################################
 # Source files and Targets
