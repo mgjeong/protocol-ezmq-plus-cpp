@@ -24,6 +24,7 @@ class Subscriber
         std::atomic_bool terminated;
         EZMQX::Context* ctx;
         std::list<ezmq::EZMQSubscriber*> subscribers;
+        std::list<EZMQX::Topic> storedTopics;
         std::map<std::string, std::shared_ptr<AML::Representation>> repDic;
         std::string token;
         EZMQX::BlockingQue* que;

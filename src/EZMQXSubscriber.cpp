@@ -122,6 +122,8 @@ void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics)
         {
             // throw exception
         }
+
+        storedTopics.push_back(topic);
     }
 
     return;
@@ -334,6 +336,5 @@ void EZMQX::Subscriber::terminate()
 
 std::list<EZMQX::Topic> EZMQX::Subscriber::getTopics()
 {
-    std::list<EZMQX::Topic> topics;
-    return topics;
+    return storedTopics;
 }
