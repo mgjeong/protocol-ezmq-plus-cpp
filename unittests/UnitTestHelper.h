@@ -1,10 +1,92 @@
 #include <iostream>
 #include <EZMQXConfig.h>
 #include <EZMQXTopicDiscovery.h>
+#include <EZMQXAMLSubscriber.h>
+#include <EZMQXAmlPublisher.h>
 #include <EZMQXException.h>
+#include <EZMQXFakeSingletonAccessor.h>
 #include <gtest.h>
 #include <gmock.h>
 #include <string>
+
+class MockAmlSubscriber : public EZMQX::AmlSubscriber
+{
+public:
+    MockAmlSubscriber() : AmlSubscriber()
+    {
+    }
+
+    ~MockAmlSubscriber()
+    {
+
+    }
+
+    void initialize(const std::string &topic)
+    {
+        Subscriber::initialize(topic);
+    }
+
+    void initialize(const EZMQX::Topic &topic)
+    {
+        std::list<EZMQX::Topic> topics(1, topic);
+        Subscriber::initialize(topics);
+    }
+
+    void initialize(const std::list<EZMQX::Topic> &topics)
+    {
+        Subscriber::initialize(topics);
+    }
+
+    MOCK_METHOD2(verifyTopics, void(const std::string &topic, std::list<EZMQX::Topic> &verified));
+};
+
+class DockerAmlSubscriber : public testing::Test
+{
+protected:
+    EZMQX::Config *config;
+    MockAmlSubscriber *mock;
+    virtual void SetUp()
+    {
+        EZMQX::FakeSingletonAccessor::setFake();
+        config = new EZMQX::Config(EZMQX::Docker);
+        mock = new MockAmlSubscriber();
+    }
+
+    virtual void TearDown()
+    {
+        delete mock;
+        mock = nullptr;
+        delete config;
+        config = nullptr;
+
+    }
+};
+
+class MockAmlPublisher : public EZMQX::AmlPublisher
+{
+public:
+    MOCK_METHOD1(registerTopic, void(EZMQX::Topic& topic));
+};
+
+class DockerAmlPublisher : public testing::Test
+{
+protected:
+    EZMQX::Config *config;
+    MockAmlPublisher *mock;
+    virtual void SetUp()
+    {
+        EZMQX::FakeSingletonAccessor::setFake();
+        config = new EZMQX::Config(EZMQX::Docker);
+    }
+
+    virtual void TearDown()
+    {
+        delete config;
+        config = nullptr;
+        delete mock;
+        mock = nullptr;
+    }
+};
 
 class MockTopicDiscovery : public EZMQX::TopicDiscovery
 {
@@ -12,7 +94,7 @@ public:
     MOCK_METHOD2(verifyTopic, void(std::string& topic, std::list<EZMQX::Topic>& topics));
 };
 
-class DiscoveryTest : public testing::Test
+class StandAloneDiscoveryTest : public testing::Test
 {
 protected:
     EZMQX::Config *config;
@@ -26,6 +108,33 @@ protected:
     {
         // config->setHostInfo("TestPublisher", "10.113.77.33");
         config->setTnsInfo("localhost:48323");
+    }
+
+    std::list<EZMQX::Topic> getDummyTopics()
+    {
+        std::list<EZMQX::Topic> dummy;
+        dummy.push_back(EZMQX::Topic("/TEST/A", "dummy1", EZMQX::Endpoint("8.8.8.8", 1)));
+        dummy.push_back(EZMQX::Topic("/TEST/B", "dummy2", EZMQX::Endpoint("8.8.8.8", 2)));
+        dummy.push_back(EZMQX::Topic("/TEST/C", "dummy3", EZMQX::Endpoint("8.8.8.8", 3)));
+        return dummy;
+    }
+
+    virtual void TearDown()
+    {
+        delete config;
+        config = nullptr;
+    }
+};
+
+class DockerDiscoveryTest : public testing::Test
+{
+protected:
+    EZMQX::Config *config;
+    MockTopicDiscovery mock;
+    virtual void SetUp()
+    {
+        EZMQX::FakeSingletonAccessor::setFake();
+        config = new EZMQX::Config(EZMQX::Docker);
     }
 
     std::list<EZMQX::Topic> getDummyTopics()

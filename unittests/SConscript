@@ -17,6 +17,7 @@ ezmq_plus_unittest_env.AppendUnique(CPPPATH=[
     '../extlibs/gtest/googletest-release-1.8.0/googletest/include/gtest',
     '../extlibs/gtest/googletest-release-1.8.0/googlemock/include/gmock',
     '../include',
+    '../internal',
     './'
 ])
 
