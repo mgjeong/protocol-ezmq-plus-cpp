@@ -1,4 +1,5 @@
 ./build_arm.sh
+cp unittests/sample_data_model.aml out/linux/armhf/release/unittests/
 cd out/linux/armhf/release/unittests
 ./ezmqx_config_test
 ./ezmqx_publisher_test
