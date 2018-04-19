@@ -29,7 +29,7 @@ int main()
     signal(SIGINT, sigint);
 
     std::string topic;
-    std::cout<<"Enter topic ex) /test/"<<std::endl;
+    std::cout<<"Enter topic ex) /test/A"<<std::endl;
     std::cin>>topic;
 
     try

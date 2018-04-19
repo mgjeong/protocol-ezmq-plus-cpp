@@ -5,6 +5,8 @@
 #include <EZMQXAmlPublisher.h>
 #include <EZMQXConfig.h>
 #include <EZMQXException.h>
+#include <thread>
+#include <condition_variable>
 
 void printAMLData(AML::AMLData amlData, int depth)
 {
@@ -69,6 +71,27 @@ void printAMLObject(AML::AMLObject amlObj)
     std::cout << "\n}" << std::endl;
 }
 
+EZMQX::AmlPublisher *publisherA = nullptr;
+EZMQX::AmlPublisher *publisherB = nullptr;
+EZMQX::AmlPublisher *publisherC = nullptr;
+std::thread *terminater = nullptr;
+std::condition_variable timerCond;
+std::mutex timerMutex;
+
+void deleteTopic()
+{
+  std::cout<<"entered deleteToopic"<<std::endl;
+  std::unique_lock<std::mutex> timerLock(timerMutex);
+  timerCond.wait_for(timerLock, std::chrono::minutes(7));
+
+  std::cout<<"try delete"<<std::endl;
+  delete publisherA;
+  delete publisherB;
+  delete publisherC;
+  std::cout<<"deleted"<<std::endl;
+  return;
+}
+
 int main()
 {
   std::string topic;
@@ -80,16 +103,17 @@ int main()
       std::list<std::string> amlPath(1, "sample_data_model.aml");
       std::list<std::string> amlId(1);
       std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::Docker));
-      //std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::StandAlone));
-      //config->setHostInfo("TestPublisher", "10.113.77.33");
-      //config->setTnsInfo("10.113.65.174:8323");
+      // std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::StandAlone));
+      // config->setHostInfo("TestPublisher", "10.113.77.33");
+      // config->setTnsInfo("10.113.65.174");
+      // config->setTnsInfo("localhost");
       amlId = config->addAmlModel(amlPath);
 
       // create publisher with test topic
-      std::shared_ptr<EZMQX::AmlPublisher> publisherA(EZMQX::AmlPublisher::getPublisher(topic + "A/", EZMQX::AmlModelId, amlId.front(), 4000));
-      std::shared_ptr<EZMQX::AmlPublisher> publisherB(EZMQX::AmlPublisher::getPublisher(topic + "B/", EZMQX::AmlModelId, amlId.front(), 4001));
-      std::shared_ptr<EZMQX::AmlPublisher> publisherC(EZMQX::AmlPublisher::getPublisher(topic + "C/", EZMQX::AmlModelId, amlId.front(), 4002));
-      
+      publisherA = EZMQX::AmlPublisher::getPublisher(topic + "A", EZMQX::AmlModelId, amlId.front(), 4000);
+      publisherB = EZMQX::AmlPublisher::getPublisher(topic + "B", EZMQX::AmlModelId, amlId.front(), 4001);
+      publisherC = EZMQX::AmlPublisher::getPublisher(topic + "C", EZMQX::AmlModelId, amlId.front(), 4002);
+
       // create AMLObject
       std::string deviceId = "GTC001";
       std::string timeStamp = "123456789";
@@ -124,6 +148,8 @@ int main()
       amlObj.addData("Model", model);
       amlObj.addData("Sample", sample);
 
+      terminater = new std::thread(deleteTopic);
+
       while(1)
       {
           // publish AMLObject
@@ -132,7 +158,7 @@ int main()
           publisherC->publish(amlObj);
           std::cout << "Publish!!!" << std::endl;
           printAMLObject(amlObj);
-          std::this_thread::sleep_for(std::chrono::milliseconds(100));
+          std::this_thread::sleep_for(std::chrono::milliseconds(10000));
       }
 
     }
