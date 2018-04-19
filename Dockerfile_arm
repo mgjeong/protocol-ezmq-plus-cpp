@@ -1,4 +1,4 @@
-FROM armhf/ubuntu:14.04
+FROM arm32v7/ubuntu:14.04
 MAINTAINER bg.chun@samsung.com
 
 COPY libs /libs
