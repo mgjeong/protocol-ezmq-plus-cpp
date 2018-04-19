@@ -38,27 +38,43 @@ public:
     }
 
     MOCK_METHOD2(verifyTopics, void(const std::string &topic, std::list<EZMQX::Topic> &verified));
+    MOCK_METHOD2(getSession, void(EZMQX::Topic topic, ezmq::EZMQSubscriber* &subCtx));
 };
 
 class DockerAmlSubscriber : public testing::Test
 {
 protected:
     EZMQX::Config *config;
-    MockAmlSubscriber *mock;
+    MockAmlSubscriber mock;
+    std::string dummyId;
     virtual void SetUp()
     {
         EZMQX::FakeSingletonAccessor::setFake();
         config = new EZMQX::Config(EZMQX::Docker);
-        mock = new MockAmlSubscriber();
+        std::list<std::string> amlPath(1, "sample_data_model.aml");
+        std::list<std::string> amlId = config->addAmlModel(amlPath);
+        dummyId = amlId.front();
     }
 
     virtual void TearDown()
     {
-        delete mock;
-        mock = nullptr;
         delete config;
         config = nullptr;
 
+    }
+
+    std::string getDummyId()
+    {
+        return dummyId;
+    }
+
+    std::list<EZMQX::Topic> getDummyTopics()
+    {
+        std::list<EZMQX::Topic> dummy;
+        dummy.push_back(EZMQX::Topic("/TEST/A", getDummyId(), EZMQX::Endpoint("localhost", 4000)));
+        dummy.push_back(EZMQX::Topic("/TEST/B", getDummyId(), EZMQX::Endpoint("localhost", 4001)));
+        dummy.push_back(EZMQX::Topic("/TEST/C", getDummyId(), EZMQX::Endpoint("localhost", 4002)));
+        return dummy;
     }
 };
 
