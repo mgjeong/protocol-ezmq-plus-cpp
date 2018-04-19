@@ -14,6 +14,9 @@
 #define SLASH '/'
 #define DOUBLE_SLASH "//"
 
+static const std::string TNS_KNOWN_PORT = "48323";
+static const std::string COLLON = ":";
+
 static const std::string TOPIC_PATTERN = "(\/[a-zA-Z0-9-_*.]+)+";
 
 static const std::string PREFIX = "/api/v1";
@@ -264,7 +267,7 @@ void EZMQX::Subscriber::verifyTopics(const std::string &topic, std::list<EZMQX::
     try
     {
         EZMQX::SimpleRest rest;
-        tmp = rest.Get(ctx->getTnsAddr() + PREFIX + TOPIC, QUERY_PARAM + topic);
+        tmp = rest.Get(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, QUERY_PARAM + topic);
     }
     catch (...)
     {

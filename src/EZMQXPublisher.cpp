@@ -13,6 +13,9 @@
 #define SLASH '/'
 #define DOUBLE_SLASH "//"
 
+static const std::string TNS_KNOWN_PORT = "48323";
+static const std::string COLLON = ":";
+
 static const std::string PREFIX = "/api/v1";
 static const std::string TOPIC = "/tns/topic";
 static const std::string HEALTH = "/health";
@@ -139,11 +142,11 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
     try
     {
         EZMQX::SimpleRest rest;
-        tmp = rest.Post(ctx->getTnsAddr() + PREFIX + TOPIC, tmp);
+        tmp = rest.Post(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, tmp);
     }
     catch (...)
     {
-        EZMQX_LOG_V(ERROR, TAG, "%s Could not send rest post request %s", __func__, ctx->getTnsAddr() + PREFIX + TOPIC, tmp);
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not send rest post request %s", __func__, ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, tmp);
         throw EZMQX::Exception("Could not send rest post request", EZMQX::UnKnownState);
     }
 
@@ -202,7 +205,10 @@ void EZMQX::Publisher::terminate()
         if (!terminated.load())
         {
             // release resource
-            ctx->releaseDynamicPort(localPort);
+            if (!(ctx->isStandAlone()))
+            {
+                ctx->releaseDynamicPort(localPort);
+            }
 
             if (ctx->isTnsEnabled())
             {

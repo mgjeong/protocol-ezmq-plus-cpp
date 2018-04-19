@@ -26,7 +26,6 @@ static const std::string TNS_UNREGISTER = "/tns/topic";
 // Json keys
 static const std::string PAYLOAD_CID = "c_id";
 static const std::string PAYLOAD_TOPIC = "topic";
-static const std::string PAYLOAD_TOPICS = "topics";
 static const std::string PAYLOAD_ENDPOINT = "endpoint";
 static const std::string PAYLOAD_SCHEMA = "schema";
 static const std::string RESULT_KEY = "result";
@@ -52,7 +51,7 @@ void EZMQX::KeepAlive::inQue(EZMQX::TaskOption opt, std::string payload)
         return;
     }
 
-    EZMQX_LOG_V(DEBUG, TAG, "%s inQue %s %s ", __func__, (opt == EZMQX::TopicKeepAlive ? KEEP_ALIVE : UNREGISTER_TOPIC), payload);
+    EZMQX_LOG_V(DEBUG, TAG, "%s inQue %s %s ", __func__, (opt == EZMQX::TopicKeepAlive ? KEEP_ALIVE : UNREGISTER_TOPIC).c_str(), payload.c_str());
     que->inQue(std::make_pair(restOpt, payload));
 }
 
@@ -89,17 +88,17 @@ void EZMQX::KeepAlive::queHandler()
 
             if (payload.first.compare(KEEP_ALIVE) == 0)
             {
-                EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request %s", __func__, remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE, payload.second);
+                EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request %s", __func__, (remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE).c_str(), payload.second.c_str());
                 EZMQX::SimpleRest rest;
                 ret = rest.Post(remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE, payload.second);
-                EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, ret);
+                EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, ret.c_str());
             }
             else if (payload.first.compare(UNREGISTER_TOPIC) == 0)
             {
-                EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request %s", __func__, remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER, payload.second);
+                EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request %s", __func__, (remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER).c_str(), payload.second.c_str());
                 EZMQX::SimpleRest rest;
                 ret = rest.Delete(remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER, payload.second);
-                EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, ret);
+                EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, ret.c_str());
             }
             else
             {
@@ -120,7 +119,7 @@ void EZMQX::KeepAlive::queHandler()
                 else
                 {
                     // try again
-                    EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result is %s, try again", __func__, ret);
+                    EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result is %s, try again", __func__, ret.c_str());
                     que->inQue(payload);
                 }
             }
@@ -150,19 +149,18 @@ void EZMQX::KeepAlive::timerHandler()
         if (!topicList.empty())
         {
             EZMQX_LOG_V(DEBUG, TAG, "%s Build KeepAlive Rest payload", __func__);
-            Json::Value root;
-            root[PAYLOAD_TOPICS] = Json::Value(Json::arrayValue);
+            Json::Value root = Json::Value(Json::arrayValue);
             // add task for rest
             for (auto itr = topicList.begin(); itr != topicList.end(); itr++)
             {
                 Json::Value value;
                 value[PAYLOAD_TOPIC] = *itr;
-                root[PAYLOAD_TOPICS].append(value);
+                root.append(value);
             }
 
             Json::FastWriter writer;
             std::string payload = writer.write(root);
-            EZMQX_LOG_V(DEBUG, TAG, "%s Payload: %s", __func__, payload);
+            EZMQX_LOG_V(DEBUG, TAG, "%s Payload: %s", __func__, payload.c_str());
 
             // queing here
             inQue(EZMQX::TopicKeepAlive, payload);
@@ -170,7 +168,6 @@ void EZMQX::KeepAlive::timerHandler()
 
         // sleep for ....
         timerCond.wait_for(timerLock, std::chrono::minutes(3));
-        //std::this_thread::sleep_for(std::chrono::minutes(3));
     }
 }
 

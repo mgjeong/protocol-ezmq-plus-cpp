@@ -340,8 +340,8 @@ void EZMQX::Context::initialize()
 
                         if (props[i].isMember(CONF_REMOTE_ADDR))
                         {
-                            EZMQX_LOG_V(DEBUG, TAG, "%s TNS info found %s", __func__, (props[i][CONF_REMOTE_ADDR].asString() + COLLON + TNS_KNOWN_PORT).c_str());
-                            setTnsInfo(props[i][CONF_REMOTE_ADDR].asString() + COLLON + TNS_KNOWN_PORT);
+                            EZMQX_LOG_V(DEBUG, TAG, "%s TNS info found %s", __func__, (props[i][CONF_REMOTE_ADDR].asString()).c_str());
+                            setTnsInfo(props[i][CONF_REMOTE_ADDR].asString());
                         }
 
                         if (props[i].isMember(CONF_NODE_ADDR))
@@ -637,7 +637,7 @@ void EZMQX::Context::insertTopic(std::string topic)
     {
         std::lock_guard<std::mutex> scopedLock(lock);
         topicList.push_back(topic);
-        EZMQX_LOG_V(DEBUG, TAG, "%s topic inserted %s", __func__, topic);
+        EZMQX_LOG_V(DEBUG, TAG, "%s topic inserted %s", __func__, topic.c_str());
     }
     // mutex unlock
 }
@@ -652,7 +652,7 @@ void EZMQX::Context::deleteTopic(std::string topic)
 
         if (itr != topicList.end())
         {
-            EZMQX_LOG_V(DEBUG, TAG, "%s topic %s deleted from list", __func__, topic);
+            EZMQX_LOG_V(DEBUG, TAG, "%s topic %s deleted from list", __func__, topic.c_str());
             topicList.erase(itr);
 
             if (keepAlive)
@@ -666,7 +666,7 @@ void EZMQX::Context::deleteTopic(std::string topic)
                     std::string payload = writer.write(value);
                     if (!payload.empty())
                     {
-                        EZMQX_LOG_V(DEBUG, TAG, "%s Request unregister topic %s payload: %s", __func__, topic, payload);
+                        EZMQX_LOG_V(DEBUG, TAG, "%s Request unregister topic %s payload: %s", __func__, topic.c_str(), payload.c_str());
                         keepAlive->inQue(EZMQX::UnregisterTopic, payload);
                     }
                 }
