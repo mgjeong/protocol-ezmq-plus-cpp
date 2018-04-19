@@ -39,6 +39,7 @@ class Subscriber
 
         void validateTopic(const std::string& topic);
         virtual void verifyTopics(const std::string &topic, std::list<EZMQX::Topic> &verified);
+        virtual void getSession(EZMQX::Topic topic, ezmq::EZMQSubscriber* &subCtx);
 
         Subscriber();
         ~Subscriber();

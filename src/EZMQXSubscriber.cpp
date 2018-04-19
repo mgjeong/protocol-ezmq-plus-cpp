@@ -27,7 +27,7 @@ static const std::string QUERY_PARAM = "topic=";
 static const std::string TOPIC_WILD_CARD = "*";
 static const std::string TOPIC_WILD_PATTERNN = "/*/";
 
-EZMQX::Subscriber::Subscriber() : que(new EZMQX::BlockingQue()), terminated(false), token(""), ctx(EZMQX::Context::getInstance())
+EZMQX::Subscriber::Subscriber() : que(new EZMQX::BlockingQue()), terminated(false), token(""), ctx(EZMQX::Context::getInstance()), mThread(new std::thread(&EZMQX::Subscriber::handler, this))
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
 }
@@ -73,11 +73,39 @@ void EZMQX::Subscriber::initialize(const std::string &topic)
     }    
 }
 
+void EZMQX::Subscriber::getSession(EZMQX::Topic topic, ezmq::EZMQSubscriber* &subCtx)
+{
+    EZMQX::Endpoint ep = topic.getEndpoint();
+    subCtx = new ezmq::EZMQSubscriber(ep.getAddr(), ep.getPort(), [](const ezmq::EZMQMessage &event)->void{ return;}, std::bind(&EZMQX::Subscriber::internalSubCb, this, std::placeholders::_1, std::placeholders::_2));
+
+    if (!subCtx)
+    {
+        EZMQX_LOG_V(DEBUG, TAG, "%s Could not connect with endpoint %s ", __func__, ep.toString().c_str());
+        throw EZMQX::Exception("Could not connect endpoint " + ep.toString(), EZMQX::UnKnownState);
+    }
+
+    ezmq::EZMQErrorCode ret = subCtx->start();
+
+    if (ezmq::EZMQ_OK != ret)
+    {
+        EZMQX_LOG_V(DEBUG, TAG, "%s Could not start session with endpoint %s ", __func__, ep.toString().c_str());
+        throw EZMQX::Exception("Could not connect endpoint " + ep.toString(), EZMQX::UnKnownState);
+    }
+
+    ret = subCtx->subscribe(topic.getTopic());
+
+    if (ezmq::EZMQ_OK != ret)
+    {
+        EZMQX_LOG_V(DEBUG, TAG, "%s Could not subscribe with endpoint %s ", __func__, ep.toString().c_str());
+        throw EZMQX::Exception("Could not connect endpoint " + ep.toString(), EZMQX::UnKnownState);
+    }
+
+    subscribers.push_back(subCtx);
+}
+
 void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
-    // create thread and push to blocked
-    mThread = new std::thread(&EZMQX::Subscriber::handler, this);
 
     for (std::list<EZMQX::Topic>::const_iterator itr = topics.cbegin(); itr != topics.cend(); itr++)
     {
@@ -88,9 +116,7 @@ void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics)
         // find Aml rep
         try
         {
-            std::cout << "Topic: " << topic_str << " Model_Id: " << topic.getSchema() << " Endpoint: " << topic.getEndpoint().toString() << std::endl;
             std::shared_ptr<AML::Representation> rep = ctx->getAmlRep(topic.getSchema());
-
             repDic.insert(std::make_pair(topic_str, ctx->getAmlRep(topic.getSchema())));
         }
         catch(...)
@@ -98,32 +124,24 @@ void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics)
             throw EZMQX::Exception("Could not found Aml Rep", EZMQX::UnKnownState);
         }
 
-        EZMQX::Endpoint ep = topic.getEndpoint();
-
-        ezmq::EZMQSubscriber* sub = new ezmq::EZMQSubscriber(ep.getAddr(), ep.getPort(), [](const ezmq::EZMQMessage &event)->void{ return;}, std::bind(&EZMQX::Subscriber::internalSubCb, this, std::placeholders::_1, std::placeholders::_2));
-
-        if (!sub)
+        ezmq::EZMQSubscriber* sub = nullptr;
+        try
         {
-            // throw exception
+            getSession(topic, sub);
         }
-
-        subscribers.push_back(sub);
-
-        ezmq::EZMQErrorCode ret = sub->start();
-
-        if (ezmq::EZMQ_OK != ret)
+        catch(const EZMQX::Exception &e)
         {
-            // throw exception
-        }
+            if (sub != nullptr)
+            {
+                delete sub;
+            }
 
-        ret = sub->subscribe(topic_str);
-
-        if (ezmq::EZMQ_OK != ret)
-        {
-            // throw exception
+            EZMQX_LOG_V(ERROR, TAG, "%s exception: %s", __func__, e.what());
+            throw e;
         }
 
         storedTopics.push_back(topic);
+        EZMQX_LOG_V(DEBUG, TAG, "%s Topic: %s Model_Id: %s Endpoint: %s ", __func__, topic.getTopic().c_str(), topic.getSchema().c_str(), topic.getEndpoint().toString().c_str());
     }
 
     return;
