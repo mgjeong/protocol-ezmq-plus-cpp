@@ -27,7 +27,7 @@ static const std::string QUERY_PARAM = "topic=";
 static const std::string TOPIC_WILD_CARD = "*";
 static const std::string TOPIC_WILD_PATTERNN = "/*/";
 
-EZMQX::Subscriber::Subscriber() : que(new EZMQX::BlockingQue()), terminated(false), token(""), ctx(EZMQX::Context::getInstance()), mThread(new std::thread(&EZMQX::Subscriber::handler, this))
+EZMQX::Subscriber::Subscriber() : que(new EZMQX::BlockingQue()), terminated(false), token(""), ctx(EZMQX::Context::getInstance()), mThread(std::thread(&EZMQX::Subscriber::handler, this))
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
 }
@@ -335,10 +335,7 @@ void EZMQX::Subscriber::terminate()
 
             EZMQX_LOG_V(DEBUG, TAG, "%s try stop callback thread", __func__);
             que->stop();
-            if (mThread)
-            {
-                mThread->join();
-            }
+            mThread.join();
             EZMQX_LOG_V(DEBUG, TAG, "%s callback thread stoped", __func__);
             delete que;
             terminated.store(true);
