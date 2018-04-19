@@ -167,7 +167,7 @@ void EZMQX::KeepAlive::timerHandler()
         }
 
         // sleep for ....
-        timerCond.wait_for(timerLock, std::chrono::minutes(3));
+        timerCond.wait_for(timerLock, std::chrono::minutes(1));
     }
 }
 
