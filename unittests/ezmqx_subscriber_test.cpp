@@ -59,20 +59,9 @@ TEST_F(DockerAmlSubscriber, ExpectThreeDummies)
 
     std::string topic = "/TEST";
 
-    
-    std::list<EZMQX::Topic> result;
-    try
-    {
-        mock.initialize(topic);
-        result = mock.getTopics();
-    }catch(...)
-    {
-        std::cout << "something" << std::endl;
-    }
+    mock.initialize(topic);
+    std::list<EZMQX::Topic> result = mock.getTopics();
 
-    
-
-    std::cout << result.size() <<std::endl;
     EXPECT_TRUE(result.size() == 3);
 
     EZMQX::Topic first = result.front();
@@ -95,14 +84,3 @@ TEST_F(DockerAmlSubscriber, ExpectThreeDummies)
 
     
 }
-
-// EXPECT_TRUE(mock != nullptr);
-// EXPECT_TRUE(mock != nullptr);
-// EXPECT_THROW(mock.query(""), EZMQX::Exception);
-// EXPECT_THROW(mock.query("////"), EZMQX::Exception);
-// EXPECT_THROW(mock.query("/aaa"), EZMQX::Exception);
-
-// std::list<EZMQX::Topic> result = mock.getTopics();
-
-
-    
