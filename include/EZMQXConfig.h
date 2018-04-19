@@ -15,7 +15,7 @@ class Context;
 typedef enum
 {
     StandAlone,
-    FullFeature
+    Docker
 }ModeOption;
 
 class Config

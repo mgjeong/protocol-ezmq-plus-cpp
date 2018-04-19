@@ -99,3 +99,8 @@ void EZMQX::AmlPublisher::publish(const AML::AMLObject& payload)
     // mutex unlock
     return;
 }
+
+EZMQX::Topic EZMQX::AmlPublisher::getTopic()
+{
+    return Publisher::getTopic();
+}

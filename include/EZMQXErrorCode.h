@@ -5,6 +5,8 @@ namespace EZMQX
 {
     typedef enum
     {
+        OK = 0,
+        InvalidParam,
         NotInitialized,
         Terminated,
         UnKnownState,
@@ -16,8 +18,9 @@ namespace EZMQX
         BrokenPayload,
         RestError,
         MaximumPortExceed,
-        ReleaseWrongPort
-
+        ReleaseWrongPort,
+        NoTopicMatched,
+        TnsNotAvailable
     }ErrorCode;
 }
 

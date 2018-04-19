@@ -92,18 +92,18 @@ int main()
     signal(SIGINT, sigint);
 
     std::string topic;
-    std::cout<<"Enter topic ex) /test/"<<std::endl;
+    std::cout<<"Enter topic ex) /TEST/A"<<std::endl;
     std::cin>>topic;
 
     try
     {
         // get config class instance & add aml model file path
         std::list<std::string> amlPath(1, "sample_data_model.aml");
-        std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::FullFeature));
+        std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::Docker));
         //std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::StandAlone));
 
-        //config->setHostInfo("TestSubscriber", "10.113.77.33");
-        //config->setTnsInfo("10.113.65.174:8323");
+        // config->setHostInfo("TestSubscriber", "10.113.77.33");
+        // config->setTnsInfo("10.113.65.174");
         std::list<std::string> amlId = config->addAmlModel(amlPath);
 
         // error callback
@@ -122,7 +122,7 @@ int main()
         }
 
         std::cout<<"amlId: " << amlId.front() << std::endl;
-        //EZMQX::Topic knownTopic("/test/A/", amlId.front(), ep);
+        //EZMQX::Topic knownTopic("/TEST/A", amlId.front(), ep);
         //std::shared_ptr<EZMQX::AmlSubscriber> subscriber(EZMQX::AmlSubscriber::getSubscriber(knownTopic, subCb, errCb));
         std::shared_ptr<EZMQX::AmlSubscriber> subscriber(EZMQX::AmlSubscriber::getSubscriber(topic, subCb, errCb));
 

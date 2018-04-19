@@ -10,7 +10,7 @@ typedef std::function<void(std::string topic, EZMQX::ErrorCode errCode)> SubErrC
 
 class AmlSubscriber : public Subscriber
 {
-    private:
+    protected:
         EZMQX::AmlSubCb mSubCb;
         EZMQX::SubErrCb mSubErrCb;
         void cb(const std::string &topic, const AML::AMLObject* obj);

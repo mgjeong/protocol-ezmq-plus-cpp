@@ -12,8 +12,9 @@
 #define TAG "EZMQXPublisher"
 #define SLASH '/'
 #define DOUBLE_SLASH "//"
-#define START_POS 0
-#define OFFSET 1
+
+static const std::string TNS_KNOWN_PORT = "48323";
+static const std::string COLLON = ":";
 
 static const std::string PREFIX = "/api/v1";
 static const std::string TOPIC = "/tns/topic";
@@ -86,7 +87,7 @@ void EZMQX::Publisher::validateTopic(const std::string topic)
     std::string tmp = topic;
 
     // simple grammer check
-    if (tmp.front() != SLASH || tmp.back() != SLASH || tmp.find(DOUBLE_SLASH) != std::string::npos)
+    if (tmp.front() != SLASH || tmp.back() == SLASH || tmp.find(DOUBLE_SLASH) != std::string::npos)
     {
         EZMQX_LOG_V(DEBUG, TAG, "%s Invalid topic %s", __func__, topic);
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
@@ -102,8 +103,6 @@ void EZMQX::Publisher::validateTopic(const std::string topic)
 #if defined(EZMQX_GCC_VERSION) && EZMQX_GCC_VERSION >= 40900
     std::regex pattern(TOPIC_PATTERN);
 
-    // remove last slash
-    tmp = tmp.substr(START_POS, tmp.length() - OFFSET);
     if (!std::regex_match(tmp, pattern))
     {
         EZMQX_LOG_V(DEBUG, TAG, "%s Invalid topic %s", __func__, topic);
@@ -143,11 +142,11 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
     try
     {
         EZMQX::SimpleRest rest;
-        tmp = rest.Post(ctx->getTnsAddr() + PREFIX + TOPIC, tmp);
+        tmp = rest.Post(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, tmp);
     }
     catch (...)
     {
-        EZMQX_LOG_V(ERROR, TAG, "%s Could not send rest post request %s", __func__, ctx->getTnsAddr() + PREFIX + TOPIC, tmp);
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not send rest post request %s", __func__, ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, tmp);
         throw EZMQX::Exception("Could not send rest post request", EZMQX::UnKnownState);
     }
 
@@ -206,7 +205,10 @@ void EZMQX::Publisher::terminate()
         if (!terminated.load())
         {
             // release resource
-            ctx->releaseDynamicPort(localPort);
+            if (!(ctx->isStandAlone()))
+            {
+                ctx->releaseDynamicPort(localPort);
+            }
 
             if (ctx->isTnsEnabled())
             {
@@ -225,4 +227,9 @@ void EZMQX::Publisher::terminate()
     }
     // mutex unlock
     return;
+}
+
+EZMQX::Topic EZMQX::Publisher::getTopic()
+{
+    return topic;
 }

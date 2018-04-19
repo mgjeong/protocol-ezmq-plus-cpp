@@ -29,7 +29,7 @@ int main()
     signal(SIGINT, sigint);
 
     std::string topic;
-    std::cout<<"Enter topic ex) /test/"<<std::endl;
+    std::cout<<"Enter topic ex) /test/A"<<std::endl;
     std::cin>>topic;
 
     try
@@ -37,7 +37,7 @@ int main()
         // get config class instance & add aml model file path
         std::list<std::string> amlPath(1, "sample_data_model.aml");
         std::list<std::string> amlId(1);
-        std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::FullFeature));
+        std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::Docker));
         //config->setHostInfo("TestSubscriber", "10.113.77.33");
         //config->setTnsInfo("10.113.65.174:8323");
         amlId = config->addAmlModel(amlPath);

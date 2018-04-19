@@ -85,7 +85,6 @@ else
     sudo ldconfig
 fi
 
-
 #build ezmq-plus-cpp
 cd $PROJECT_ROOT
 #scons TARGET_OS=linux TARGET_ARCH=x86_64

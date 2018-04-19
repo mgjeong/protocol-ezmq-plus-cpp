@@ -37,9 +37,9 @@ void EZMQX::Config::initialize()
                 ctx->setStandAloneMode(true);
                 ctx->setHostInfo("localhost", "localhost");
             }
-            else if(FullFeature == configMode)
+            else if(Docker == configMode)
             {
-                EZMQX_LOG_V(DEBUG, TAG, "%s Set as FullFeature", __func__);
+                EZMQX_LOG_V(DEBUG, TAG, "%s Set as Docker", __func__);
                 ctx->initialize();
             }
             else
@@ -70,7 +70,7 @@ void EZMQX::Config::setHostInfo(std::string hostName, std::string hostAddr)
         }
         else
         {
-            EZMQX_LOG_V(DEBUG, TAG, "%s Set host info Hostname: %s, Hostaddr: %s", __func__, hostName,  hostAddr);
+            EZMQX_LOG_V(DEBUG, TAG, "%s Set host info Hostname: %s, Hostaddr: %s", __func__, hostName.c_str(),  hostAddr.c_str());
             ctx->setHostInfo(hostName, hostAddr);
         }
     }
@@ -90,7 +90,7 @@ void EZMQX::Config::setTnsInfo(std::string remoteAddr)
         }
         else
         {
-            EZMQX_LOG_V(DEBUG, TAG, "%s Set TNS address %s", __func__, remoteAddr);
+            EZMQX_LOG_V(DEBUG, TAG, "%s Set TNS address %s", __func__, remoteAddr.c_str());
             ctx->setTnsInfo(remoteAddr);
         }
     }
@@ -138,7 +138,7 @@ void EZMQX::Config::reset(ModeOption mode)
             ctx->setStandAloneMode(true);
             ctx->setHostInfo("localhost", "localhost");
         }
-        else if(FullFeature == configMode)
+        else if(Docker == configMode)
         {
             ctx->initialize();
         }

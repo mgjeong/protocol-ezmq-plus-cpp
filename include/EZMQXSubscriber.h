@@ -24,6 +24,7 @@ class Subscriber
         std::atomic_bool terminated;
         EZMQX::Context* ctx;
         std::list<ezmq::EZMQSubscriber*> subscribers;
+        std::list<EZMQX::Topic> storedTopics;
         std::map<std::string, std::shared_ptr<AML::Representation>> repDic;
         std::string token;
         EZMQX::BlockingQue* que;
@@ -33,11 +34,12 @@ class Subscriber
         virtual void cb(const std::string &_topic, const AML::AMLObject* obj) = 0;
 
         void internalSubCb(std::string topic, const ezmq::EZMQMessage &event);
+        void initialize(const std::string &topic);
         void initialize(const std::list<EZMQX::Topic> &topics);
 
         void validateTopic(const std::string& topic);
         virtual void verifyTopics(const std::string &topic, std::list<EZMQX::Topic> &verified);
-        virtual void verifyTopics(const std::list<EZMQX::Topic> &topics);
+        virtual void getSession(EZMQX::Topic topic, ezmq::EZMQSubscriber* &subCtx);
 
         Subscriber();
         ~Subscriber();

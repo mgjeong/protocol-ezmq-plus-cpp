@@ -10,8 +10,9 @@
 #define TAG "EZMQXTopicDiscovery"
 #define SLASH '/'
 #define DOUBLE_SLASH "//"
-#define START_POS 0
-#define OFFSET 1
+
+static const std::string TNS_KNOWN_PORT = "48323";
+static const std::string COLLON = ":";
 
 static const std::string PREFIX = "/api/v1";
 static const std::string TOPIC = "/tns/topic";
@@ -24,14 +25,19 @@ static const std::string TOPIC_PATTERN = "(\/[a-zA-Z0-9-_*.]+)+";
 static const std::string TOPIC_WILD_CARD = "*";
 static const std::string TOPIC_WILD_PATTERNN = "/*/";
 
-
 #ifdef __GNUC__
 #define EZMQX_GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #endif
 
-EZMQX::TopicDiscovery::TopicDiscovery() : ctx(EZMQX::Context::getInstance()){}
+EZMQX::TopicDiscovery::TopicDiscovery() : ctx(EZMQX::Context::getInstance())
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+}
 
-EZMQX::TopicDiscovery::~TopicDiscovery(){}
+EZMQX::TopicDiscovery::~TopicDiscovery()
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+}
 
 void EZMQX::TopicDiscovery::validateTopic(std::string& topic)
 {
@@ -39,7 +45,7 @@ void EZMQX::TopicDiscovery::validateTopic(std::string& topic)
     std::string tmp = topic;
 
     // simple grammer check
-    if (tmp.front() != SLASH || tmp.back() != SLASH || tmp.find(DOUBLE_SLASH) != std::string::npos)
+    if (tmp.front() != SLASH || tmp.back() == SLASH || tmp.find(DOUBLE_SLASH) != std::string::npos)
     {
         EZMQX_LOG_V(ERROR, TAG, "%s Invalid topic %s", __func__, topic);
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
@@ -55,8 +61,6 @@ void EZMQX::TopicDiscovery::validateTopic(std::string& topic)
 #if defined(EZMQX_GCC_VERSION) && EZMQX_GCC_VERSION >= 40900
     std::regex pattern(TOPIC_PATTERN);
 
-    // remove last slash
-    tmp = tmp.substr(START_POS, tmp.length() - OFFSET);
     if (!std::regex_match(tmp, pattern))
     {
         EZMQX_LOG_V(ERROR, TAG, "%s Invalid topic %s", __func__, topic);
@@ -73,7 +77,7 @@ void EZMQX::TopicDiscovery::verifyTopic(std::string& topic, std::list<EZMQX::Top
     try
     {
         EZMQX::SimpleRest rest;
-        tmp = rest.Get(ctx->getTnsAddr() + PREFIX + TOPIC, QUERY_PARAM + topic);
+        tmp = rest.Get(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, QUERY_PARAM + topic);
     }
     catch (...)
     {
@@ -134,11 +138,11 @@ std::list<EZMQX::Topic> EZMQX::TopicDiscovery::query(std::string topic)
         validateTopic(topic);
     }
 
-    // mode check
-    if (ctx->isStandAlone() && !ctx->isTnsEnabled())
+    // tns check
+    if (!ctx->isTnsEnabled())
     {
         EZMQX_LOG_V(ERROR, TAG, "%s Could not use discovery without tns server", __func__);
-        throw EZMQX::Exception("Could not use discovery with outtns server", EZMQX::InvalidTopic);
+        throw EZMQX::Exception("Could not use discovery with out tns server", EZMQX::TnsNotAvailable);
     }
 
     //tns server addr check

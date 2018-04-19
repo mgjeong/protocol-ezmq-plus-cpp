@@ -34,6 +34,7 @@ class Publisher
 
         bool isTerminated();
         void terminate();
+        EZMQX::Topic getTopic();
 
     public:
         ~Publisher();
