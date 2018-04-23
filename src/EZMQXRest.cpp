@@ -33,10 +33,11 @@ EZMQX::SimpleRest::~SimpleRest()
     curl_easy_cleanup(curl);
 }
 
-std::string EZMQX::SimpleRest::Get(std::string url)
+EZMQX::RestResponse EZMQX::SimpleRest::Get(const std::string &url)
 {
     std::string buff;
     CURLcode res;
+    long respCode;
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _writeCb);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buff);
@@ -46,14 +47,17 @@ std::string EZMQX::SimpleRest::Get(std::string url)
         throw EZMQX::Exception(curl_easy_strerror(res), EZMQX::RestError);
     }
 
-    return buff;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &respCode);
+
+    return RestResponse(static_cast<EZMQX::HttpStatus>(respCode), buff);
 }
 
-std::string EZMQX::SimpleRest::Get(std::string url, std::string query)
+EZMQX::RestResponse EZMQX::SimpleRest::Get(const std::string &url, const std::string &query)
 {
     std::string buff;
     std::string addr = url + QUESTION_MARK + query;
     CURLcode res;
+    long respCode;
     curl_easy_setopt(curl, CURLOPT_URL, addr.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _writeCb);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buff);
@@ -63,12 +67,15 @@ std::string EZMQX::SimpleRest::Get(std::string url, std::string query)
         throw EZMQX::Exception(curl_easy_strerror(res), EZMQX::RestError);
     }
 
-    return buff;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &respCode);
+
+    return RestResponse(static_cast<EZMQX::HttpStatus>(respCode), buff);
 }
 
-std::string EZMQX::SimpleRest::Put(std::string url, std::string payload)
+EZMQX::RestResponse EZMQX::SimpleRest::Put(const std::string &url, const std::string &payload)
 {
     CURLcode res;
+    long respCode;
     std::string buff;
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, PUT.c_str());
@@ -81,13 +88,16 @@ std::string EZMQX::SimpleRest::Put(std::string url, std::string payload)
         throw EZMQX::Exception(curl_easy_strerror(res), EZMQX::RestError);
     }
 
-    return buff;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &respCode);
+
+    return RestResponse(static_cast<EZMQX::HttpStatus>(respCode), buff);
 }
 
-std::string EZMQX::SimpleRest::Post(std::string url, std::string payload)
+EZMQX::RestResponse EZMQX::SimpleRest::Post(const std::string &url, const std::string &payload)
 {
     std::string buff;
     CURLcode res;
+    long respCode;
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _writeCb);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buff);
@@ -99,14 +109,17 @@ std::string EZMQX::SimpleRest::Post(std::string url, std::string payload)
         throw EZMQX::Exception(curl_easy_strerror(res), EZMQX::RestError);
     }
 
-    return buff;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &respCode);
+
+    return RestResponse(static_cast<EZMQX::HttpStatus>(respCode), buff);
 
 }
 
-std::string EZMQX::SimpleRest::Delete(std::string url, std::string payload)
+EZMQX::RestResponse EZMQX::SimpleRest::Delete(const std::string &url, const std::string &payload)
 {
     CURLcode res;
     std::string buff;
+    long respCode;
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, DELETE.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _writeCb);
@@ -119,5 +132,40 @@ std::string EZMQX::SimpleRest::Delete(std::string url, std::string payload)
         throw EZMQX::Exception(curl_easy_strerror(res), EZMQX::RestError);
     }
 
-    return buff;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &respCode);
+
+    return RestResponse(static_cast<EZMQX::HttpStatus>(respCode), buff);
+}
+
+EZMQX::rest RestFactory::getSomeRest()
+{
+    SimpleRest _rest;
+    return _rest;
+}
+
+EZMQX::RestService::factory;
+
+EZMQX::RestResponse EZMQX::RestService::Get(const std::string &url)
+{
+    return factory.getSomeRest().Get(url);
+}
+
+EZMQX::RestResponse EZMQX::RestService::Get(const std::string &url, const std::string &query)
+{
+    return factory.getSomeRest().Get(url, query);
+}
+
+EZMQX::RestResponse EZMQX::RestService::Put(const std::string &url, const std::string &payload)
+{
+    return factory.getSomeRest().Put(url, payload);
+}
+
+EZMQX::RestResponse EZMQX::RestService::Post(const std::string &url, const std::string &payload)
+{
+    return factory.getSomeRest().Post(url, payload)
+}
+
+EZMQX::RestResponse EZMQX::RestService::Delete(const std::string &url, const std::string &payload)
+{
+    return factory.getSomeRest().Delete(url, payload)
 }
