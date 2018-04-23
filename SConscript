@@ -63,10 +63,11 @@ if target_os not in ['windows']:
 if target_os in ['linux']:
     ezmq_plus_env.AppendUnique(LIBS=['pthread'])
 
-#if target_os in ['linux']:
-#    if not env.get('RELEASE'):
-#        ezmq_plus_env.PrependUnique(LIBS=['gcov'])
-#        ezmq_plus_env.AppendUnique(CXXFLAGS=['--coverage'])
+if target_os in ['linux']:
+   if not env.get('RELEASE'):
+       ezmq_plus_env.AppendUnique(CCFLAGS=['-g'])
+       ezmq_plus_env.PrependUnique(LIBS=['gcov'])
+       ezmq_plus_env.AppendUnique(CXXFLAGS=['--coverage'])
 
 ezmq_plus_DIR = '.'
 ezmq_plus_env.AppendUnique(ezmq_plus_src = [ezmq_plus_env.Glob(os.path.join(ezmq_plus_DIR, 'src', '*.cpp'))])
