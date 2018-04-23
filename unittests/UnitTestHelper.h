@@ -38,7 +38,7 @@ public:
     }
 
     MOCK_METHOD2(verifyTopics, void(const std::string &topic, std::list<EZMQX::Topic> &verified));
-    MOCK_METHOD2(getSession, void(EZMQX::Topic topic, ezmq::EZMQSubscriber* &subCtx));
+    MOCK_METHOD1(getSession, void(EZMQX::Topic topic));
 };
 
 class DockerAmlSubscriber : public testing::Test

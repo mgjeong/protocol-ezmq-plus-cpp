@@ -54,7 +54,7 @@ TEST_F(DockerAmlSubscriber, ExpectThreeDummies)
     EXPECT_CALL(mock, verifyTopics(_, _))
     .WillOnce(SetArgReferee<1>(getDummyTopics()));
 
-    EXPECT_CALL(mock, getSession(_, _))
+    EXPECT_CALL(mock, getSession(_))
     .Times(3);
 
     std::string topic = "/TEST";

@@ -76,30 +76,53 @@ void EZMQX::Subscriber::initialize(const std::string &topic)
     }    
 }
 
-void EZMQX::Subscriber::getSession(EZMQX::Topic topic, ezmq::EZMQSubscriber* &subCtx)
+void EZMQX::Subscriber::getSession(EZMQX::Topic topic)
 {
     EZMQX::Endpoint ep = topic.getEndpoint();
-    subCtx = new ezmq::EZMQSubscriber(ep.getAddr(), ep.getPort(), [](const ezmq::EZMQMessage &event)->void{ return;}, std::bind(&EZMQX::Subscriber::internalSubCb, this, std::placeholders::_1, std::placeholders::_2));
+    ezmq::EZMQSubscriber* subCtx = nullptr;
 
-    if (!subCtx)
+    try
     {
-        EZMQX_LOG_V(DEBUG, TAG, "%s Could not connect with endpoint %s ", __func__, ep.toString().c_str());
-        throw EZMQX::Exception("Could not connect endpoint " + ep.toString(), EZMQX::UnKnownState);
+        subCtx = new ezmq::EZMQSubscriber(ep.getAddr(), ep.getPort(), [](const ezmq::EZMQMessage &event)->void{ return;}, std::bind(&EZMQX::Subscriber::internalSubCb, this, std::placeholders::_1, std::placeholders::_2));
+
+        if (!subCtx)
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s Could not connect with endpoint %s ", __func__, ep.toString().c_str());
+            throw EZMQX::Exception("Could not connect endpoint " + ep.toString(), EZMQX::UnKnownState);
+        }
+
+        ezmq::EZMQErrorCode ret = subCtx->start();
+
+        if (ezmq::EZMQ_OK != ret)
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s Could not start session with endpoint %s ", __func__, ep.toString().c_str());
+            throw EZMQX::Exception("Could not connect endpoint " + ep.toString(), EZMQX::UnKnownState);
+        }
+
+        ret = subCtx->subscribe(topic.getTopic());
+
+        if (ezmq::EZMQ_OK != ret)
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s Could not subscribe with endpoint %s ", __func__, ep.toString().c_str());
+            throw EZMQX::Exception("Could not connect endpoint " + ep.toString(), EZMQX::UnKnownState);
+        }
     }
-
-    ezmq::EZMQErrorCode ret = subCtx->start();
-
-    if (ezmq::EZMQ_OK != ret)
+    catch(const EZMQX::Exception &e)
     {
-        EZMQX_LOG_V(DEBUG, TAG, "%s Could not start session with endpoint %s ", __func__, ep.toString().c_str());
-        throw EZMQX::Exception("Could not connect endpoint " + ep.toString(), EZMQX::UnKnownState);
+        if (subCtx)
+        {
+            delete subCtx;
+        }
+
+        throw e;
     }
-
-    ret = subCtx->subscribe(topic.getTopic());
-
-    if (ezmq::EZMQ_OK != ret)
+    catch(...)
     {
-        EZMQX_LOG_V(DEBUG, TAG, "%s Could not subscribe with endpoint %s ", __func__, ep.toString().c_str());
+        if (subCtx)
+        {
+            delete subCtx;
+        }
+
         throw EZMQX::Exception("Could not connect endpoint " + ep.toString(), EZMQX::UnKnownState);
     }
 
@@ -127,19 +150,24 @@ void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics)
             throw EZMQX::Exception("Could not found Aml Rep", EZMQX::UnKnownState);
         }
 
-        ezmq::EZMQSubscriber* sub = nullptr;
         try
         {
-            getSession(topic, sub);
+            getSession(topic);
         }
         catch(const EZMQX::Exception &e)
         {
-            if (sub != nullptr)
+            EZMQX_LOG_V(ERROR, TAG, "%s exception: %s", __func__, e.what());
+
+            // clear all subscribers
+            for (std::list<ezmq::EZMQSubscriber*>::iterator subItr = subscribers.begin() ; subItr != subscribers.end(); subItr++)
             {
-                delete sub;
+                if (*subItr)
+                {
+                    EZMQX_LOG_V(DEBUG, TAG, "%s try ezmq subscribers terminated", __func__);
+                    delete *subItr;
+                }
             }
 
-            EZMQX_LOG_V(ERROR, TAG, "%s exception: %s", __func__, e.what());
             throw e;
         }
 
