@@ -158,7 +158,7 @@ EZMQX::rest* EZMQX::RestFactory::getSomeRest()
     return new SimpleRest;
 }
 
-EZMQX::RestFactory EZMQX::RestService::factory = EZMQX::RestFactory();
+EZMQX::RestFactoryInterface* EZMQX::RestService::factory = new EZMQX::RestFactory();
 
 EZMQX::RestResponse EZMQX::RestService::Get(const std::string &url)
 {
@@ -169,7 +169,7 @@ EZMQX::RestResponse EZMQX::RestService::Get(const std::string &url)
 
     try
     {
-        ctx = factory.getSomeRest();
+        ctx = factory->getSomeRest();
         resp = ctx->Get(url);
     }
     catch(const EZMQX::Exception& e)
@@ -206,7 +206,7 @@ EZMQX::RestResponse EZMQX::RestService::Get(const std::string &url, const std::s
 
     try
     {
-        ctx = factory.getSomeRest();
+        ctx = factory->getSomeRest();
         resp = ctx->Get(url, query);
     }
     catch(const EZMQX::Exception& e)
@@ -243,7 +243,7 @@ EZMQX::RestResponse EZMQX::RestService::Put(const std::string &url, const std::s
 
     try
     {
-        ctx = factory.getSomeRest();
+        ctx = factory->getSomeRest();
         resp = ctx->Put(url, payload);
     }
     catch(const EZMQX::Exception& e)
@@ -280,7 +280,7 @@ EZMQX::RestResponse EZMQX::RestService::Post(const std::string &url, const std::
 
     try
     {
-        ctx = factory.getSomeRest();
+        ctx = factory->getSomeRest();
         resp = ctx->Post(url, payload);
     }
     catch(const EZMQX::Exception& e)
@@ -317,7 +317,7 @@ EZMQX::RestResponse EZMQX::RestService::Delete(const std::string &url, const std
 
     try
     {
-        ctx = factory.getSomeRest();
+        ctx = factory->getSomeRest();
         resp = ctx->Delete(url, payload);
     }
     catch(const EZMQX::Exception& e)
@@ -343,4 +343,13 @@ EZMQX::RestResponse EZMQX::RestService::Delete(const std::string &url, const std
 
     delete ctx;
     return resp;
+}
+
+EZMQX::RestService::~RestService()
+{
+    if (factory)
+    {
+        delete factory;
+        factory = nullptr;
+    }
 }

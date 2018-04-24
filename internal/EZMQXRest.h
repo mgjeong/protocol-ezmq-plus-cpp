@@ -60,11 +60,17 @@ public:
     RestResponse Delete(const std::string &url, const std::string &payload);
 };
 
-// rest Factory
-class RestFactory
+class RestFactoryInterface
 {
 public:
-    virtual rest* getSomeRest();
+    virtual rest* getSomeRest() = 0;
+};
+
+// rest Factory
+class RestFactory : public RestFactoryInterface
+{
+public:
+    rest* getSomeRest();
 };
 
 // fake accessor fot RestService
@@ -75,9 +81,11 @@ class RestService
 {
 friend FakeRestAccessor;
 private:
-    static RestFactory factory;
+    static RestFactoryInterface* factory;
 
 public:
+    RestService(){};
+    ~RestService();
     static RestResponse Get(const std::string &url);
     static RestResponse Get(const std::string &url, const std::string &query);
     static RestResponse Put(const std::string &url, const std::string &payload);
