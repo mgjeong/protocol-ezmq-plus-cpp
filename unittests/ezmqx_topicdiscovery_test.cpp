@@ -5,6 +5,7 @@
 #include <EZMQXException.h>
 #include <UnitTestHelper.h>
 #include <string>
+#include <list>
 
 using testing::Action;
 using testing::ActionInterface;
@@ -115,4 +116,21 @@ TEST_F(DockerDiscoveryTest, DockerMockTest)
     EXPECT_TRUE(third.getSchema().compare("dummy3") == 0);
     EXPECT_TRUE(third.getEndpoint().toString().compare("8.8.8.8:3") == 0);
     result.pop_front();
+}
+
+TEST_F(FakeDiscoveryTest, FakeRest)
+{
+    std::list<EZMQX::Topic> topics = discovery.query("/FakeDiscoveryTest");
+
+
+    std::list<EZMQX::Topic> checkList = getDummyTopics();
+
+    auto checker = checkList.begin();
+    for (auto itr =  topics.begin();  itr != topics.end(); itr++, checker++)
+    {
+        EXPECT_TRUE((*itr).getTopic().compare((*checker).getTopic())==0);
+        EXPECT_TRUE((*itr).getSchema().compare((*checker).getSchema())==0);
+        EXPECT_TRUE((*itr).getEndpoint().toString().compare((*checker).getEndpoint().toString()) == 0);
+    }
+
 }
