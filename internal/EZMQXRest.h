@@ -26,8 +26,8 @@ class RestResponse
 private:
     HttpStatus status;
     std::string payload;
-    RestResponse(){};
 public:
+    RestResponse() : status(WrongCode), payload(""){};
     RestResponse(HttpStatus restStatus, const std::string &restPayload): status(restStatus), payload(restPayload){};
     HttpStatus getStatus(){return status;};
     std::string getPayload(){return payload;};
@@ -36,11 +36,11 @@ public:
 class rest
 {
 public:
-    virtual RestResponse Get(const std::string &url);
-    virtual RestResponse Get(const std::string &url, const std::string &query);
-    virtual RestResponse Put(const std::string &url, const std::string &payload);
-    virtual RestResponse Post(const std::string &url, const std::string &payload);
-    virtual RestResponse Delete(const std::string &url, const std::string &payload);
+    virtual RestResponse Get(const std::string &url) = 0;
+    virtual RestResponse Get(const std::string &url, const std::string &query) = 0;
+    virtual RestResponse Put(const std::string &url, const std::string &payload) = 0;
+    virtual RestResponse Post(const std::string &url, const std::string &payload) = 0;
+    virtual RestResponse Delete(const std::string &url, const std::string &payload) = 0;
 };
 
 class SimpleRest : public rest
@@ -64,7 +64,7 @@ public:
 class RestFactory
 {
 public:
-    virtual rest getSomeRest();
+    virtual rest* getSomeRest();
 };
 
 // fake accessor fot RestService
