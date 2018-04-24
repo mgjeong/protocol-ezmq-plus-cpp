@@ -141,8 +141,7 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
 
     try
     {
-        EZMQX::SimpleRest rest;
-        tmp = rest.Post(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, tmp);
+        tmp = EZMQX::RestService::Post(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, tmp).getPayload();
     }
     catch (...)
     {

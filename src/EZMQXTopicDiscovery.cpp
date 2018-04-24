@@ -76,8 +76,12 @@ void EZMQX::TopicDiscovery::verifyTopic(std::string& topic, std::list<EZMQX::Top
     // send rest
     try
     {
-        EZMQX::SimpleRest rest;
-        tmp = rest.Get(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, QUERY_PARAM + topic);
+        tmp = EZMQX::RestService::Get(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, QUERY_PARAM + topic).getPayload();
+    }
+    catch(const EZMQX::Exception& e)
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s %s", __func__, e.what());
+        throw e;
     }
     catch (...)
     {

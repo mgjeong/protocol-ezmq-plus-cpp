@@ -5,6 +5,7 @@
 #include <EZMQXAmlPublisher.h>
 #include <EZMQXException.h>
 #include <EZMQXFakeSingletonAccessor.h>
+#include <EZMQXFakeRestAccessor.h>
 #include <gtest.h>
 #include <gmock.h>
 #include <string>
@@ -38,7 +39,7 @@ public:
     }
 
     MOCK_METHOD2(verifyTopics, void(const std::string &topic, std::list<EZMQX::Topic> &verified));
-    MOCK_METHOD2(getSession, void(EZMQX::Topic topic, ezmq::EZMQSubscriber* &subCtx));
+    MOCK_METHOD1(getSession, void(EZMQX::Topic topic));
 };
 
 class DockerAmlSubscriber : public testing::Test
@@ -132,6 +133,37 @@ protected:
         dummy.push_back(EZMQX::Topic("/TEST/A", "dummy1", EZMQX::Endpoint("8.8.8.8", 1)));
         dummy.push_back(EZMQX::Topic("/TEST/B", "dummy2", EZMQX::Endpoint("8.8.8.8", 2)));
         dummy.push_back(EZMQX::Topic("/TEST/C", "dummy3", EZMQX::Endpoint("8.8.8.8", 3)));
+        return dummy;
+    }
+
+    virtual void TearDown()
+    {
+        delete config;
+        config = nullptr;
+    }
+};
+
+class FakeDiscoveryTest : public testing::Test
+{
+protected:
+    EZMQX::Config *config;
+    EZMQX::TopicDiscovery discovery;
+    virtual void SetUp()
+    {
+        EZMQX::FakeSingletonAccessor::setFake();
+        EZMQX::FakeRestAccessor::setFake();
+        config = new EZMQX::Config(EZMQX::Docker);
+    }
+
+    std::list<EZMQX::Topic> getDummyTopics()
+    {
+        std::list<EZMQX::Topic> dummy;
+        dummy.push_back(EZMQX::Topic("/A/A", "GTC_Robot_0.0.1", EZMQX::Endpoint("localhost", 4000)));
+        dummy.push_back(EZMQX::Topic("/A/B", "GTC_Robot_0.0.1", EZMQX::Endpoint("localhost", 4001)));
+        dummy.push_back(EZMQX::Topic("/A/C", "GTC_Robot_0.0.1", EZMQX::Endpoint("localhost", 4002)));
+        dummy.push_back(EZMQX::Topic("/B/A", "GTC_Robot_0.0.1", EZMQX::Endpoint("localhost", 4000)));
+        dummy.push_back(EZMQX::Topic("/B/B", "GTC_Robot_0.0.1", EZMQX::Endpoint("localhost", 4001)));
+        dummy.push_back(EZMQX::Topic("/B/C", "GTC_Robot_0.0.1", EZMQX::Endpoint("localhost", 4002)));
         return dummy;
     }
 

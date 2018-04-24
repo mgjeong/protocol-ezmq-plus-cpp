@@ -29,6 +29,13 @@ ezmq_plus_unittest_env.AppendUnique(LIBPATH=[lib_env.get('BUILD_DIR')])
 #ezmq_plus_unittest_env.AppendUnique(LIBS=['aml', 'ezmq_plus', 'gtest', 'gtest_main', 'gmock'])
 ezmq_plus_unittest_env.AppendUnique(LIBS=['aml', 'ezmq_plus', 'gmock'])
 
+if target_os in ['linux']:
+   if not env.get('RELEASE'):
+       ezmq_plus_unittest_env.AppendUnique(CCFLAGS=['-g'])
+       ezmq_plus_unittest_env.PrependUnique(LIBS=['gcov'])
+       ezmq_plus_unittest_env.AppendUnique(CXXFLAGS=['--coverage'])
+       ezmq_plus_unittest_env.AppendUnique(CPPDEFINES=['DEBUG_LOG'])
+
 ####################################################################
 # Source files and Targets
 ######################################################################
