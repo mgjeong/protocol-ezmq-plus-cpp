@@ -21,12 +21,11 @@ static const std::string TOPIC = "/tns/topic";
 static const std::string HEALTH = "/health";
 
 static const std::string PAYLOAD_TOPIC = "topic";
+static const std::string PAYLOAD_NAME = "name";
 static const std::string PAYLOAD_ENDPOINT = "endpoint";
-static const std::string PAYLOAD_SCHEMA = "schema";
+static const std::string PAYLOAD_DATAMODEL = "datamodel";
 
-static const std::string RESULT_KEY = "result";
-static const std::string RESULT_SUCCESS = "success";
-static const std::string RESULT_DUPLICATED = "duplicated";
+static const std::string PAYLOAD_KEEPALIVE_INTERVAL = "ka_interval";
 
 static const std::string TOPIC_PATTERN = "(\/[a-zA-Z0-9-_*.]+)+";
 
@@ -122,16 +121,22 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
     }
 
     std::string tmp;
+    int interval = 0;
+    EZMQX::RestResponse resp;
 
     try
     {
-        Json::Value value;
-        value[PAYLOAD_TOPIC] = regTopic.getTopic();
-        value[PAYLOAD_ENDPOINT] = regTopic.getEndpoint().toString();
-        value[PAYLOAD_SCHEMA] = regTopic.getSchema();
+        Json::Value root = Json::Value(Json::objectValue);
+        root[PAYLOAD_TOPIC] = Json::Value(Json::objectValue);
 
-        Json::FastWriter writer;
-        tmp = writer.write(value);
+        root[PAYLOAD_TOPIC][PAYLOAD_NAME] = regTopic.getTopic();
+        root[PAYLOAD_TOPIC][PAYLOAD_ENDPOINT] = regTopic.getEndpoint().toString();
+        root[PAYLOAD_TOPIC][PAYLOAD_DATAMODEL] = regTopic.getSchema();
+
+        Json::StreamWriterBuilder builder;
+        std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
+        tmp = writer->write(root, &std::cout);
+        std::cout << std::endl;
     }
     catch (...)
     {
@@ -141,7 +146,12 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
 
     try
     {
-        tmp = EZMQX::RestService::Post(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, tmp).getPayload();
+        resp = EZMQX::RestService::Post(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, tmp);
+    }
+    catch(const EZMQX::Exception &e)
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s %s", __func__, e.what());
+        throw e;
     }
     catch (...)
     {
@@ -149,19 +159,54 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
         throw EZMQX::Exception("Could not send rest post request", EZMQX::UnKnownState);
     }
 
+    if (resp.getStatus() == EZMQX::Created)
+    {
+        EZMQX_LOG_V(DEBUG, TAG, "%s topic %s register successfully", __func__, regTopic.getTopic());
+    }
+    else if (resp.getStatus() == EZMQX::Conflict)
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not register topic: duplicated", __func__);
+        throw EZMQX::Exception("Could not register topic: duplicated", EZMQX::RestError);
+    }
+    else if (resp.getStatus() == EZMQX::InternalError)
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not register topic: Internal Server Error", __func__);
+        throw EZMQX::Exception("Could not register topic: Internal Server Error", EZMQX::RestError);
+    }
+    else
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not register topic: unknown rest error", __func__);
+        throw EZMQX::Exception("Could not register topic: unknown rest error", EZMQX::RestError);
+    }
+
     try
     {
+        std::string response = resp.getPayload();
+        std::string errors;
         Json::Value root;
-        Json::Reader reader;
-        if (!reader.parse(tmp, root))
+        Json::CharReaderBuilder builder;
+        std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+        if (!reader->parse(response.c_str(), response.c_str() + response.size(), &root, &errors))
         {
-            EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json response %s", __func__, tmp);
-            throw EZMQX::Exception("Could not parse json response", EZMQX::UnKnownState);
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json response %s", __func__, response);
+            throw EZMQX::Exception("Could not parse json response", EZMQX::RestError);
         }
         else
         {
-            tmp = root[RESULT_KEY].asString();
+            tmp = root[PAYLOAD_KEEPALIVE_INTERVAL].asString();
+            interval = std::stoi(tmp);
+
+            if (interval < 1)
+            {
+                EZMQX_LOG_V(ERROR, TAG, "%s Invalid keepAlive option parsed", __func__);
+                throw EZMQX::Exception("Invalid keepAlive option parsed", EZMQX::RestError);
+            }
         }
+    }
+    catch (const EZMQX::Exception& e)
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s %s", __func__, e.what());
+        throw e;
     }
     catch (...)
     {
@@ -169,21 +214,8 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
         throw EZMQX::Exception("Could not parse json response", EZMQX::UnKnownState);
     }
 
-    if (tmp.compare(RESULT_SUCCESS) == 0)
-    {
-        ctx->insertTopic(regTopic.getTopic());
-        return;
-    }
-    else if (tmp.compare(RESULT_DUPLICATED) == 0)
-    {
-        EZMQX_LOG_V(ERROR, TAG, "%s Could not register topic: duplicated topic", __func__);
-        throw EZMQX::Exception("Could not register topic: duplicated topic", EZMQX::UnKnownState);
-    }
-    else
-    {
-        EZMQX_LOG_V(ERROR, TAG, "%s Could not register topic: unknown state", __func__);
-        throw EZMQX::Exception("Could not register topic: unknown state", EZMQX::UnKnownState);
-    }
+    // TODO
+    // Update keepAlive interval
 
     return;
 }
