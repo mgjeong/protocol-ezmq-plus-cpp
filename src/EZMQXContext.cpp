@@ -317,8 +317,7 @@ void EZMQX::Context::initialize()
             {
                 EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request for getting host info", __func__);
                 {
-                    EZMQX::SimpleRest rest;
-                    nodeInfo = rest.Get(NODE+PREFIX+API_CONFIG);
+                    nodeInfo = EZMQX::RestService::Get(NODE+PREFIX+API_CONFIG).getPayload();
                 }
                 EZMQX_LOG_V(DEBUG, TAG, "%s Rest result \n %s \n", __func__, nodeInfo.c_str());
 
@@ -390,8 +389,7 @@ void EZMQX::Context::initialize()
                 EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request for getting App info", __func__);
 
                 {
-                    EZMQX::SimpleRest rest;
-                    nodeInfo = rest.Get(NODE+PREFIX+API_APPS);
+                    nodeInfo = EZMQX::RestService::Get(NODE+PREFIX+API_APPS).getPayload();
                 }
 
             }
@@ -463,8 +461,7 @@ void EZMQX::Context::initialize()
                     nodeInfo.clear();
                     EZMQX_LOG_V(DEBUG, TAG, "%s try send Get request to %s", __func__, addr.c_str());
                     {
-                        EZMQX::SimpleRest rest;
-                        nodeInfo = rest.Get(addr);
+                        nodeInfo = EZMQX::RestService::Get(addr).getPayload();
                     }
                     EZMQX_LOG_V(DEBUG, TAG, "%s Rest result is \n %s \n", __func__, nodeInfo.c_str());
 

@@ -294,8 +294,7 @@ void EZMQX::Subscriber::verifyTopics(const std::string &topic, std::list<EZMQX::
     std::string tmp;
     try
     {
-        EZMQX::SimpleRest rest;
-        tmp = rest.Get(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, QUERY_PARAM + topic);
+        tmp = EZMQX::RestService::Get(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, QUERY_PARAM + topic).getPayload();
     }
     catch (...)
     {
