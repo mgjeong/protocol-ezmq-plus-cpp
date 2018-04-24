@@ -16,7 +16,12 @@ static const std::string COLLON = ":";
 
 static const std::string PREFIX = "/api/v1";
 static const std::string TOPIC = "/tns/topic";
-static const std::string QUERY_PARAM = "topic=";
+
+static const std::string QUERY_NAME = "name=";
+static const std::string QUERY_HIERARCHICAL = "&hierarchical=";
+static const std::string QUERY_TRUE = "yes";
+static const std::string QUERY_FALSE = "no";
+
 static const std::string PAYLOAD_TOPIC = "topic";
 static const std::string PAYLOAD_ENDPOINT = "endpoint";
 static const std::string PAYLOAD_SCHEMA = "schema";
@@ -69,14 +74,43 @@ void EZMQX::TopicDiscovery::validateTopic(std::string& topic)
 #endif
 }
 
-void EZMQX::TopicDiscovery::verifyTopic(std::string& topic, std::list<EZMQX::Topic>& topics)
+void EZMQX::TopicDiscovery::verifyTopic(std::string& topic, std::list<EZMQX::Topic>& topics, bool isHierarchical)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     std::string tmp;
+    std::string resp;
+    EZMQX::RestResponse restResp;
     // send rest
     try
     {
-        tmp = EZMQX::RestService::Get(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, QUERY_PARAM + topic).getPayload();
+        std::string query = QUERY_NAME + topic + QUERY_HIERARCHICAL + (isHierarchical == true ? QUERY_TRUE : QUERY_FALSE);
+        restResp = EZMQX::RestService::Get(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, query);
+
+        if (restResp.getStatus() == EZMQX::Success)
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s topic %s query successfully", __func__, topic);
+        }
+        else if (restResp.getStatus() == EZMQX::BadRequest)
+        {
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not query topic successfully : BadRequest", __func__);
+            throw EZMQX::Exception("Could not qeury topic: BadRequest", EZMQX::RestError);
+        }
+        else if (restResp.getStatus() == EZMQX::NotFound)
+        {
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not qeury topic successfully : NotFound", __func__);
+            throw EZMQX::Exception("Could not qeury topic: NotFound", EZMQX::RestError);
+        }
+        else if (restResp.getStatus() == EZMQX::InternalError)
+        {
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not qeury topic successfully : Internal Server Error", __func__);
+            throw EZMQX::Exception("Could not qeury topic: Internal Server Error", EZMQX::RestError);
+        }
+        else
+        {
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not qeury topic successfully : unknown rest error", __func__);
+            throw EZMQX::Exception("Could not qeury topic: unknown rest error", EZMQX::RestError);
+        }
+
     }
     catch(const EZMQX::Exception& e)
     {
@@ -122,7 +156,7 @@ void EZMQX::TopicDiscovery::verifyTopic(std::string& topic, std::list<EZMQX::Top
     }
 }
 
-std::list<EZMQX::Topic> EZMQX::TopicDiscovery::query(std::string topic)
+EZMQX::Topic EZMQX::TopicDiscovery::query(std::string topic)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     if (!ctx)
@@ -154,7 +188,55 @@ std::list<EZMQX::Topic> EZMQX::TopicDiscovery::query(std::string topic)
 
     try
     {
-        verifyTopic(topic, topics);
+        verifyTopic(topic, topics, false);
+    }
+    catch(const EZMQX::Exception& e)
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s Exception: %s", __func__, e.what());
+        throw e;
+    }
+    catch(...)
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s Unknown Exception", __func__);
+        throw EZMQX::Exception("Could not query topic", EZMQX::UnKnownState);
+    }
+
+    return topics.front();
+}
+
+std::list<EZMQX::Topic> EZMQX::TopicDiscovery::hierarchicalQuery(std::string topic)
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+    if (!ctx)
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s Coould not initialize context", __func__);
+        throw EZMQX::Exception("Could not initialize context", EZMQX::UnKnownState);
+    }
+
+    // TODO validation check
+    if (topic.empty())
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s Invalid topic %s", __func__, topic);
+        throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
+    }
+    else
+    {
+        validateTopic(topic);
+    }
+
+    // tns check
+    if (!ctx->isTnsEnabled())
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not use discovery without tns server", __func__);
+        throw EZMQX::Exception("Could not use discovery with out tns server", EZMQX::TnsNotAvailable);
+    }
+
+    //tns server addr check
+    std::list<EZMQX::Topic> topics;
+
+    try
+    {
+        verifyTopic(topic, topics, true);
     }
     catch(const EZMQX::Exception& e)
     {

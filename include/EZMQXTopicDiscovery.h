@@ -13,9 +13,10 @@ class TopicDiscovery
         std::mutex lock;
         EZMQX::Context* ctx;
         void validateTopic(std::string& topic);
-        virtual void verifyTopic(std::string& topic, std::list<EZMQX::Topic>& topics);
+        virtual void verifyTopic(std::string& topic, std::list<EZMQX::Topic>& topics, bool isHierarchical);
     public:
-        std::list<EZMQX::Topic> query(std::string topic);
+        EZMQX::Topic query(std::string topic);
+        std::list<EZMQX::Topic> hierarchicalQuery(std::string topic);
         TopicDiscovery();
         ~TopicDiscovery();
 };
