@@ -23,7 +23,7 @@ int main()
             {
                 result.clear();
             }
-            result = discovery->query(topic);
+            result = discovery->hierarchicalQuery(topic);
 
             for (auto itr = result.begin(); itr != result.end(); itr++)
             {
