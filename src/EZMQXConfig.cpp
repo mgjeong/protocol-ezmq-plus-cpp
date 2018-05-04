@@ -9,7 +9,7 @@ static const std::string LOCAL_ADDR = "localhost";
 
 EZMQX::Config::Config(): initialized(false), ctx(EZMQX::Context::getInstance()){/*DoNotUseIt*/}
 
-EZMQX::Config::Config(ModeOption mode): configMode(mode), initialized(false), ctx(EZMQX::Context::getInstance())
+EZMQX::Config::Config(ModeOption mode): initialized(false), configMode(mode), ctx(EZMQX::Context::getInstance())
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     initialize();
