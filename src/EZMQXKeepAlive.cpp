@@ -9,6 +9,7 @@
 #include <EZMQXContext.h>
 #include <chrono>
 #include <EZMQXLogger.h>
+#include <iostream>
 
 #define TAG "EZMQXKeepAlive"
 
@@ -103,9 +104,12 @@ void EZMQX::KeepAlive::queHandler()
                 continue;
             }
 
+            std::string errors;
             Json::Value root;
-            Json::Reader reader;
-            if (reader.parse(ret, root))
+            Json::CharReaderBuilder builder;
+            std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+
+            if (reader->parse(ret.c_str(), ret.c_str() + ret.size(), &root, &errors))
             {
                 ret = root[RESULT_KEY].asString();
 
@@ -156,8 +160,14 @@ void EZMQX::KeepAlive::timerHandler()
                 root.append(value);
             }
 
-            Json::FastWriter writer;
-            std::string payload = writer.write(root);
+            Json::StreamWriterBuilder builder;
+            std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
+
+            writer->write(root, &std::cout);
+            std::cout << std::endl;
+
+            std::string payload = root.asString();
+
             EZMQX_LOG_V(DEBUG, TAG, "%s Payload: %s", __func__, payload.c_str());
 
             // queing here

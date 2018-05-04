@@ -135,8 +135,9 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
 
         Json::StreamWriterBuilder builder;
         std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
-        tmp = writer->write(root, &std::cout);
+        writer->write(root, &std::cout);
         std::cout << std::endl;
+        tmp = root.asString();
     }
     catch (...)
     {
