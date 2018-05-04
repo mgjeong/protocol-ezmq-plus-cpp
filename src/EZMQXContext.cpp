@@ -40,6 +40,9 @@ static const std::string PORTS_PRIVATE = "PrivatePort";
 static const std::string PORTS_PUBLIC = "PublicPort";
 
 static const std::string PAYLOAD_TOPIC = "topic";
+static const std::string PAYLOAD_NAME = "name";
+static const std::string PAYLOAD_ENDPOINT = "endpoint";
+static const std::string PAYLOAD_DATAMODEL = "datamodel";
 
 // hostname path
 static const std::string HOSTNAME = "/etc/hostname";
@@ -656,16 +659,8 @@ void EZMQX::Context::deleteTopic(std::string topic)
             {
                 try
                 {
-                    Json::Value value;
-                    value[PAYLOAD_TOPIC] = topic;
-
-                    Json::FastWriter writer;
-                    std::string payload = writer.write(value);
-                    if (!payload.empty())
-                    {
-                        EZMQX_LOG_V(DEBUG, TAG, "%s Request unregister topic %s payload: %s", __func__, topic.c_str(), payload.c_str());
-                        keepAlive->inQue(EZMQX::UnregisterTopic, payload);
-                    }
+                    EZMQX_LOG_V(DEBUG, TAG, "%s Request unregister topic %s", __func__, topic.c_str());
+                    keepAlive->inQue(EZMQX::UnregisterTopic, topic);
                 }
                 catch(...)
                 {
