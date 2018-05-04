@@ -324,9 +324,12 @@ void EZMQX::Context::initialize()
                 }
                 EZMQX_LOG_V(DEBUG, TAG, "%s Rest result \n %s \n", __func__, nodeInfo.c_str());
 
+                std::string errors;
                 Json::Value root;
-                Json::Reader reader;
-                if (!reader.parse(nodeInfo, root))
+                Json::CharReaderBuilder builder;
+                std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+
+                if (!reader->parse(nodeInfo.c_str(), nodeInfo.c_str() + nodeInfo.size(), &root, &errors))
                 {
                     EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json", __func__);
                 }
@@ -376,7 +379,7 @@ void EZMQX::Context::initialize()
                     _hostname = _hostname.substr(0, _hostname.size()-1);
                 }
                 this->hostname = _hostname;
-                EZMQX_LOG_V(DEBUG, TAG, "%s hostname found %s", __func__, this->hostname);
+                EZMQX_LOG_V(DEBUG, TAG, "%s hostname found %s", __func__, this->hostname.c_str());
             }
             catch(...)
             {
@@ -402,15 +405,17 @@ void EZMQX::Context::initialize()
                 throw EZMQX::Exception("Internal rest service unavilable", EZMQX::ServiceUnavailable);
             }
 
+            std::string errors;
             Json::Value root;
-            Json::Reader reader;
+            Json::CharReaderBuilder builder;
+            std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
             Json::Value props;
             Json::Value portArray;
             std::list<std::string> runningApps;
 
             try
             {
-                if (!reader.parse(nodeInfo, root))
+                if (!reader->parse(nodeInfo.c_str(), nodeInfo.c_str() + nodeInfo.size(), &root, &errors))
                 {
                     EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json", __func__);
                     throw EZMQX::Exception("Could not parse json", EZMQX::UnKnownState);
@@ -475,7 +480,7 @@ void EZMQX::Context::initialize()
                     else
                     {
                         root.clear();
-                        if (!reader.parse(nodeInfo, root))
+                        if (!reader->parse(nodeInfo.c_str(), nodeInfo.c_str() + nodeInfo.size(), &root, &errors))
                         {
                             continue;
                         }
