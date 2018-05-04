@@ -19,7 +19,7 @@ const static std::string UNREGISTER_TOPIC = "UNREGISTER_TOPIC";
 // Rest Endpoints
 static const std::string PREFIX = "/api/v1";
 static const std::string TNS_KNOWN_PORT = ":48323";
-static const std::string TNS_KEEP_ALIVE_PORT = ":48324";
+static const std::string TNS_KEEP_ALIVE_PORT = ":48323";
 static const std::string TNS_KEEP_ALIVE = "/tns/keepalive";
 static const std::string TNS_UNREGISTER = "/tns/topic";
 
