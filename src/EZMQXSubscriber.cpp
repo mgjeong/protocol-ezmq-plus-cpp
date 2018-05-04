@@ -22,10 +22,15 @@ static const std::string TOPIC_PATTERN = "(\/[a-zA-Z0-9-_*.]+)+";
 static const std::string PREFIX = "/api/v1";
 static const std::string TOPIC = "/tns/topic";
 
-static const std::string PAYLOAD_TOPIC = "topic";
+static const std::string QUERY_NAME = "name=";
+static const std::string QUERY_HIERARCHICAL = "&hierarchical=";
+static const std::string QUERY_TRUE = "yes";
+static const std::string QUERY_FALSE = "no";
+
+static const std::string PAYLOAD_TOPICS = "topics";
+static const std::string PAYLOAD_NAME = "name";
 static const std::string PAYLOAD_ENDPOINT = "endpoint";
-static const std::string PAYLOAD_SCHEMA = "schema";
-static const std::string QUERY_PARAM = "topic=";
+static const std::string PAYLOAD_DATAMODEL = "detamodel";
 
 static const std::string TOPIC_WILD_CARD = "*";
 static const std::string TOPIC_WILD_PATTERNN = "/*/";
@@ -41,7 +46,7 @@ EZMQX::Subscriber::~Subscriber()
     terminate();
 }
 
-void EZMQX::Subscriber::initialize(const std::string &topic)
+void EZMQX::Subscriber::initialize(const std::string &topic, bool isHierarchical)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     validateTopic(topic);
@@ -50,7 +55,7 @@ void EZMQX::Subscriber::initialize(const std::string &topic)
 
     if (ctx->isTnsEnabled())
     {
-        verifyTopics(topic, verified);
+        verifyTopics(topic, verified, isHierarchical);
 
         if (verified.empty())
         {
@@ -287,52 +292,100 @@ void EZMQX::Subscriber::validateTopic(const std::string& topic)
 #endif
 }
 
-void EZMQX::Subscriber::verifyTopics(const std::string &topic, std::list<EZMQX::Topic> &verified)
+void EZMQX::Subscriber::verifyTopics(const std::string &topic, std::list<EZMQX::Topic> &verified, bool isHierarchical)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     // send rest
     std::string tmp;
+    EZMQX::RestResponse restResp;
     try
     {
-        tmp = EZMQX::RestService::Get(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, QUERY_PARAM + topic).getPayload();
+        std::string query = QUERY_NAME + topic + QUERY_HIERARCHICAL + (isHierarchical == true ? QUERY_TRUE : QUERY_FALSE);
+        restResp = EZMQX::RestService::Get(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, query);
+
+        if (restResp.getStatus() == EZMQX::Success)
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s topic %s query successfully", __func__, topic.c_str());
+        }
+        else if (restResp.getStatus() == EZMQX::BadRequest)
+        {
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not query topic successfully : BadRequest", __func__);
+            throw EZMQX::Exception("Could not qeury topic: BadRequest", EZMQX::RestError);
+        }
+        else if (restResp.getStatus() == EZMQX::NotFound)
+        {
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not qeury topic successfully : NotFound", __func__);
+            throw EZMQX::Exception("Could not qeury topic: NotFound", EZMQX::RestError);
+        }
+        else if (restResp.getStatus() == EZMQX::InternalError)
+        {
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not qeury topic successfully : Internal Server Error", __func__);
+            throw EZMQX::Exception("Could not qeury topic: Internal Server Error", EZMQX::RestError);
+        }
+        else
+        {
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not qeury topic successfully : unknown rest error code %d", __func__, restResp.getStatus());
+            throw EZMQX::Exception("Could not qeury topic: unknown rest error", EZMQX::RestError);
+        }
+    }
+    catch(const EZMQX::Exception& e)
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s %s", __func__, e.what());
+        throw e;
     }
     catch (...)
     {
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not send rest get request", __func__);
         throw EZMQX::Exception("Could not send rest get request", EZMQX::UnKnownState);
     }
 
     // parse json
     try
     {
+        std::string errors;
+        Json::Value root;
         Json::Value props;
-        Json::Reader reader;
+        Json::CharReaderBuilder builder;
+        std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
 
         // try parse json
-        if((!reader.parse(tmp, props)) && props.type() != Json::arrayValue)
+        if (!(reader->parse(tmp.c_str(), tmp.c_str() + tmp.size(), &root, &errors)))
         {
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json object error : %s", __func__, errors.c_str());
             throw EZMQX::Exception("Could not parse json object", EZMQX::UnKnownState);
         }
         else
         {
+            EZMQX_LOG_V(ERROR, TAG, "%s json object parsed", __func__);
+            props = root[PAYLOAD_TOPICS];
+            EZMQX_LOG_V(ERROR, TAG, "%s props parsed", __func__);
             // access array
             for (Json::Value::ArrayIndex i = 0; i < props.size(); i++)
             {
+                EZMQX_LOG_V(ERROR, TAG, "%s itr", __func__);
                 // get Topic
-                if (props[i].isMember(PAYLOAD_TOPIC) && props[i].isMember(PAYLOAD_SCHEMA) && props[i].isMember(PAYLOAD_ENDPOINT))
+                EZMQX_LOG_V(ERROR, TAG, "%s try get", __func__);
+                if (props[i].isMember(PAYLOAD_NAME) && props[i].isMember(PAYLOAD_DATAMODEL) && props[i].isMember(PAYLOAD_ENDPOINT))
                 {
-                    verified.push_back(EZMQX::Topic(props[i][PAYLOAD_TOPIC].asString(), props[i][PAYLOAD_SCHEMA].asString(), EZMQX::Endpoint(props[i][PAYLOAD_ENDPOINT].asString())));
+                    verified.push_back(EZMQX::Topic(props[i][PAYLOAD_NAME].asString(), props[i][PAYLOAD_DATAMODEL].asString(), EZMQX::Endpoint(props[i][PAYLOAD_ENDPOINT].asString())));
                 }
             }
-
         }
+    }
+    catch(const EZMQX::Exception& e)
+    {
+        throw e;
+    }
+    catch(const std::exception& e)
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json object exception: %s", __func__, e.what());
+        throw e;
     }
     catch(...)
     {
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json object", __func__);
         throw EZMQX::Exception("Could not parse json object", EZMQX::UnKnownState);
     }
-
-    // made list
-
 
     return;
 }

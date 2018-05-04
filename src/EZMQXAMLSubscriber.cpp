@@ -43,13 +43,13 @@ EZMQX::AmlSubscriber::AmlSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX
     }
 }
 
-EZMQX::AmlSubscriber::AmlSubscriber(const std::string &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
+EZMQX::AmlSubscriber::AmlSubscriber(const std::string &topic, bool isHierarchical, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
  : Subscriber(), mSubCb(subCb), mSubErrCb(errCb)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     try
     {
-        Subscriber::initialize(topic);
+        Subscriber::initialize(topic, isHierarchical);
     }
     catch(const EZMQX::Exception& e)
     {
@@ -78,10 +78,10 @@ void EZMQX::AmlSubscriber::cb(const std::string &_topic, const AML::AMLObject *o
     return;
 }
 
-EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const std::string &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
+EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const std::string &topic, bool isHierarchical, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
-    EZMQX::AmlSubscriber* subInstance = new AmlSubscriber(topic, subCb, errCb);
+    EZMQX::AmlSubscriber* subInstance = new AmlSubscriber(topic, isHierarchical, subCb, errCb);
     return subInstance;
 }
 

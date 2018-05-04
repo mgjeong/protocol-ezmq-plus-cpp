@@ -22,9 +22,9 @@ public:
 
     }
 
-    void initialize(const std::string &topic)
+    void initialize(const std::string &topic, bool isHierarchical)
     {
-        Subscriber::initialize(topic);
+        Subscriber::initialize(topic, isHierarchical);
     }
 
     void initialize(const EZMQX::Topic &topic)
@@ -38,7 +38,7 @@ public:
         Subscriber::initialize(topics);
     }
 
-    MOCK_METHOD2(verifyTopics, void(const std::string &topic, std::list<EZMQX::Topic> &verified));
+    MOCK_METHOD3(verifyTopics, void(const std::string &topic, std::list<EZMQX::Topic> &verified, bool isHierarchical));
     MOCK_METHOD1(getSession, void(EZMQX::Topic topic));
 };
 

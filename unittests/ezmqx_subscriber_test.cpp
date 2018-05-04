@@ -40,18 +40,19 @@ using testing::SetArgReferee;
 TEST_F(DockerAmlSubscriber, ExpectThrow)
 {
 
-    EXPECT_CALL(mock, verifyTopics(_, _))
-    .Times(1);
+    EXPECT_CALL(mock, verifyTopics(_, _, _))
+    .Times(2);
 
     std::string topic = "/TEST";
 
-    EXPECT_THROW(mock.initialize(topic), EZMQX::Exception);
+    EXPECT_THROW(mock.initialize(topic, true), EZMQX::Exception);
+    EXPECT_THROW(mock.initialize(topic, false), EZMQX::Exception);
 }
 
 TEST_F(DockerAmlSubscriber, ExpectThreeDummies)
 {
 
-    EXPECT_CALL(mock, verifyTopics(_, _))
+    EXPECT_CALL(mock, verifyTopics(_, _, _))
     .WillOnce(SetArgReferee<1>(getDummyTopics()));
 
     EXPECT_CALL(mock, getSession(_))
@@ -59,7 +60,7 @@ TEST_F(DockerAmlSubscriber, ExpectThreeDummies)
 
     std::string topic = "/TEST";
 
-    mock.initialize(topic);
+    mock.initialize(topic, true);
     std::list<EZMQX::Topic> result = mock.getTopics();
 
     EXPECT_TRUE(result.size() == 3);

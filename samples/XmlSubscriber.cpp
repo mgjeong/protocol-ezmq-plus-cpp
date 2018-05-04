@@ -60,7 +60,7 @@ int main()
         std::cout<<"amlId: " << amlId.front() << std::endl;
         //EZMQX::Topic knownTopic("/test/A/", amlId.front(), ep);
         //std::shared_ptr<EZMQX::XmlSubscriber> subscriber = EZMQX::XmlSubscriber::getSubscriber(knownTopic, subCb, errCb);
-        std::shared_ptr<EZMQX::XmlSubscriber> subscriber(EZMQX::XmlSubscriber::getSubscriber(topic, subCb, errCb));
+        std::shared_ptr<EZMQX::XmlSubscriber> subscriber(EZMQX::XmlSubscriber::getSubscriber(topic, true, subCb, errCb));
 
         std::cout<<"subscriber created"<<std::endl;
 
