@@ -13,9 +13,9 @@ static const std::string POST = "POST";
 static const std::string DELETE = "DELETE";
 static const std::string EMPTY = "";
 
-static const std::string QUERY_PARAM = "topic=";
+static const std::string QUERY_PARAM = "name=";
 
-static const std::string UNITTEST_DISCOVERY_FAKE = "/FakeDiscoveryTest";
+static const std::string UNITTEST_DISCOVERY_FAKE = "/FakeDiscoveryTest&hierarchical=yes";
 
 namespace EZMQX {
 
@@ -24,7 +24,7 @@ class FakeRest : public rest
 private:
     RestResponse fake(const std::string& op, const std::string& url, const std::string& query, const std::string& payload)
     {
-        EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+        EZMQX_LOG_V(DEBUG, TAG, "%s %s Entered url is  %s query is %s payload is %s", __func__, op.c_str(), url.c_str(), query.c_str(), payload.c_str());
 
         RestResponse resp;
 
@@ -33,7 +33,7 @@ private:
         {
             if (query.compare(QUERY_PARAM+UNITTEST_DISCOVERY_FAKE) == 0)
             {
-                RestResponse fake(EZMQX::Success, "[{\"id\":\"5adede045d62b2001ee73dfc\",\"topic\":\"/A/A\",\"endpoint\":\"localhost:4000\",\"schema\":\"GTC_Robot_0.0.1\"},{\"id\":\"5adede045d62b2001ee73dfd\",\"topic\":\"/A/B\",\"endpoint\":\"localhost:4001\",\"schema\":\"GTC_Robot_0.0.1\"},{\"id\":\"5adede045d62b2001ee73dfe\",\"topic\":\"/A/C\",\"endpoint\":\"localhost:4002\",\"schema\":\"GTC_Robot_0.0.1\"},{\"id\":\"5adede095d62b2001ee73dff\",\"topic\":\"/B/A\",\"endpoint\":\"localhost:4000\",\"schema\":\"GTC_Robot_0.0.1\"},{\"id\":\"5adede095d62b2001ee73e00\",\"topic\":\"/B/B\",\"endpoint\":\"localhost:4001\",\"schema\":\"GTC_Robot_0.0.1\"},{\"id\":\"5adede095d62b2001ee73e01\",\"topic\":\"/B/C\",\"endpoint\":\"localhost:4002\",\"schema\":\"GTC_Robot_0.0.1\"}]");
+                RestResponse fake(EZMQX::Success, "{ \"topics\" : [{ \"name\" : \"/A/A\", \"endpoint\" : \"localhost:4000\", \"datamodel\" : \"GTC_Robot_0.0.1\" }, { \"name\" : \"/A/B\", \"endpoint\" : \"localhost:4001\", \"datamodel\" : \"GTC_Robot_0.0.1\" } , { \"name\" : \"/A/C\", \"endpoint\" : \"localhost:4002\", \"datamodel\" : \"GTC_Robot_0.0.1\" }, { \"name\" : \"/B/A\", \"endpoint\" : \"localhost:4000\", \"datamodel\" : \"GTC_Robot_0.0.1\" }, { \"name\" : \"/B/B\", \"endpoint\" : \"localhost:4001\", \"datamodel\" : \"GTC_Robot_0.0.1\" }, { \"name\" : \"/B/C\", \"endpoint\" : \"localhost:4002\", \"datamodel\" : \"GTC_Robot_0.0.1\" }]}");
                 return fake;
             }
         }

@@ -108,7 +108,7 @@ protected:
 class MockTopicDiscovery : public EZMQX::TopicDiscovery
 {
 public:
-    MOCK_METHOD2(verifyTopic, void(std::string& topic, std::list<EZMQX::Topic>& topics));
+    MOCK_METHOD3(verifyTopic, void(std::string& topic, std::list<EZMQX::Topic>& topics, bool isHierarchical));
 };
 
 class StandAloneDiscoveryTest : public testing::Test

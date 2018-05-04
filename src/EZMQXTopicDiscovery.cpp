@@ -89,7 +89,7 @@ void EZMQX::TopicDiscovery::verifyTopic(std::string& topic, std::list<EZMQX::Top
 
         if (restResp.getStatus() == EZMQX::Success)
         {
-            EZMQX_LOG_V(DEBUG, TAG, "%s topic %s query successfully", __func__, topic);
+            EZMQX_LOG_V(DEBUG, TAG, "%s topic %s query successfully", __func__, topic.c_str());
         }
         else if (restResp.getStatus() == EZMQX::BadRequest)
         {
@@ -108,7 +108,7 @@ void EZMQX::TopicDiscovery::verifyTopic(std::string& topic, std::list<EZMQX::Top
         }
         else
         {
-            EZMQX_LOG_V(ERROR, TAG, "%s Could not qeury topic successfully : unknown rest error", __func__);
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not qeury topic successfully : unknown rest error code %d", __func__, restResp.getStatus());
             throw EZMQX::Exception("Could not qeury topic: unknown rest error", EZMQX::RestError);
         }
     }
@@ -133,18 +133,22 @@ void EZMQX::TopicDiscovery::verifyTopic(std::string& topic, std::list<EZMQX::Top
         std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
 
         // try parse json
-        if (!reader->parse(resp.c_str(), resp.c_str() + resp.size(), &root, &errors))
+        if (!(reader->parse(resp.c_str(), resp.c_str() + resp.size(), &root, &errors)))
         {
-            EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json object", __func__);
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json object error : %s", __func__, errors.c_str());
             throw EZMQX::Exception("Could not parse json object", EZMQX::UnKnownState);
         }
         else
         {
+            EZMQX_LOG_V(ERROR, TAG, "%s json object parsed", __func__);
             props = root[PAYLOAD_TOPICS];
+            EZMQX_LOG_V(ERROR, TAG, "%s props parsed", __func__);
             // access array
             for (Json::Value::ArrayIndex i = 0; i < props.size(); i++)
             {
+                EZMQX_LOG_V(ERROR, TAG, "%s itr", __func__);
                 // get Topic
+                EZMQX_LOG_V(ERROR, TAG, "%s try get", __func__);
                 if (props[i].isMember(PAYLOAD_NAME) && props[i].isMember(PAYLOAD_DATAMODEL) && props[i].isMember(PAYLOAD_ENDPOINT))
                 {
                     topics.push_back(EZMQX::Topic(props[i][PAYLOAD_NAME].asString(), props[i][PAYLOAD_DATAMODEL].asString(), EZMQX::Endpoint(props[i][PAYLOAD_ENDPOINT].asString())));
@@ -154,6 +158,11 @@ void EZMQX::TopicDiscovery::verifyTopic(std::string& topic, std::list<EZMQX::Top
     }
     catch(const EZMQX::Exception& e)
     {
+        throw e;
+    }
+    catch(const std::exception& e)
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json object exception: %s", __func__, e.what());
         throw e;
     }
     catch(...)
