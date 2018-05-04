@@ -13,7 +13,7 @@
 
 #define TAG "EZMQXAmlSubscriber"
 
-EZMQX::AmlSubscriber::AmlSubscriber() : Subscriber(), mSubCb([](std::string topic, const AML::AMLObject& payload){}), mSubErrCb([](std::string topic, EZMQX::ErrorCode errCode){})
+EZMQX::AmlSubscriber::AmlSubscriber() : Subscriber(), mSubCb([](std::string topic, const AML::AMLObject& payload){EZMQX_LOG_V(INFO, TAG, "Entered Cb topic : %s payload id : %s", topic.c_str(), payload.getId().c_str());}), mSubErrCb([](std::string topic, EZMQX::ErrorCode errCode){EZMQX_LOG_V(INFO, TAG, "Entered Cb topic : %s errCode : %d", topic.c_str(), errCode);})
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     // do nothing
