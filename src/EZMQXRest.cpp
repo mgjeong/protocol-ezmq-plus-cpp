@@ -127,19 +127,18 @@ EZMQX::RestResponse EZMQX::SimpleRest::Post(const std::string &url, const std::s
 
 }
 
-EZMQX::RestResponse EZMQX::SimpleRest::Delete(const std::string &url, const std::string &payload)
+EZMQX::RestResponse EZMQX::SimpleRest::Delete(const std::string &url, const std::string &query)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
 
     CURLcode res;
     std::string buff;
+    std::string addr = url + QUESTION_MARK + query;
     long respCode;
-    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_URL, addr.c_str());
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, DELETE.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _writeCb);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buff);
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.c_str());
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)(payload.size()));
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)
     {
@@ -308,7 +307,7 @@ EZMQX::RestResponse EZMQX::RestService::Post(const std::string &url, const std::
     return resp;
 }
 
-EZMQX::RestResponse EZMQX::RestService::Delete(const std::string &url, const std::string &payload)
+EZMQX::RestResponse EZMQX::RestService::Delete(const std::string &url, const std::string &query)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
 
@@ -318,7 +317,7 @@ EZMQX::RestResponse EZMQX::RestService::Delete(const std::string &url, const std
     try
     {
         ctx = factory->getSomeRest();
-        resp = ctx->Delete(url, payload);
+        resp = ctx->Delete(url, query);
     }
     catch(const EZMQX::Exception& e)
     {

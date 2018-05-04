@@ -81,10 +81,10 @@ public:
         return fake(POST, url, EMPTY, payload);
     }
 
-    RestResponse Delete(const std::string &url, const std::string &payload)
+    RestResponse Delete(const std::string &url, const std::string &query)
     {
         EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
-        return fake(DELETE, url, EMPTY, payload);
+        return fake(DELETE, url, query, EMPTY);
     }
 
 };
