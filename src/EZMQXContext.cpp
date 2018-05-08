@@ -539,10 +539,10 @@ void EZMQX::Context::initialize()
                 EZMQX_LOG_V(ERROR, TAG, "%s Could not found port mapping info", __func__);
                 throw EZMQX::Exception("Could not found port mapping info", EZMQX::UnKnownState);
             }
-
-            initialized.store(true);
-            terminated.store(false);
         }
+
+        initialized.store(true);
+        terminated.store(false);
     }
     // mutex unlock
     return;
