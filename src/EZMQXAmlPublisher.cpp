@@ -82,7 +82,7 @@ void EZMQX::AmlPublisher::publish(const AML::AMLObject& payload)
             // get AMLRep
             if (!rep)
             {
-                rep = ctx->getAmlRep(topic.getSchema());
+                rep = ctx->getAmlRep(topic.getDatamodel());
             }
 
             // transform // throw exception
@@ -95,7 +95,7 @@ void EZMQX::AmlPublisher::publish(const AML::AMLObject& payload)
             }
 
             ezmq::EZMQByteData data(reinterpret_cast<const uint8_t*>(byteAml.c_str()), byteAml.length());
-            pubCtx->publish(topic.getTopic(), data);
+            pubCtx->publish(topic.getName(), data);
         }
     }
     // mutex unlock

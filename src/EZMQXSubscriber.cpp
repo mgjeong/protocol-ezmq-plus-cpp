@@ -110,7 +110,7 @@ void EZMQX::Subscriber::getSession(EZMQX::Topic topic)
             throw EZMQX::Exception("Could not connect endpoint " + ep.toString(), EZMQX::UnKnownState);
         }
 
-        ret = subCtx->subscribe(topic.getTopic());
+        ret = subCtx->subscribe(topic.getName());
 
         if (ezmq::EZMQ_OK != ret)
         {
@@ -153,13 +153,13 @@ void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics)
     {
         // create subCtx with internal callback
         EZMQX::Topic topic = *itr;
-        const std::string &topic_str = topic.getTopic();
+        const std::string &topic_str = topic.getName();
 
         // find Aml rep
         try
         {
-            std::shared_ptr<AML::Representation> rep = ctx->getAmlRep(topic.getSchema());
-            repDic.insert(std::make_pair(topic_str, ctx->getAmlRep(topic.getSchema())));
+            std::shared_ptr<AML::Representation> rep = ctx->getAmlRep(topic.getDatamodel());
+            repDic.insert(std::make_pair(topic_str, ctx->getAmlRep(topic.getDatamodel())));
         }
         catch(...)
         {
@@ -188,7 +188,7 @@ void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics)
         }
 
         storedTopics.push_back(topic);
-        EZMQX_LOG_V(DEBUG, TAG, "%s Topic: %s Model_Id: %s Endpoint: %s ", __func__, topic.getTopic().c_str(), topic.getSchema().c_str(), topic.getEndpoint().toString().c_str());
+        EZMQX_LOG_V(DEBUG, TAG, "%s Topic: %s Model_Id: %s Endpoint: %s ", __func__, topic.getName().c_str(), topic.getDatamodel().c_str(), topic.getEndpoint().toString().c_str());
     }
 
     return;

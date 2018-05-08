@@ -135,9 +135,9 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
         Json::Value root = Json::Value(Json::objectValue);
         root[PAYLOAD_TOPIC] = Json::Value(Json::objectValue);
 
-        root[PAYLOAD_TOPIC][PAYLOAD_NAME] = regTopic.getTopic();
+        root[PAYLOAD_TOPIC][PAYLOAD_NAME] = regTopic.getName();
         root[PAYLOAD_TOPIC][PAYLOAD_ENDPOINT] = regTopic.getEndpoint().toString();
-        root[PAYLOAD_TOPIC][PAYLOAD_DATAMODEL] = regTopic.getSchema();
+        root[PAYLOAD_TOPIC][PAYLOAD_DATAMODEL] = regTopic.getDatamodel();
 
         Json::StreamWriterBuilder builder;
         std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
@@ -147,7 +147,7 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
     }
     catch (...)
     {
-        EZMQX_LOG_V(ERROR, TAG, "%s Could not build json payload %s", __func__, regTopic.getTopic());
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not build json payload %s", __func__, regTopic.getName());
         throw EZMQX::Exception("Could not build json payload", EZMQX::UnKnownState);
     }
 
@@ -168,7 +168,7 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
 
     if (resp.getStatus() == EZMQX::Created)
     {
-        EZMQX_LOG_V(DEBUG, TAG, "%s topic %s register successfully", __func__, regTopic.getTopic());
+        EZMQX_LOG_V(DEBUG, TAG, "%s topic %s register successfully", __func__, regTopic.getName());
     }
     else if (resp.getStatus() == EZMQX::Conflict)
     {
@@ -214,7 +214,7 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
                     ctx->updateKeepAliveInterval(interval);
                 }
 
-                ctx->insertTopic(regTopic.getTopic());
+                ctx->insertTopic(regTopic.getName());
             }
         }
     }
@@ -225,7 +225,7 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
     }
     catch (...)
     {
-        EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json response %s", __func__, regTopic.getTopic());
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json response %s", __func__, regTopic.getName());
         throw EZMQX::Exception("Could not parse json response", EZMQX::UnKnownState);
     }
 
@@ -258,7 +258,7 @@ void EZMQX::Publisher::terminate()
 
             if (ctx->isTnsEnabled())
             {
-                ctx->deleteTopic(topic.getTopic());
+                ctx->deleteTopic(topic.getName());
             }
 
             delete pubCtx;

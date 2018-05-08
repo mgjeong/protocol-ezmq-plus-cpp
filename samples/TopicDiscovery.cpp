@@ -30,9 +30,9 @@ int main()
             {
                 std::cout<<"========================================"<<std::endl;
                 EZMQX::Topic tmp = *itr;
-                std::cout<<"Topic: "<<tmp.getTopic()<<std::endl;
+                std::cout<<"Topic: "<<tmp.getName()<<std::endl;
                 std::cout<<"Endpoint: "<<tmp.getEndpoint().toString()<<std::endl;
-                std::cout<<"Schema: "<<tmp.getSchema()<<std::endl;
+                std::cout<<"Schema: "<<tmp.getDatamodel()<<std::endl;
             }
             std::cout<<"========================================"<<std::endl;
         }

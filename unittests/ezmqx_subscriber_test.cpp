@@ -66,20 +66,20 @@ TEST_F(DockerAmlSubscriber, ExpectThreeDummies)
     EXPECT_TRUE(result.size() == 3);
 
     EZMQX::Topic first = result.front();
-    EXPECT_TRUE(first.getTopic().compare("/TEST/A") == 0);
-    EXPECT_TRUE(first.getSchema().compare(getDummyId()) == 0);
+    EXPECT_TRUE(first.getName().compare("/TEST/A") == 0);
+    EXPECT_TRUE(first.getDatamodel().compare(getDummyId()) == 0);
     EXPECT_TRUE(first.getEndpoint().toString().compare("localhost:4000") == 0);
     result.pop_front();
 
     EZMQX::Topic second = result.front();
-    EXPECT_TRUE(second.getTopic().compare("/TEST/B") == 0);
-    EXPECT_TRUE(second.getSchema().compare(getDummyId()) == 0);
+    EXPECT_TRUE(second.getName().compare("/TEST/B") == 0);
+    EXPECT_TRUE(second.getDatamodel().compare(getDummyId()) == 0);
     EXPECT_TRUE(second.getEndpoint().toString().compare("localhost:4001") == 0);
     result.pop_front();
 
     EZMQX::Topic third = result.front();
-    EXPECT_TRUE(third.getTopic().compare("/TEST/C") == 0);
-    EXPECT_TRUE(third.getSchema().compare(getDummyId()) == 0);
+    EXPECT_TRUE(third.getName().compare("/TEST/C") == 0);
+    EXPECT_TRUE(third.getDatamodel().compare(getDummyId()) == 0);
     EXPECT_TRUE(third.getEndpoint().toString().compare("localhost:4002") == 0);
     result.pop_front();
 

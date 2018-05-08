@@ -63,20 +63,20 @@ TEST_F(StandAloneDiscoveryTest, MockQueryTest)
     EXPECT_TRUE(result.size() == 3);
 
     EZMQX::Topic first = result.front();
-    EXPECT_TRUE(first.getTopic().compare("/TEST/A") == 0);
-    EXPECT_TRUE(first.getSchema().compare("dummy1") == 0);
+    EXPECT_TRUE(first.getName().compare("/TEST/A") == 0);
+    EXPECT_TRUE(first.getDatamodel().compare("dummy1") == 0);
     EXPECT_TRUE(first.getEndpoint().toString().compare("8.8.8.8:1") == 0);
     result.pop_front();
 
     EZMQX::Topic second = result.front();
-    EXPECT_TRUE(second.getTopic().compare("/TEST/B") == 0);
-    EXPECT_TRUE(second.getSchema().compare("dummy2") == 0);
+    EXPECT_TRUE(second.getName().compare("/TEST/B") == 0);
+    EXPECT_TRUE(second.getDatamodel().compare("dummy2") == 0);
     EXPECT_TRUE(second.getEndpoint().toString().compare("8.8.8.8:2") == 0);
     result.pop_front();
 
     EZMQX::Topic third = result.front();
-    EXPECT_TRUE(third.getTopic().compare("/TEST/C") == 0);
-    EXPECT_TRUE(third.getSchema().compare("dummy3") == 0);
+    EXPECT_TRUE(third.getName().compare("/TEST/C") == 0);
+    EXPECT_TRUE(third.getDatamodel().compare("dummy3") == 0);
     EXPECT_TRUE(third.getEndpoint().toString().compare("8.8.8.8:3") == 0);
     result.pop_front();
 }
@@ -91,20 +91,20 @@ TEST_F(DockerDiscoveryTest, DockerMockTest)
     EXPECT_TRUE(result.size() == 3);
 
     EZMQX::Topic first = result.front();
-    EXPECT_TRUE(first.getTopic().compare("/TEST/A") == 0);
-    EXPECT_TRUE(first.getSchema().compare("dummy1") == 0);
+    EXPECT_TRUE(first.getName().compare("/TEST/A") == 0);
+    EXPECT_TRUE(first.getDatamodel().compare("dummy1") == 0);
     EXPECT_TRUE(first.getEndpoint().toString().compare("8.8.8.8:1") == 0);
     result.pop_front();
 
     EZMQX::Topic second = result.front();
-    EXPECT_TRUE(second.getTopic().compare("/TEST/B") == 0);
-    EXPECT_TRUE(second.getSchema().compare("dummy2") == 0);
+    EXPECT_TRUE(second.getName().compare("/TEST/B") == 0);
+    EXPECT_TRUE(second.getDatamodel().compare("dummy2") == 0);
     EXPECT_TRUE(second.getEndpoint().toString().compare("8.8.8.8:2") == 0);
     result.pop_front();
 
     EZMQX::Topic third = result.front();
-    EXPECT_TRUE(third.getTopic().compare("/TEST/C") == 0);
-    EXPECT_TRUE(third.getSchema().compare("dummy3") == 0);
+    EXPECT_TRUE(third.getName().compare("/TEST/C") == 0);
+    EXPECT_TRUE(third.getDatamodel().compare("dummy3") == 0);
     EXPECT_TRUE(third.getEndpoint().toString().compare("8.8.8.8:3") == 0);
     result.pop_front();
 }
@@ -119,8 +119,8 @@ TEST_F(FakeDiscoveryTest, FakeRest)
     auto checker = checkList.begin();
     for (auto itr =  topics.begin();  itr != topics.end(); itr++, checker++)
     {
-        EXPECT_TRUE((*itr).getTopic().compare((*checker).getTopic())==0);
-        EXPECT_TRUE((*itr).getSchema().compare((*checker).getSchema())==0);
+        EXPECT_TRUE((*itr).getName().compare((*checker).getName())==0);
+        EXPECT_TRUE((*itr).getDatamodel().compare((*checker).getDatamodel())==0);
         EXPECT_TRUE((*itr).getEndpoint().toString().compare((*checker).getEndpoint().toString()) == 0);
     }
 
