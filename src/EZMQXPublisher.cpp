@@ -201,6 +201,15 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
                 EZMQX_LOG_V(ERROR, TAG, "%s Invalid keepAlive option parsed", __func__);
                 throw EZMQX::Exception("Invalid keepAlive option parsed", EZMQX::RestError);
             }
+            else
+            {
+                if (ctx->getKeepAliveInterval() < 1)
+                {
+                    ctx->updateKeepAliveInterval(interval);
+                }
+
+                ctx->insertTopic(regTopic.getTopic());
+            }
         }
     }
     catch (const EZMQX::Exception& e)
