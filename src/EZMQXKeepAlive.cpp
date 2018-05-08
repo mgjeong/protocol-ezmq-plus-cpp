@@ -90,7 +90,7 @@ void EZMQX::KeepAlive::queHandler()
             if (payload.first.compare(KEEP_ALIVE) == 0)
             {
                 EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request %s", __func__, (remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE).c_str(), payload.second.c_str());
-                ret = EZMQX::RestService::Post(remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE, payload.second).getPayload();
+                ret = EZMQX::RestService::Put(remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE, payload.second).getPayload();
                 EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, ret.c_str());
             }
             else if (payload.first.compare(UNREGISTER_TOPIC) == 0)
