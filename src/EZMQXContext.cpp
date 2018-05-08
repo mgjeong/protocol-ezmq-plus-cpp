@@ -52,7 +52,7 @@ static const int LOCAL_PORT_START = 4000;
 static const int LOCAL_PORT_MAX = 100;
 
 // ctor
-EZMQX::Context::Context() : keepAlive(nullptr), initialized(false), terminated(false), usedIdx(0), numOfPort(0), standAlone(false), tnsEnabled(false)
+EZMQX::Context::Context() : keepAlive(nullptr), initialized(false), terminated(false), usedIdx(0), interval(-1), numOfPort(0), standAlone(false), tnsEnabled(false)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     if (ezmq::EZMQ_OK != ezmq::EZMQAPI::getInstance()->initialize())
@@ -99,7 +99,7 @@ void EZMQX::Context::setTnsInfo(std::string remoteAddr)
     EZMQX_LOG_V(INFO, TAG, "%s TNS addr setted manually Addr: %s", __func__, remoteAddr.c_str());
     tnsEnabled = true;
     this->remoteAddr = remoteAddr;
-    keepAlive = new EZMQX::KeepAlive(this->remoteAddr);
+    
 }
 
 EZMQX::Context* EZMQX::Context::getInstance()
@@ -643,6 +643,11 @@ void EZMQX::Context::insertTopic(std::string topic)
         std::lock_guard<std::mutex> scopedLock(lock);
         topicList.push_back(topic);
         EZMQX_LOG_V(DEBUG, TAG, "%s topic inserted %s", __func__, topic.c_str());
+
+        if (!keepAlive && isTnsEnabled() && (getKeepAliveInterval() > 0))
+        {
+            keepAlive = new EZMQX::KeepAlive(this->remoteAddr, getKeepAliveInterval());
+        }
     }
     // mutex unlock
 }
@@ -687,4 +692,15 @@ std::list<std::string> EZMQX::Context::getTopicList()
     }
     // mutex unlock
     return topicList;
+}
+
+int EZMQX::Context::updateKeepAliveInterval(int keepAliveInterval)
+{
+    interval.store(keepAliveInterval);
+    return interval.load();
+}
+
+int EZMQX::Context::getKeepAliveInterval()
+{
+    return interval.load();
 }

@@ -31,6 +31,7 @@ class Context
         std::string hostAddr;
         std::string remoteAddr;
         std::list<std::string> topicList;
+        std::atomic_int interval;
         static std::shared_ptr<EZMQX::Context> _instance;
         std::map<int, int> ports;
         std::map<int, bool> usedPorts;
@@ -43,7 +44,7 @@ class Context
         void initialize();
         void terminate();
 
-        // make noncopyable        
+        // make noncopyable
         Context();
         Context(const Context&) = delete;
         Context& operator = (const Context&) = delete;
@@ -64,7 +65,8 @@ class Context
         void insertTopic(std::string topic);
         void deleteTopic(std::string topic);
         std::list<std::string> getTopicList();
-
+        int updateKeepAliveInterval(int keepAliveInterval);
+        int getKeepAliveInterval();
 };
 
 } // namespace EZMQX
