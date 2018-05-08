@@ -175,7 +175,7 @@ void EZMQX::KeepAlive::timerHandler()
         }
 
         // sleep for ....
-        timerCond.wait_for(timerLock, std::chrono::minutes(1));
+        timerCond.wait_for(timerLock, std::chrono::seconds(interval));
     }
 }
 
@@ -189,7 +189,7 @@ void EZMQX::KeepAlive::stopTimer()
 
 EZMQX::KeepAlive::KeepAlive(){/*DoNotUseIt*/}
 
-EZMQX::KeepAlive::KeepAlive(std::string addr) : remoteAddr(addr), timerIsTerminate(false), timerCond()
+EZMQX::KeepAlive::KeepAlive(std::string addr, int KeepAliveInterval) : timerCond(), timerIsTerminate(false), remoteAddr(addr), interval(KeepAliveInterval)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     que = new EZMQX::BlockingQue();
