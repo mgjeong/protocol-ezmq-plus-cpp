@@ -25,16 +25,17 @@ class Config
         std::atomic_bool initialized;
         EZMQX::Context* ctx;
         void setTnsInfo(std::string remoteAddr);
-        virtual void initialize(EZMQX::ModeOption configMode);
-        virtual void terminate();
+        void initialize(EZMQX::ModeOption configMode);
+        void terminate();
 
-        // make noncopyable        
+        // make noncopyable
+        Config();
         Config(const Config&) = delete;
         Config& operator = (const Config&) = delete;
+        ~Config();
 
     public:
-        Config();
-        ~Config();
+        static Config* getInstance();
         void startDockerMode();
         void startStandAloneMode(bool useTns, std::string tnsAddr);
         std::list<std::string> addAmlModel(const std::list<std::string>& amlFilePath);

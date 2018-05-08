@@ -5,7 +5,7 @@
 
 int main()
 {
-    std::shared_ptr<EZMQX::Config> config(new EZMQX::Config());
+    EZMQX::Config* config = EZMQX::Config::getInstance();
 
     config->startDockerMode();
     //config->startStandAloneMode(true, "10.113.65.174");
