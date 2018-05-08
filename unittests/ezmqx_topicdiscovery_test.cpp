@@ -38,13 +38,6 @@ using testing::tuple;
 using testing::tuple_element;
 using testing::SetArgReferee;
 
-TEST_F(StandAloneDiscoveryTest, WithOutMock)
-{
-    EXPECT_THROW(mock.query(""), EZMQX::Exception);
-    EXPECT_THROW(mock.query("////"), EZMQX::Exception);
-    EXPECT_THROW(mock.query("/aaa"), EZMQX::Exception);
-}
-
 TEST_F(StandAloneDiscoveryTest, MockFuncCallTest)
 {
     EXPECT_CALL(mock, verifyTopic(_, _, _))
@@ -52,7 +45,6 @@ TEST_F(StandAloneDiscoveryTest, MockFuncCallTest)
 
     try
     {
-        setDummyTns();
         mock.query("/abc");
     }
     catch(...)
@@ -67,7 +59,6 @@ TEST_F(StandAloneDiscoveryTest, MockQueryTest)
     .Times(1)
     .WillOnce(SetArgReferee<1>(getDummyTopics()));
 
-    setDummyTns();
     std::list<EZMQX::Topic> result = mock.hierarchicalQuery("/TEST");
     EXPECT_TRUE(result.size() == 3);
 

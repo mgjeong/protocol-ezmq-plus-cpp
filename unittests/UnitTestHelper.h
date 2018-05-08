@@ -51,7 +51,7 @@ protected:
     virtual void SetUp()
     {
         EZMQX::FakeSingletonAccessor::setFake();
-        config = new EZMQX::Config(EZMQX::Docker);
+        config = new EZMQX::Config();
         std::list<std::string> amlPath(1, "sample_data_model.aml");
         std::list<std::string> amlId = config->addAmlModel(amlPath);
         dummyId = amlId.front();
@@ -93,7 +93,7 @@ protected:
     virtual void SetUp()
     {
         EZMQX::FakeSingletonAccessor::setFake();
-        config = new EZMQX::Config(EZMQX::Docker);
+        config = new EZMQX::Config();
     }
 
     virtual void TearDown()
@@ -118,14 +118,10 @@ protected:
     MockTopicDiscovery mock;
     virtual void SetUp()
     {
-        config = new EZMQX::Config(EZMQX::StandAlone);
+        config = new EZMQX::Config();
+        config->startStandAloneMode(true, "localhost:48323");
     }
 
-    void setDummyTns()
-    {
-        // config->setHostInfo("TestPublisher", "10.113.77.33");
-        config->setTnsInfo("localhost:48323");
-    }
 
     std::list<EZMQX::Topic> getDummyTopics()
     {
@@ -152,7 +148,7 @@ protected:
     {
         EZMQX::FakeSingletonAccessor::setFake();
         EZMQX::FakeRestAccessor::setFake();
-        config = new EZMQX::Config(EZMQX::Docker);
+        config = new EZMQX::Config();
     }
 
     std::list<EZMQX::Topic> getDummyTopics()
@@ -182,7 +178,7 @@ protected:
     virtual void SetUp()
     {
         EZMQX::FakeSingletonAccessor::setFake();
-        config = new EZMQX::Config(EZMQX::Docker);
+        config = new EZMQX::Config();
     }
 
     std::list<EZMQX::Topic> getDummyTopics()
@@ -209,7 +205,8 @@ protected:
 
     virtual void SetUp()
     {
-        config = new EZMQX::Config(EZMQX::StandAlone);
+        config = new EZMQX::Config();
+        config->startStandAloneMode(false, "");
         discovery = new EZMQX::TopicDiscovery();
     }
 
