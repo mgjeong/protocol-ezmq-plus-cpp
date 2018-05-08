@@ -5,10 +5,11 @@
 
 int main()
 {
-    std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::Docker));
-    // std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::StandAlone));
-    // config->setHostInfo("TestPublisher", "10.113.77.33");
-    // config->setTnsInfo("10.113.65.174");
+    std::shared_ptr<EZMQX::Config> config(new EZMQX::Config());
+
+    config->startDockerMode();
+    //config->startStandAloneMode(true, "10.113.65.174");
+
     std::shared_ptr<EZMQX::TopicDiscovery> discovery(new EZMQX::TopicDiscovery());
     std::list<EZMQX::Topic> result;
     while (1)
