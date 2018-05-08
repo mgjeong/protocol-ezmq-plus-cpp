@@ -194,8 +194,7 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
         }
         else
         {
-            tmp = root[PAYLOAD_KEEPALIVE_INTERVAL].asString();
-            interval = std::stoi(tmp);
+            interval = root[PAYLOAD_KEEPALIVE_INTERVAL].asInt();
 
             if (interval < 1)
             {
