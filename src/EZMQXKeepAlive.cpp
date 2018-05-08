@@ -26,7 +26,7 @@ static const std::string TNS_UNREGISTER = "/tns/topic";
 
 // Json keys
 static const std::string PAYLOAD_CID = "c_id";
-static const std::string PAYLOAD_TOPIC = "topic";
+static const std::string PAYLOAD_TOPIC = "topic_names";
 static const std::string PAYLOAD_ENDPOINT = "endpoint";
 static const std::string PAYLOAD_SCHEMA = "schema";
 static const std::string RESULT_KEY = "result";
@@ -151,12 +151,12 @@ void EZMQX::KeepAlive::timerHandler()
         if (!topicList.empty())
         {
             EZMQX_LOG_V(DEBUG, TAG, "%s Build KeepAlive Rest payload", __func__);
-            Json::Value root = Json::Value(Json::arrayValue);
+            Json::Value root = Json::Value(Json::objectValue);
+            root[PAYLOAD_TOPIC] = Json::Value(Json::arrayValue);
             // add task for rest
             for (auto itr = topicList.begin(); itr != topicList.end(); itr++)
             {
-                Json::Value value;
-                value[PAYLOAD_TOPIC] = *itr;
+                Json::Value value(*itr);
                 root.append(value);
             }
 
