@@ -84,46 +84,53 @@ void EZMQX::KeepAlive::queHandler()
                 throw EZMQX::Exception("empty payload", EZMQX::UnKnownState);
             }
 
-            // send Rest here
-            std::string ret;
+            EZMQX::RestResponse resp;
 
             if (payload.first.compare(KEEP_ALIVE) == 0)
             {
                 EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request %s", __func__, (remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE).c_str(), payload.second.c_str());
-                ret = EZMQX::RestService::Put(remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE, payload.second).getPayload();
+                resp = EZMQX::RestService::Put(remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE, payload.second);
                 EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, ret.c_str());
+
+                if (resp.getStatus() == EZMQX::Success)
+                {
+                    EZMQX_LOG_V(DEBUG, TAG, "%s KeepAlive successfully", __func__);
+                }
+                else if (resp.getStatus() == EZMQX::NotFound)
+                {
+                    EZMQX_LOG_V(ERROR, TAG, "%s KeepAlive unnsuccessfully some topic notfound: %s", __func__, resp.getPayload().c_str());
+                }
+                else
+                {
+                    EZMQX_LOG_V(ERROR, TAG, "%s KeepAlive failed unknown response status: %d, response : %s", __func__, resp.getStatus(), resp.getPayload().c_str());
+                }
             }
             else if (payload.first.compare(UNREGISTER_TOPIC) == 0)
             {
                 EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request %s", __func__, (remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER).c_str(), payload.second.c_str());
-                ret = EZMQX::RestService::Delete(remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER, payload.second).getPayload();
+                resp = EZMQX::RestService::Delete(remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER, payload.second);
                 EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, ret.c_str());
+
+                if (resp.getStatus() == EZMQX::Success)
+                {
+                    EZMQX_LOG_V(DEBUG, TAG, "%s topic %s unregister successfully", __func__, payload.second.c_str());
+                }
+                else if (resp.getStatus() == EZMQX::NotFound)
+                {
+                    EZMQX_LOG_V(ERROR, TAG, "%s Could not unregister topic, topic notfound: %s", __func__, payload.second.c_str());
+                }
+                else if (resp.getStatus() == EZMQX::BadRequest)
+                {
+                    EZMQX_LOG_V(ERROR, TAG, "%s Could not unregister topic, bad request: %s", __func__, payload.second.c_str());
+                }
+                else
+                {
+                    EZMQX_LOG_V(ERROR, TAG, "%s Could not unregister topic failed unknown response status: %d, response: %s", __func__, resp.getStatus(), resp.getPayload().c_str());
+                }
             }
             else
             {
                 continue;
-            }
-
-            std::string errors;
-            Json::Value root;
-            Json::CharReaderBuilder builder;
-            std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-
-            if (reader->parse(ret.c_str(), ret.c_str() + ret.size(), &root, &errors))
-            {
-                ret = root[RESULT_KEY].asString();
-
-                if (ret.compare(RESULT_SUCCESS) == 0)
-                {
-                    EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result is Success", __func__);
-                    continue;
-                }
-                else
-                {
-                    // try again
-                    EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result is %s, try again", __func__, ret.c_str());
-                    que->inQue(payload);
-                }
             }
 
         }
