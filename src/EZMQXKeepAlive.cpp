@@ -90,7 +90,7 @@ void EZMQX::KeepAlive::queHandler()
             {
                 EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request %s", __func__, (remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE).c_str(), payload.second.c_str());
                 resp = EZMQX::RestService::Put(remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE, payload.second);
-                EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, ret.c_str());
+                EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, resp.getPayload().c_str());
 
                 if (resp.getStatus() == EZMQX::Success)
                 {
@@ -109,7 +109,7 @@ void EZMQX::KeepAlive::queHandler()
             {
                 EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request %s", __func__, (remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER).c_str(), payload.second.c_str());
                 resp = EZMQX::RestService::Delete(remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER, payload.second);
-                EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, ret.c_str());
+                EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, resp.getPayload().c_str());
 
                 if (resp.getStatus() == EZMQX::Success)
                 {

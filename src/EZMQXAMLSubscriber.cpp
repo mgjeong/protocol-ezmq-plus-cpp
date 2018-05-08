@@ -64,6 +64,13 @@ EZMQX::AmlSubscriber::AmlSubscriber(const std::string &topic, bool isHierarchica
 void EZMQX::AmlSubscriber::cb(const std::string &_topic, const AML::AMLObject *obj)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    if (ctx->isTerminated())
+    {
+        terminate();
+        throw EZMQX::Exception("Subscriber terminated", EZMQX::Terminated);
+    }
+
     if (!_topic.empty() && obj != NULL)
     {
         // call subCb
@@ -81,6 +88,7 @@ void EZMQX::AmlSubscriber::cb(const std::string &_topic, const AML::AMLObject *o
 EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const std::string &topic, bool isHierarchical, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
     EZMQX::AmlSubscriber* subInstance = new AmlSubscriber(topic, isHierarchical, subCb, errCb);
     return subInstance;
 }
@@ -88,6 +96,7 @@ EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const std::string &top
 EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const EZMQX::Topic &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
     std::list<EZMQX::Topic> topics(1, topic);
     EZMQX::AmlSubscriber* subInstance = new AmlSubscriber(topics, subCb, errCb);
     return subInstance;
@@ -96,6 +105,7 @@ EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const EZMQX::Topic &to
 EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
     EZMQX::AmlSubscriber* subInstance = new AmlSubscriber(topics, subCb, errCb);
     return subInstance;
 }
@@ -115,5 +125,12 @@ void EZMQX::AmlSubscriber::terminate()
 std::list<EZMQX::Topic> EZMQX::AmlSubscriber::getTopics()
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    if (ctx->isTerminated())
+    {
+        terminate();
+        throw EZMQX::Exception("Subscriber terminated", EZMQX::Terminated);
+    }
+
     return EZMQX::Subscriber::getTopics();
 }

@@ -49,6 +49,12 @@ EZMQX::Subscriber::~Subscriber()
 void EZMQX::Subscriber::initialize(const std::string &topic, bool isHierarchical)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    if (!ctx->isInitialized())
+    {
+        throw EZMQX::Exception("Could not create Subscriber context not initialized", EZMQX::NotInitialized);
+    }
+
     validateTopic(topic);
 
     std::list<EZMQX::Topic> verified;
@@ -137,6 +143,11 @@ void EZMQX::Subscriber::getSession(EZMQX::Topic topic)
 void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    if (!ctx->isInitialized())
+    {
+        throw EZMQX::Exception("Could not create Subscriber context not initialized", EZMQX::NotInitialized);
+    }
 
     for (std::list<EZMQX::Topic>::const_iterator itr = topics.cbegin(); itr != topics.cend(); itr++)
     {

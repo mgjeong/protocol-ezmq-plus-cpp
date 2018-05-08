@@ -40,12 +40,12 @@ using testing::SetArgReferee;
 
 TEST_F(StandAloneDiscoveryTest, MockFuncCallTest)
 {
-    EXPECT_CALL(mock, verifyTopic(_, _, _))
+    EXPECT_CALL(*mock, verifyTopic(_, _, _))
     .Times(1);
 
     try
     {
-        mock.query("/abc");
+        mock->query("/abc");
     }
     catch(...)
     {
@@ -55,11 +55,11 @@ TEST_F(StandAloneDiscoveryTest, MockFuncCallTest)
 
 TEST_F(StandAloneDiscoveryTest, MockQueryTest)
 {
-    EXPECT_CALL(mock, verifyTopic(_, _, _))
+    EXPECT_CALL(*mock, verifyTopic(_, _, _))
     .Times(1)
     .WillOnce(SetArgReferee<1>(getDummyTopics()));
 
-    std::list<EZMQX::Topic> result = mock.hierarchicalQuery("/TEST");
+    std::list<EZMQX::Topic> result = mock->hierarchicalQuery("/TEST");
     EXPECT_TRUE(result.size() == 3);
 
     EZMQX::Topic first = result.front();
@@ -83,11 +83,11 @@ TEST_F(StandAloneDiscoveryTest, MockQueryTest)
 
 TEST_F(DockerDiscoveryTest, DockerMockTest)
 {
-    EXPECT_CALL(mock, verifyTopic(_, _, _))
+    EXPECT_CALL(*mock, verifyTopic(_, _, _))
     .Times(1)
     .WillOnce(SetArgReferee<1>(getDummyTopics()));
 
-    std::list<EZMQX::Topic> result = mock.hierarchicalQuery("/TEST");
+    std::list<EZMQX::Topic> result = mock->hierarchicalQuery("/TEST");
     EXPECT_TRUE(result.size() == 3);
 
     EZMQX::Topic first = result.front();
@@ -111,7 +111,7 @@ TEST_F(DockerDiscoveryTest, DockerMockTest)
 
 TEST_F(FakeDiscoveryTest, FakeRest)
 {
-    std::list<EZMQX::Topic> topics = discovery.hierarchicalQuery("/FakeDiscoveryTest");
+    std::list<EZMQX::Topic> topics = discovery->hierarchicalQuery("/FakeDiscoveryTest");
 
 
     std::list<EZMQX::Topic> checkList = getDummyTopics();

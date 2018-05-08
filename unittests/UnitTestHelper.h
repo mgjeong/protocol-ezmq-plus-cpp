@@ -46,7 +46,7 @@ class DockerAmlSubscriber : public testing::Test
 {
 protected:
     EZMQX::Config *config;
-    MockAmlSubscriber mock;
+    MockAmlSubscriber *mock;
     std::string dummyId;
     virtual void SetUp()
     {
@@ -56,11 +56,14 @@ protected:
         std::list<std::string> amlPath(1, "sample_data_model.aml");
         std::list<std::string> amlId = config->addAmlModel(amlPath);
         dummyId = amlId.front();
+        mock = new MockAmlSubscriber();
     }
 
     virtual void TearDown()
     {
         config->reset();
+        delete mock;
+        mock = nullptr;
     }
 
     std::string getDummyId()
@@ -114,11 +117,12 @@ class StandAloneDiscoveryTest : public testing::Test
 {
 protected:
     EZMQX::Config *config;
-    MockTopicDiscovery mock;
+    MockTopicDiscovery *mock;
     virtual void SetUp()
     {
         config = EZMQX::Config::getInstance();
         config->startStandAloneMode(true, "localhost:48323");
+        mock = new MockTopicDiscovery();
     }
 
 
@@ -134,6 +138,8 @@ protected:
     virtual void TearDown()
     {
         config->reset();
+        delete mock;
+        mock = nullptr;
     }
 };
 
@@ -141,13 +147,14 @@ class FakeDiscoveryTest : public testing::Test
 {
 protected:
     EZMQX::Config *config;
-    EZMQX::TopicDiscovery discovery;
+    EZMQX::TopicDiscovery *discovery;
     virtual void SetUp()
     {
         EZMQX::FakeSingletonAccessor::setFake();
         EZMQX::FakeRestAccessor::setFake();
         config = EZMQX::Config::getInstance();
         config->startDockerMode();
+        discovery = new EZMQX::TopicDiscovery();
     }
 
     std::list<EZMQX::Topic> getDummyTopics()
@@ -165,6 +172,8 @@ protected:
     virtual void TearDown()
     {
         config->reset();
+        delete discovery;
+        discovery = nullptr;
     }
 };
 
@@ -172,12 +181,13 @@ class DockerDiscoveryTest : public testing::Test
 {
 protected:
     EZMQX::Config *config;
-    MockTopicDiscovery mock;
+    MockTopicDiscovery *mock;
     virtual void SetUp()
     {
         EZMQX::FakeSingletonAccessor::setFake();
         config = EZMQX::Config::getInstance();
         config->startDockerMode();
+        mock = new MockTopicDiscovery();
     }
 
     std::list<EZMQX::Topic> getDummyTopics()
@@ -192,14 +202,16 @@ protected:
     virtual void TearDown()
     {
         config->reset();
+        delete mock;
+        mock = nullptr;
     }
 };
 
 class TopicTest : public testing::Test
 {
 protected:
-    EZMQX::Config* config;
-    EZMQX::TopicDiscovery* discovery;
+    EZMQX::Config *config;
+    EZMQX::TopicDiscovery *discovery;
 
     virtual void SetUp()
     {

@@ -37,6 +37,12 @@ static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQError
 EZMQX::Publisher::Publisher(int optionalPort) : terminated(false), localPort(0), token(""), ctx(EZMQX::Context::getInstance())
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    if (!ctx->isInitialized())
+    {
+        throw EZMQX::Exception("Could not create publisher context not initialized", EZMQX::NotInitialized);
+    }
+
     bool isStandAlone = ctx->isStandAlone();
     //validate topic
     try

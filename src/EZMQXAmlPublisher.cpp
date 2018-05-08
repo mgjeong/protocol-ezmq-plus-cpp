@@ -70,7 +70,13 @@ void EZMQX::AmlPublisher::publish(const AML::AMLObject& payload)
     // mutex lock
     {
         std::lock_guard<std::mutex> scopedLock(lock);
-        if (!terminated.load())
+
+        if (ctx->isTerminated())
+        {
+            terminate();
+            throw EZMQX::Exception("Publisher terminated", EZMQX::Terminated);
+        }
+        else
         {
             // get AML model id
             // get AMLRep
@@ -91,10 +97,6 @@ void EZMQX::AmlPublisher::publish(const AML::AMLObject& payload)
             ezmq::EZMQByteData data(reinterpret_cast<const uint8_t*>(byteAml.c_str()), byteAml.length());
             pubCtx->publish(topic.getTopic(), data);
         }
-        else
-        {
-            throw EZMQX::Exception("Publisher terminated", EZMQX::Terminated);
-        }
     }
     // mutex unlock
     return;
@@ -102,5 +104,11 @@ void EZMQX::AmlPublisher::publish(const AML::AMLObject& payload)
 
 EZMQX::Topic EZMQX::AmlPublisher::getTopic()
 {
+    if (ctx->isTerminated())
+    {
+        terminate();
+        throw EZMQX::Exception("Publisher terminated", EZMQX::Terminated);
+    }
+
     return Publisher::getTopic();
 }

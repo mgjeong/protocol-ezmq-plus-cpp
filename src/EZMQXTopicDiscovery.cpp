@@ -38,6 +38,11 @@ static const std::string TOPIC_WILD_PATTERNN = "/*/";
 EZMQX::TopicDiscovery::TopicDiscovery() : ctx(EZMQX::Context::getInstance())
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    if (!ctx->isInitialized())
+    {
+        throw EZMQX::Exception("Could not create instance context not initialized", EZMQX::NotInitialized);
+    }
 }
 
 EZMQX::TopicDiscovery::~TopicDiscovery()
@@ -181,6 +186,11 @@ EZMQX::Topic EZMQX::TopicDiscovery::query(std::string topic)
         throw EZMQX::Exception("Could not initialize context", EZMQX::UnKnownState);
     }
 
+    if (ctx->isTerminated())
+    {
+        throw EZMQX::Exception("context terminated", EZMQX::Terminated);
+    }
+
     // TODO validation check
     if (topic.empty())
     {
@@ -227,6 +237,11 @@ std::list<EZMQX::Topic> EZMQX::TopicDiscovery::hierarchicalQuery(std::string top
     {
         EZMQX_LOG_V(ERROR, TAG, "%s Coould not initialize context", __func__);
         throw EZMQX::Exception("Could not initialize context", EZMQX::UnKnownState);
+    }
+
+    if (ctx->isTerminated())
+    {
+        throw EZMQX::Exception("context terminated", EZMQX::Terminated);
     }
 
     // TODO validation check

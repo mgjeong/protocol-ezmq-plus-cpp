@@ -65,6 +65,13 @@ EZMQX::XmlSubscriber::XmlSubscriber(const std::string &topic, bool isHierarchica
 void EZMQX::XmlSubscriber::cb(const std::string &_topic, const AML::AMLObject *obj)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    if (ctx->isTerminated())
+    {
+        terminate();
+        throw EZMQX::Exception("Subscriber terminated", EZMQX::Terminated);
+    }
+
     bool isError = false;
     std::string xml;
     if (!_topic.empty() && obj != NULL)
@@ -111,6 +118,7 @@ void EZMQX::XmlSubscriber::cb(const std::string &_topic, const AML::AMLObject *o
 EZMQX::XmlSubscriber* EZMQX::XmlSubscriber::getSubscriber(const std::string &topic, bool isHierarchical, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
     EZMQX::XmlSubscriber* subInstance = new XmlSubscriber(topic, isHierarchical, subCb, errCb);
     return subInstance;
 }
@@ -118,6 +126,7 @@ EZMQX::XmlSubscriber* EZMQX::XmlSubscriber::getSubscriber(const std::string &top
 EZMQX::XmlSubscriber* EZMQX::XmlSubscriber::getSubscriber(const EZMQX::Topic &topic, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
     std::list<EZMQX::Topic> topics(1, topic);
     EZMQX::XmlSubscriber* subInstance = new XmlSubscriber(topics, subCb, errCb);
     return subInstance;
@@ -126,6 +135,7 @@ EZMQX::XmlSubscriber* EZMQX::XmlSubscriber::getSubscriber(const EZMQX::Topic &to
 EZMQX::XmlSubscriber* EZMQX::XmlSubscriber::getSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
     EZMQX::XmlSubscriber* subInstance = new XmlSubscriber(topics, subCb, errCb);
     return subInstance;
 }
@@ -145,5 +155,11 @@ void EZMQX::XmlSubscriber::terminate()
 std::list<EZMQX::Topic> EZMQX::XmlSubscriber::getTopics()
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    if (!ctx->isInitialized())
+    {
+        throw EZMQX::Exception("Could not create Subscriber context not initialized", EZMQX::NotInitialized);
+    }
+
     return EZMQX::Subscriber::getTopics();
 }
