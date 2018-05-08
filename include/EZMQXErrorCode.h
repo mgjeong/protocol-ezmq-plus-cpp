@@ -7,6 +7,7 @@ namespace EZMQX
     {
         OK = 0,
         InvalidParam,
+        Initialized,
         NotInitialized,
         Terminated,
         UnKnownState,
