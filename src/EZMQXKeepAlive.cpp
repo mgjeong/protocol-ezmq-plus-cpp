@@ -28,6 +28,7 @@ static const std::string TNS_UNREGISTER = "/tns/topic";
 static const std::string PAYLOAD_OPTION = "indentation";
 static const std::string PAYLOAD_CID = "c_id";
 static const std::string PAYLOAD_TOPIC = "topic_names";
+static const std::string PAYLOAD_NAME = "name=";
 static const std::string PAYLOAD_ENDPOINT = "endpoint";
 static const std::string PAYLOAD_SCHEMA = "schema";
 static const std::string RESULT_KEY = "result";
@@ -108,8 +109,8 @@ void EZMQX::KeepAlive::queHandler()
             }
             else if (payload.first.compare(UNREGISTER_TOPIC) == 0)
             {
-                EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request %s", __func__, (remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER).c_str(), payload.second.c_str());
-                resp = EZMQX::RestService::Delete(remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER, payload.second);
+                EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request %s query %s", __func__, (remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER).c_str(), (PAYLOAD_NAME + payload.second).c_str());
+                resp = EZMQX::RestService::Delete(remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER, PAYLOAD_NAME+payload.second);
                 EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, resp.getPayload().c_str());
 
                 if (resp.getStatus() == EZMQX::Success)

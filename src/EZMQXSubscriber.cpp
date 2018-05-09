@@ -30,7 +30,7 @@ static const std::string QUERY_FALSE = "no";
 static const std::string PAYLOAD_TOPICS = "topics";
 static const std::string PAYLOAD_NAME = "name";
 static const std::string PAYLOAD_ENDPOINT = "endpoint";
-static const std::string PAYLOAD_DATAMODEL = "detamodel";
+static const std::string PAYLOAD_DATAMODEL = "datamodel";
 
 static const std::string TOPIC_WILD_CARD = "*";
 static const std::string TOPIC_WILD_PATTERNN = "/*/";
@@ -316,7 +316,9 @@ void EZMQX::Subscriber::verifyTopics(const std::string &topic, std::list<EZMQX::
 
         if (restResp.getStatus() == EZMQX::Success)
         {
+            tmp = restResp.getPayload();
             EZMQX_LOG_V(DEBUG, TAG, "%s topic %s query successfully", __func__, topic.c_str());
+            EZMQX_LOG_V(DEBUG, TAG, "%s", restResp.getPayload().c_str());
         }
         else if (restResp.getStatus() == EZMQX::BadRequest)
         {
@@ -373,9 +375,7 @@ void EZMQX::Subscriber::verifyTopics(const std::string &topic, std::list<EZMQX::
             // access array
             for (Json::Value::ArrayIndex i = 0; i < props.size(); i++)
             {
-                EZMQX_LOG_V(ERROR, TAG, "%s itr", __func__);
                 // get Topic
-                EZMQX_LOG_V(ERROR, TAG, "%s try get", __func__);
                 if (props[i].isMember(PAYLOAD_NAME) && props[i].isMember(PAYLOAD_DATAMODEL) && props[i].isMember(PAYLOAD_ENDPOINT))
                 {
                     verified.push_back(EZMQX::Topic(props[i][PAYLOAD_NAME].asString(), props[i][PAYLOAD_DATAMODEL].asString(), EZMQX::Endpoint(props[i][PAYLOAD_ENDPOINT].asString())));
