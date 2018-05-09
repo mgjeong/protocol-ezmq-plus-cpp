@@ -16,7 +16,6 @@ COPY samples/build/SRnD+Web+Proxy.crt /root
 RUN apt-get update && apt-get install -y vim \
     apt-transport-https \
     ca-certificates \
-    curl \
     software-properties-common \
     git \
     python \
