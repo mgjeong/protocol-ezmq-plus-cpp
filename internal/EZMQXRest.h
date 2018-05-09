@@ -36,6 +36,7 @@ public:
 class rest
 {
 public:
+    virtual ~rest() = 0;
     virtual RestResponse Get(const std::string &url) = 0;
     virtual RestResponse Get(const std::string &url, const std::string &query) = 0;
     virtual RestResponse Put(const std::string &url, const std::string &payload) = 0;

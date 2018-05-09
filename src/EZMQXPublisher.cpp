@@ -32,9 +32,9 @@ static const std::string TOPIC_PATTERN = "(\/[a-zA-Z0-9-_*.]+)+";
 static const std::string TOPIC_WILD_CARD = "*";
 static const std::string TOPIC_WILD_PATTERNN = "/*/";
 
-static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQErrorCode code)->void{std::cout<<"errCb"<<std::endl; return;};
+static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQErrorCode code)->void{std::cout<<"errCode"<< code <<std::endl; return;};
 
-EZMQX::Publisher::Publisher(int optionalPort) : terminated(false), localPort(0), token(""), ctx(EZMQX::Context::getInstance())
+EZMQX::Publisher::Publisher(int optionalPort) : terminated(false), ctx(EZMQX::Context::getInstance()), localPort(0), token("")
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
 

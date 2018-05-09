@@ -52,7 +52,7 @@ static const int LOCAL_PORT_START = 4000;
 static const int LOCAL_PORT_MAX = 100;
 
 // ctor
-EZMQX::Context::Context() : keepAlive(nullptr), initialized(false), terminated(false), usedIdx(0), interval(-1), numOfPort(0), standAlone(false), tnsEnabled(false)
+EZMQX::Context::Context() : keepAlive(nullptr), standAlone(false), tnsEnabled(false), initialized(false), terminated(false), interval(-1), usedIdx(0), numOfPort(0)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     if (ezmq::EZMQ_OK != ezmq::EZMQAPI::getInstance()->initialize())
@@ -89,7 +89,7 @@ void EZMQX::Context::setHostInfo(std::string hostName, std::string hostAddr)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     EZMQX_LOG_V(INFO, TAG, "%s Host infomation setted manually Hostname: %s Hostaddr: %s", __func__, hostName.c_str(), hostAddr.c_str());
-    this->hostname = hostname;
+    this->hostname = hostName;
     this->hostAddr = hostAddr;
 }
 

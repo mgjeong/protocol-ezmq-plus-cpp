@@ -57,6 +57,8 @@ private:
         return resp;
     }
 public:
+    FakeRest(){};
+    ~FakeRest(){};
     RestResponse Get(const std::string &url)
     {
         EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);

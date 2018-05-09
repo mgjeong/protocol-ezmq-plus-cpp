@@ -16,6 +16,8 @@ static size_t _writeCb(void *ptr, size_t size, size_t nmemb, void *userdata)
     return ret;
 }
 
+EZMQX::rest::~rest(){};
+
 EZMQX::SimpleRest::SimpleRest() : curl(nullptr)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
