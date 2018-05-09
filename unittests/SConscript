@@ -26,7 +26,6 @@ ezmq_plus_unittest_env.AppendUnique(
 
 ezmq_plus_unittest_env.AppendUnique(LIBPATH=[lib_env.get('BUILD_DIR')])
 
-#ezmq_plus_unittest_env.AppendUnique(LIBS=['aml', 'ezmq_plus', 'gtest', 'gtest_main', 'gmock'])
 ezmq_plus_unittest_env.AppendUnique(LIBS=['aml', 'ezmq_plus', 'gmock'])
 
 if target_os in ['linux']:
