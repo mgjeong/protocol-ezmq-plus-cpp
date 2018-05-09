@@ -1,12 +1,5 @@
 #!/bin/sh
 
-#copy libs
-cd /
-rm -rf /usr/local/lib/*
-cp -r libs/* /usr/local/lib/
-ldconfig
-
-#excute sample
 if [ "loop" = $1 ]; then
     while true
     do
