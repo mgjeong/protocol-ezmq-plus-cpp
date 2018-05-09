@@ -25,6 +25,7 @@ static const std::string TNS_KEEP_ALIVE = "/tns/keepalive";
 static const std::string TNS_UNREGISTER = "/tns/topic";
 
 // Json keys
+static const std::string PAYLOAD_OPTION = "indentation";
 static const std::string PAYLOAD_CID = "c_id";
 static const std::string PAYLOAD_TOPIC = "topic_names";
 static const std::string PAYLOAD_ENDPOINT = "endpoint";
@@ -164,16 +165,13 @@ void EZMQX::KeepAlive::timerHandler()
             for (auto itr = topicList.begin(); itr != topicList.end(); itr++)
             {
                 Json::Value value(*itr);
-                root.append(value);
+                root[PAYLOAD_TOPIC].append(value);
             }
 
             Json::StreamWriterBuilder builder;
-            std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
+            builder[PAYLOAD_OPTION] = "";
 
-            writer->write(root, &std::cout);
-            std::cout << std::endl;
-
-            std::string payload = root.asString();
+            std::string payload = Json::writeString(builder, root);
 
             EZMQX_LOG_V(DEBUG, TAG, "%s Payload: %s", __func__, payload.c_str());
 

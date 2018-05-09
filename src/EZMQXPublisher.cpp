@@ -20,6 +20,7 @@ static const std::string PREFIX = "/api/v1";
 static const std::string TOPIC = "/tns/topic";
 static const std::string HEALTH = "/health";
 
+static const std::string PAYLOAD_OPTION = "indentation";
 static const std::string PAYLOAD_TOPIC = "topic";
 static const std::string PAYLOAD_NAME = "name";
 static const std::string PAYLOAD_ENDPOINT = "endpoint";
@@ -140,14 +141,14 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
         root[PAYLOAD_TOPIC][PAYLOAD_DATAMODEL] = regTopic.getDatamodel();
 
         Json::StreamWriterBuilder builder;
-        std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
-        writer->write(root, &std::cout);
-        std::cout << std::endl;
-        tmp = root.asString();
+        builder[PAYLOAD_OPTION] = "";
+
+        tmp = Json::writeString(builder, root);
+        EZMQX_LOG_V(DEBUG, TAG, "%s payload %s", __func__, tmp.c_str());
     }
     catch (...)
     {
-        EZMQX_LOG_V(ERROR, TAG, "%s Could not build json payload %s", __func__, regTopic.getName());
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not build json payload %s", __func__, regTopic.getName().c_str());
         throw EZMQX::Exception("Could not build json payload", EZMQX::UnKnownState);
     }
 
@@ -168,7 +169,7 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
 
     if (resp.getStatus() == EZMQX::Created)
     {
-        EZMQX_LOG_V(DEBUG, TAG, "%s topic %s register successfully", __func__, regTopic.getName());
+        EZMQX_LOG_V(DEBUG, TAG, "%s topic %s register successfully", __func__, regTopic.getName().c_str());
     }
     else if (resp.getStatus() == EZMQX::Conflict)
     {
