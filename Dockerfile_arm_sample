@@ -36,7 +36,7 @@ WORKDIR /
 RUN git clone git@github.sec.samsung.net:RS7-EdgeComputing/protocol-ezmq-plus-cpp.git
 WORKDIR /protocol-ezmq-plus-cpp
 RUN sh build_arm.sh
-RUN sh install.sh
+RUN sh install_arm.sh
 
 # create real image
 FROM docker.sec.samsung.net:5000/edge/base-image:latest
