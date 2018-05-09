@@ -1,6 +1,6 @@
 #!/bin/bash
 
-EZMQ_PLUS_WITH_DEP=false
+EZMQ_PLUS_WITH_DEP=true
 
 PROJECT_ROOT=$(pwd)
 DEP_ROOT=$(pwd)/dependencies
