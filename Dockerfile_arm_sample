@@ -29,7 +29,7 @@ RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 1
 RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 1
 
 RUN add-apt-repository ppa:george-edison55/cmake-3.x && apt-get update
-RUN apt-get install -y autoconf automake make unzip sudo autogen libtool pkg-config scons cmake python-dev
+RUN apt-get install -y autoconf automake make unzip sudo autogen libtool pkg-config scons cmake python-dev wget
 
 #build protocol-ezmq-plus-cpp
 WORKDIR /
@@ -49,7 +49,7 @@ COPY --from=build /usr/local/lib/libcurl.so.4.5.0 /usr/local/lib/libcurl.so.4.5.
 RUN ln -s /usr/local/lib/libcurl.so.4.5.0 /usr/local/lib/libcurl.so
 RUN ln -s /usr/local/lib/libcurl.so.4.5.0 /usr/local/lib/libcurl.so.4
 
-COPY --from=build /usr/local/lib/libjsoncpp.so.1.8.4.so /usr/local/lib/libjsoncpp.so.1.8.4
+COPY --from=build /usr/local/lib/libjsoncpp.so.1.8.4 /usr/local/lib/libjsoncpp.so.1.8.4
 RUN ln -s /usr/local/lib/libjsoncpp.so.1.8.4 /usr/local/lib/libjsoncpp.so.19
 RUN ln -s /usr/local/lib/libjsoncpp.so.19 /usr/local/lib/libjsoncpp.so
 
