@@ -18,7 +18,7 @@ class TopicDiscovery
         EZMQX::Topic query(std::string topic);
         std::list<EZMQX::Topic> hierarchicalQuery(std::string topic);
         TopicDiscovery();
-        ~TopicDiscovery();
+        virtual ~TopicDiscovery();
 };
 
 } //namespace EZMQX

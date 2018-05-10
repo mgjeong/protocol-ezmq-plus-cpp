@@ -42,7 +42,7 @@ class Subscriber
         virtual void getSession(EZMQX::Topic topic);
 
         Subscriber();
-        ~Subscriber();
+        virtual ~Subscriber() = 0;
         // make noncopyable
         Subscriber(const Subscriber&) = delete;
         Subscriber& operator = (const Subscriber&) = delete;

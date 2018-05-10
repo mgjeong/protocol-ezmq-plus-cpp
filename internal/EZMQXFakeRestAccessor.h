@@ -62,7 +62,7 @@ public:
     RestResponse Get(const std::string &url)
     {
         EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
-        return fake(GET, EMPTY, EMPTY, EMPTY);
+        return fake(GET, url, EMPTY, EMPTY);
     }
 
     RestResponse Get(const std::string &url, const std::string &query)

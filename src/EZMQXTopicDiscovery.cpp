@@ -27,7 +27,7 @@ static const std::string PAYLOAD_NAME = "name";
 static const std::string PAYLOAD_ENDPOINT = "endpoint";
 static const std::string PAYLOAD_DATAMODEL = "datamodel";
 
-static const std::string TOPIC_PATTERN = "(\/[a-zA-Z0-9-_*.]+)+";
+static const std::string TOPIC_PATTERN = "(\\/[a-zA-Z0-9-_*.]+)+";
 static const std::string TOPIC_WILD_CARD = "*";
 static const std::string TOPIC_WILD_PATTERNN = "/*/";
 
@@ -58,13 +58,13 @@ void EZMQX::TopicDiscovery::validateTopic(std::string& topic)
     // simple grammer check
     if (tmp.front() != SLASH || tmp.back() == SLASH || tmp.find(DOUBLE_SLASH) != std::string::npos)
     {
-        EZMQX_LOG_V(ERROR, TAG, "%s Invalid topic %s", __func__, topic);
+        EZMQX_LOG_V(ERROR, TAG, "%s Invalid topic %s", __func__, topic.c_str());
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
 
     if (tmp.find(TOPIC_WILD_CARD) != std::string::npos && tmp.find(TOPIC_WILD_PATTERNN) == std::string::npos)
     {
-        EZMQX_LOG_V(ERROR, TAG, "%s Invalid topic %s", __func__, topic);
+        EZMQX_LOG_V(ERROR, TAG, "%s Invalid topic %s", __func__, topic.c_str());
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
 
@@ -74,7 +74,7 @@ void EZMQX::TopicDiscovery::validateTopic(std::string& topic)
 
     if (!std::regex_match(tmp, pattern))
     {
-        EZMQX_LOG_V(ERROR, TAG, "%s Invalid topic %s", __func__, topic);
+        EZMQX_LOG_V(ERROR, TAG, "%s Invalid topic %s", __func__, topic.c_str());
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
 #endif
@@ -191,7 +191,7 @@ EZMQX::Topic EZMQX::TopicDiscovery::query(std::string topic)
     // TODO validation check
     if (topic.empty())
     {
-        EZMQX_LOG_V(ERROR, TAG, "%s Invalid topic %s", __func__, topic);
+        EZMQX_LOG_V(ERROR, TAG, "%s Invalid topic %s", __func__, topic.c_str());
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
     else
@@ -244,7 +244,7 @@ std::list<EZMQX::Topic> EZMQX::TopicDiscovery::hierarchicalQuery(std::string top
     // TODO validation check
     if (topic.empty())
     {
-        EZMQX_LOG_V(ERROR, TAG, "%s Invalid topic %s", __func__, topic);
+        EZMQX_LOG_V(ERROR, TAG, "%s Invalid topic %s", __func__, topic.c_str());
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
     else

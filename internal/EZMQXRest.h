@@ -65,6 +65,7 @@ class RestFactoryInterface
 {
 public:
     virtual rest* getSomeRest() = 0;
+    virtual ~RestFactoryInterface() = 0;
 };
 
 // rest Factory

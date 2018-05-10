@@ -17,7 +17,7 @@
 static const std::string TNS_KNOWN_PORT = "48323";
 static const std::string COLLON = ":";
 
-static const std::string TOPIC_PATTERN = "(\/[a-zA-Z0-9-_*.]+)+";
+static const std::string TOPIC_PATTERN = "(\\/[a-zA-Z0-9-_*.]+)+";
 
 static const std::string PREFIX = "/api/v1";
 static const std::string TOPIC = "/tns/topic";
@@ -35,7 +35,7 @@ static const std::string PAYLOAD_DATAMODEL = "datamodel";
 static const std::string TOPIC_WILD_CARD = "*";
 static const std::string TOPIC_WILD_PATTERNN = "/*/";
 
-EZMQX::Subscriber::Subscriber() : que(new EZMQX::BlockingQue()), terminated(false), token(""), ctx(EZMQX::Context::getInstance()), mThread(std::thread(&EZMQX::Subscriber::handler, this))
+EZMQX::Subscriber::Subscriber() : terminated(false), ctx(EZMQX::Context::getInstance()), token(""), que(new EZMQX::BlockingQue()), mThread(std::thread(&EZMQX::Subscriber::handler, this))
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
 }
@@ -94,7 +94,9 @@ void EZMQX::Subscriber::getSession(EZMQX::Topic topic)
 
     try
     {
-        subCtx = new ezmq::EZMQSubscriber(ep.getAddr(), ep.getPort(), [](const ezmq::EZMQMessage &event)->void{ return;}, std::bind(&EZMQX::Subscriber::internalSubCb, this, std::placeholders::_1, std::placeholders::_2));
+        subCtx = new ezmq::EZMQSubscriber(ep.getAddr(), ep.getPort(),
+            std::bind(&EZMQX::Subscriber::internalSubCb, this, "", std::placeholders::_1),
+            std::bind(&EZMQX::Subscriber::internalSubCb, this, std::placeholders::_1, std::placeholders::_2));
 
         if (!subCtx)
         {

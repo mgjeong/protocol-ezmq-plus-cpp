@@ -17,6 +17,7 @@ static size_t _writeCb(void *ptr, size_t size, size_t nmemb, void *userdata)
 }
 
 EZMQX::rest::~rest(){};
+EZMQX::RestFactoryInterface::~RestFactoryInterface(){};
 
 EZMQX::SimpleRest::SimpleRest() : curl(nullptr)
 {
@@ -95,6 +96,7 @@ EZMQX::RestResponse EZMQX::SimpleRest::Put(const std::string &url, const std::st
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buff);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.c_str());
     curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)(payload.size()));
+    res = curl_easy_perform(curl);
     if(res != CURLE_OK)
     {
         throw EZMQX::Exception(curl_easy_strerror(res), EZMQX::RestError);

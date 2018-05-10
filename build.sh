@@ -187,9 +187,9 @@ cd $PROJECT_ROOT
 echo "build protocol-ezmq-plus-cpp"
 
 if [ "debug" = ${EZMQ_PLUS_BUILD_MODE} ]; then
-    scons TARGET_OS=linux LOGGING=1 RELEASE=0 TARGET_ARCH=x86_64 TEST=0 LOGGING=true
+    scons TARGET_OS=linux LOGGING=1 RELEASE=0 TARGET_ARCH=x86_64 TEST=0
 else
-    scons TARGET_OS=linux TARGET_ARCH=x86_64
+    scons TARGET_OS=linux TARGET_ARCH=x86_64 LOGGING=1
 fi
 
 echo "done"

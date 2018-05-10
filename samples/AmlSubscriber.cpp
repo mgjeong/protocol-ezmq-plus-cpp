@@ -109,8 +109,8 @@ int main()
         // error callback
         // typedef std::function<void(std::string topic, const AML::AMLObject& payload)> SubCb;
         // typedef std::function<void(std::string topic, EZMQX::ErrorCode errCode)> SubErrCb;
-        EZMQX::AmlSubCb subCb = [](std::string topic, const AML::AMLObject& payload){std::cout << "subCb called" << std::endl; printAMLObject(payload);};
-        EZMQX::SubErrCb errCb = [](std::string topic, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl;};
+        EZMQX::AmlSubCb subCb = [](std::string topic, const AML::AMLObject& payload){std::cout << "subCb called" << std::endl << "topic: " << topic << std::endl; printAMLObject(payload);};
+        EZMQX::SubErrCb errCb = [](std::string topic, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl << "topic: " <<  topic << std::endl << "err: " << errCode << std::endl;};
 
         // create subscriber with test topic
         EZMQX::Endpoint ep("localhost", 4000);

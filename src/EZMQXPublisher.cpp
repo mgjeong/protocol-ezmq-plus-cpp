@@ -28,7 +28,7 @@ static const std::string PAYLOAD_DATAMODEL = "datamodel";
 
 static const std::string PAYLOAD_KEEPALIVE_INTERVAL = "ka_interval";
 
-static const std::string TOPIC_PATTERN = "(\/[a-zA-Z0-9-_*.]+)+";
+static const std::string TOPIC_PATTERN = "(\\/[a-zA-Z0-9-_*.]+)+";
 
 static const std::string TOPIC_WILD_CARD = "*";
 static const std::string TOPIC_WILD_PATTERNN = "/*/";
@@ -95,13 +95,13 @@ void EZMQX::Publisher::validateTopic(const std::string topic)
     // simple grammer check
     if (tmp.front() != SLASH || tmp.back() == SLASH || tmp.find(DOUBLE_SLASH) != std::string::npos)
     {
-        EZMQX_LOG_V(DEBUG, TAG, "%s Invalid topic %s", __func__, topic);
+        EZMQX_LOG_V(DEBUG, TAG, "%s Invalid topic %s", __func__, topic.c_str());
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
 
     if (tmp.find(TOPIC_WILD_CARD) != std::string::npos && tmp.find(TOPIC_WILD_PATTERNN) == std::string::npos)
     {
-        EZMQX_LOG_V(DEBUG, TAG, "%s Invalid topic %s", __func__, topic);
+        EZMQX_LOG_V(DEBUG, TAG, "%s Invalid topic %s", __func__, topic.c_str());
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
 
@@ -163,7 +163,6 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
     }
     catch (...)
     {
-        EZMQX_LOG_V(ERROR, TAG, "%s Could not send rest post request %s", __func__, ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, tmp);
         throw EZMQX::Exception("Could not send rest post request", EZMQX::UnKnownState);
     }
 
@@ -196,7 +195,7 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
         std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
         if (!reader->parse(response.c_str(), response.c_str() + response.size(), &root, &errors))
         {
-            EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json response %s", __func__, response);
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json response %s", __func__, response.c_str());
             throw EZMQX::Exception("Could not parse json response", EZMQX::RestError);
         }
         else
@@ -226,7 +225,7 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
     }
     catch (...)
     {
-        EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json response %s", __func__, regTopic.getName());
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json response %s", __func__, regTopic.getName().c_str());
         throw EZMQX::Exception("Could not parse json response", EZMQX::UnKnownState);
     }
 
