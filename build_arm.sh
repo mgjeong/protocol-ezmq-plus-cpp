@@ -4,7 +4,7 @@ EZMQ_PLUS_WITH_DEP=true
 
 PROJECT_ROOT=$(pwd)
 DEP_ROOT=$(pwd)/dependencies
-EZMQ_TARGET_ARCH="$(uname -m)"
+EZMQ_PLUS_BUILD_MODE="release"
 
 install_dependencies() {
     if [ -d "./dependencies" ] ; then
@@ -98,12 +98,14 @@ usage() {
     echo "Usage: ./build_arm.sh <option>"
     echo "Options:"
     echo "  --with_dependencies=(default: false)                               :  Build with dependencies"
+    echo "  --build_mode=[release|debug](default: release)                     :  Build ezmq plus library and samples in release or debug mode"
     echo "  -h / --help                                                        :  Display help and exit"
     echo "Examples:"
     echo "build:-"
     echo "  $ ./build_arm.sh"
     echo "  $ ./build_arm.sh --with_dependencies=true"
-    echo "  $ ./build_arm.sh --with_dependencies=false"
+    echo "  $ ./build.sh --with_dependencies=false --build_mode=release"
+    echo "  $ ./build.sh --with_dependencies=false --build_mode=debug"
     echo "help:-"
     echo "  $ ./build_arm.sh -h"
 }
@@ -126,6 +128,11 @@ process_cmd_args() {
                     echo -e "Wrong option"
                     shift 1; exit 0
                 fi
+                shift 1;
+                ;;
+            --build_mode=*)
+                EZMQ_PLUS_BUILD_MODE="${1#*=}";
+                echo "Build mode is: $EZMQ_PLUS_BUILD_MODE"
                 shift 1;
                 ;;
             -h)
@@ -178,5 +185,15 @@ fi
 #build ezmq-plus-cpp
 cd $PROJECT_ROOT
 echo "build protocol-ezmq-plus-cpp"
-scons TARGET_OS=linux TARGET_ARCH=armhf
+
+if [ "debug" = ${EZMQ_PLUS_BUILD_MODE} ]; then
+    scons TARGET_OS=linux LOGGING=1 RELEASE=0 TARGET_ARCH=armhf TEST=0 LOGGING=true
+else
+    scons TARGET_OS=linux TARGET_ARCH=armhf
+fi
+
+
 echo "done"
+
+
+
