@@ -479,21 +479,25 @@ void EZMQX::Context::initialize()
                     }
                     else
                     {
-                        root.clear();
-                        if (!reader->parse(nodeInfo.c_str(), nodeInfo.c_str() + nodeInfo.size(), &root, &errors))
+                        Json::Value tmp;
+                        if (!reader->parse(nodeInfo.c_str(), nodeInfo.c_str() + nodeInfo.size(), &tmp, &errors))
                         {
+                            EZMQX_LOG_V(ERROR, TAG, "%s failed at parse json", __func__);
                             continue;
                         }
                         else
                         {
                             props.clear();
-                            props = root[SERVICES_PROPS];
+                            props = tmp[SERVICES_PROPS];
                             for (Json::Value::ArrayIndex i = 0; i < props.size(); i++)
                             {
+                                EZMQX_LOG_V(DEBUG, TAG, "%s seeking json object", __func__);
                                 if (props[i].isMember(SERVICES_CON_ID) && props[i].isMember(SERVICES_CON_PORTS))
                                 {
+                                    EZMQX_LOG_V(DEBUG, TAG, "%s this json object have cid, ports member", __func__);
                                     std::string conId = props[i][SERVICES_CON_ID].asString();
                                     conId = conId.substr(0, hostname.size());
+                                    EZMQX_LOG_V(DEBUG, TAG, "%s cid %s, host %s", __func__, conId.c_str(), hostname.c_str());
                                     if (!conId.compare(hostname))
                                     {
                                         portArray = props[i][SERVICES_CON_PORTS];
