@@ -81,32 +81,6 @@ protected:
     }
 };
 
-class MockAmlPublisher : public EZMQX::AmlPublisher
-{
-public:
-    MOCK_METHOD1(registerTopic, void(EZMQX::Topic& topic));
-};
-
-class DockerAmlPublisher : public testing::Test
-{
-protected:
-    EZMQX::Config *config;
-    MockAmlPublisher *mock;
-    virtual void SetUp()
-    {
-        EZMQX::FakeSingletonAccessor::setFake();
-        config = EZMQX::Config::getInstance();
-        config->startDockerMode();
-    }
-
-    virtual void TearDown()
-    {
-        config->reset();
-        delete mock;
-        mock = nullptr;
-    }
-};
-
 class MockTopicDiscovery : public EZMQX::TopicDiscovery
 {
 public:
