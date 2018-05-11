@@ -35,7 +35,7 @@ RUN apt-get install -y autoconf automake make unzip sudo autogen libtool pkg-con
 WORKDIR /
 RUN git clone git@github.sec.samsung.net:RS7-EdgeComputing/protocol-ezmq-plus-cpp.git
 WORKDIR /protocol-ezmq-plus-cpp
-RUN sh build_arm.sh
+RUN sh build_arm.sh --with_dependencies=false --build_mode=release
 RUN sh install_arm.sh
 
 # create real image
