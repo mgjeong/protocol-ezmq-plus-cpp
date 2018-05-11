@@ -16,20 +16,20 @@ install_dependencies() {
     fi
 
     #build zmq
-#    cd $DEP_ROOT
-#    if [ -d "./libzmq" ] ; then
-#        echo "libzmq exist"
-#    else
-#        git clone https://github.com/zeromq/libzmq.git
-#        cd ./libzmq
-#        git checkout v4.2.2
-#        ./version.sh
-#        ./autogen.sh
-#        ./configure
-#        make -j 8
-#        sudo make install
-#        sudo ldconfig
-#    fi
+    cd $DEP_ROOT
+    if [ -d "./libzmq" ] ; then
+        echo "libzmq exist"
+    else
+        git clone https://github.com/zeromq/libzmq.git
+        cd ./libzmq
+        git checkout v4.2.2
+        ./version.sh
+        ./autogen.sh
+        ./configure
+        make -j 8
+        sudo make install
+        sudo ldconfig
+    fi
 
     #build & install curl lib
     cd $DEP_ROOT
@@ -74,10 +74,10 @@ install_dependencies() {
     else
         git clone git@github.sec.samsung.net:RS7-EdgeComputing/protocol-ezmq-cpp.git
         cd ./protocol-ezmq-cpp
-#        echo "build protocol-ezmq-cpp"
-#        scons TARGET_OS=linux TARGET_ARCH=armhf
-#        sudo cp out/linux/armhf/release/libezmq.so /usr/local/lib
-#        sudo ldconfig
+        echo "build protocol-ezmq-cpp"
+        scons TARGET_OS=linux TARGET_ARCH=armhf
+        sudo cp out/linux/armhf/release/libezmq.so /usr/local/lib
+        sudo ldconfig
         echo "done"
     fi
 
@@ -87,10 +87,10 @@ install_dependencies() {
         echo "datamodel-aml-cpp exist"
     else
         git clone git@github.sec.samsung.net:RS7-EdgeComputing/datamodel-aml-cpp.git
-#        cd datamodel-aml-cpp
-#        ./build_arm.sh
-#        sudo cp out/linux/armhf/release/libaml.so /usr/local/lib
-#        sudo ldconfig
+        cd datamodel-aml-cpp
+        ./build_arm.sh
+        sudo cp out/linux/armhf/release/libaml.so /usr/local/lib
+        sudo ldconfig
     fi
 }
 
