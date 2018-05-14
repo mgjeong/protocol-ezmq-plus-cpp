@@ -45,14 +45,6 @@ WORKDIR /
 #copy lib from build
 COPY --from=build /protocol-ezmq-plus-cpp/out/linux/armhf/release/libezmq_plus.so /usr/local/lib/libezmq_plus.so
 
-COPY --from=build /usr/local/lib/libcurl.so.4.5.0 /usr/local/lib/libcurl.so.4.5.0
-RUN ln -s /usr/local/lib/libcurl.so.4.5.0 /usr/local/lib/libcurl.so
-RUN ln -s /usr/local/lib/libcurl.so.4.5.0 /usr/local/lib/libcurl.so.4
-
-COPY --from=build /usr/local/lib/libjsoncpp.so.1.8.4 /usr/local/lib/libjsoncpp.so.1.8.4
-RUN ln -s /usr/local/lib/libjsoncpp.so.1.8.4 /usr/local/lib/libjsoncpp.so.19
-RUN ln -s /usr/local/lib/libjsoncpp.so.19 /usr/local/lib/libjsoncpp.so
-
 #copy samples from build
 COPY --from=build /protocol-ezmq-plus-cpp/out/linux/armhf/release/samples/publisher /publisher
 COPY --from=build /protocol-ezmq-plus-cpp/out/linux/armhf/release/samples/AmlSubscriber /AmlSubscriber
