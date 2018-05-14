@@ -92,7 +92,7 @@ void EZMQX::KeepAlive::queHandler()
             {
                 std::string KeepAliveUrl = remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE;
                 EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request to %s, payload: %s", __func__, KeepAliveUrl.c_str(), payload.second.c_str());
-                resp = EZMQX::RestService::Put(remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE, payload.second);
+                resp = EZMQX::RestService::Post(remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE, payload.second);
                 EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, resp.getPayload().c_str());
 
                 if (resp.getStatus() == EZMQX::Success)
