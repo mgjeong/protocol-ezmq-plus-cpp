@@ -148,7 +148,7 @@ int main()
       amlObj.addData("Model", model);
       amlObj.addData("Sample", sample);
 
-      terminater = new std::thread(deleteTopic);
+      //terminater = new std::thread(deleteTopic);
 
       while(1)
       {
@@ -158,7 +158,7 @@ int main()
           publisherC->publish(amlObj);
           std::cout << "Publish!!!" << std::endl;
           printAMLObject(amlObj);
-          std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+          std::this_thread::sleep_for(std::chrono::milliseconds(1000));
       }
 
     }
