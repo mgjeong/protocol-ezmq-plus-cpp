@@ -164,24 +164,6 @@ if [ ${EZMQ_PLUS_WITH_DEP} = true ]; then
     install_dependencies
 fi
 
-#clone ezmq-cpp
-cd $DEP_ROOT
-#clone ezmq-protocol-cpp
-if [ -d "./protocol-ezmq-cpp" ] ; then
-    echo "protocol-ezmq-cpp exist"
-else
-    git clone git@github.sec.samsung.net:RS7-EdgeComputing/protocol-ezmq-cpp.git
-fi
-
-
-#clone AML
-cd $DEP_ROOT
-if [ -d "./datamodel-aml-cpp" ] ; then
-    echo "datamodel-aml-cpp exist"
-else
-    git clone git@github.sec.samsung.net:RS7-EdgeComputing/datamodel-aml-cpp.git
-fi
-
 #build ezmq-plus-cpp
 cd $PROJECT_ROOT
 echo "build protocol-ezmq-plus-cpp"
