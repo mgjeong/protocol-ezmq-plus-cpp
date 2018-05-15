@@ -371,14 +371,24 @@ void EZMQX::Context::initialize()
             try
             {
                 // get hostname
-                std::ifstream _file(HOSTNAME);
-                std::string _hostname((std::istreambuf_iterator<char>(_file)), std::istreambuf_iterator<char>());
-                // check last is '\n'
-                if (_hostname.back() == '\n')
+                if (hostname.empty())
                 {
-                    _hostname = _hostname.substr(0, _hostname.size()-1);
+                    std::ifstream _file(HOSTNAME);
+                    std::string _hostname((std::istreambuf_iterator<char>(_file)), std::istreambuf_iterator<char>());
+                    // check last is '\n'
+                    if (_hostname.back() == '\n')
+                    {
+                        _hostname = _hostname.substr(0, _hostname.size()-1);
+                    }
+                    this->hostname = _hostname;
                 }
-                this->hostname = _hostname;
+
+                if (hostname.empty())
+                {
+                    EZMQX_LOG_V(ERROR, TAG, "%s Could not parse hostname", __func__);
+                    throw EZMQX::Exception("Could not parse hostname", EZMQX::ServiceUnavailable);
+                }
+
                 EZMQX_LOG_V(DEBUG, TAG, "%s hostname found %s", __func__, this->hostname.c_str());
             }
             catch(...)
