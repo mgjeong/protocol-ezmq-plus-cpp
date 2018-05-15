@@ -69,8 +69,8 @@ EZMQX::Publisher::Publisher(int optionalPort) : terminated(false), ctx(EZMQX::Co
     // check error and throw exception
     if (!pubCtx)
     {
-        EZMQX_LOG_V(ERROR, TAG, "%s Could not start publisher", __func__);
-        throw EZMQX::Exception("Could not start publisher", EZMQX::UnKnownState);
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not create publisher", __func__);
+        throw EZMQX::Exception("Could not create publisher", EZMQX::UnKnownState);
     }
 
     if (ezmq::EZMQ_OK != pubCtx->start())
