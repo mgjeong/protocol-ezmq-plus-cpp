@@ -4,6 +4,7 @@
 #include <string>
 #include <EZMQXRest.h>
 #include <EZMQXLogger.h>
+#include <EZMQXContext.h>
 
 #define TAG "EZMQXFakeRest"
 
@@ -16,6 +17,12 @@ static const std::string EMPTY = "";
 static const std::string QUERY_PARAM = "name=";
 
 static const std::string UNITTEST_DISCOVERY_FAKE = "/FakeDiscoveryTest&hierarchical=yes";
+
+// publish stub
+static const std::string TNS_KNOWN_PORT = "48323";
+static const std::string COLLON = ":";
+static const std::string PREFIX = "/api/v1";
+static const std::string TOPIC = "/tns/topic";
 
 namespace EZMQX {
 
@@ -43,6 +50,13 @@ private:
         }
         else if (op.compare(POST) == 0)
         {
+            // publish register stun
+            //EZMQX::RestService::Post(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, tmp);
+            if (url.compare(EZMQX::Context::getInstance()->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC) == 0)
+            {
+                RestResponse fake(EZMQX::Created, "{ \"ka_interval\" : 180 }");
+                return fake;
+            }
 
         }
         else if (op.compare(DELETE) == 0)

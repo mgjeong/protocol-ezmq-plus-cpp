@@ -42,7 +42,9 @@ ezmq_plus_env.AppendUnique(CPPPATH=[
         './extlibs/',
         './include',
         './internal',
-        './src'
+        './internal/logger',
+        './src',
+        './src/logger'
 ])
 
 ezmq_plus_env.PrependUnique(LIBS=['zmq', 'protobuf', 'curl', 'jsoncpp', 'ezmq', 'aml'])
@@ -64,7 +66,8 @@ if target_os in ['linux']:
        ezmq_plus_env.AppendUnique(CXXFLAGS=['--coverage'])
 
 ezmq_plus_DIR = '.'
-ezmq_plus_env.AppendUnique(ezmq_plus_src = [ezmq_plus_env.Glob(os.path.join(ezmq_plus_DIR, 'src', '*.cpp'))])
+ezmq_plus_env.AppendUnique(ezmq_plus_src = [ezmq_plus_env.Glob(os.path.join(ezmq_plus_DIR, 'src', '*.cpp')),
+                                            ezmq_plus_env.Glob(os.path.join(ezmq_plus_DIR, 'src', 'logger', '*.cpp'))])
 
 ezmq_plus_shared = ezmq_plus_env.SharedLibrary('ezmq_plus', ezmq_plus_env.get('ezmq_plus_src'))
 ezmq_plus_static = ezmq_plus_env.StaticLibrary('ezmq_plus', ezmq_plus_env.get('ezmq_plus_src'))

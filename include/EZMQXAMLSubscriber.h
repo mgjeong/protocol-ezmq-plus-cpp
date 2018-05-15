@@ -16,7 +16,7 @@ class AmlSubscriber : public Subscriber
         void cb(const std::string &topic, const AML::AMLObject* obj);
 
         // delete default ctor
-        AmlSubscriber();
+        AmlSubscriber() = delete;
         AmlSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb);
         AmlSubscriber(const std::string &topic, bool isHierarchical, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb);
         // make noncopyable
