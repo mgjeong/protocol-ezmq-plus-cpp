@@ -202,6 +202,7 @@ void EZMQX::Subscriber::handler()
     {
         EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
         std::pair<std::string, std::string> payload;
+        AML::AMLObject *obj = nullptr;
 
         if (!que || que->isTerminated())
         {
@@ -238,7 +239,7 @@ void EZMQX::Subscriber::handler()
             }
             else
             {
-                AML::AMLObject *obj = itr->second->ByteToData(payload.second);
+                obj = itr->second->ByteToData(payload.second);
 
                 if (!obj)
                 {
@@ -247,14 +248,36 @@ void EZMQX::Subscriber::handler()
 
                 // call subCb
                 cb(payload.first, obj);
+
+                // delete AmlObject
+                if (obj)
+                {
+                    delete obj;
+                    obj = nullptr;
+                }
             }
         }
         catch(const std::exception &e)
         {
+            // delete AmlObject
+            if (obj)
+            {
+                delete obj;
+                obj = nullptr;
+            }
+
             // call errCb
             EZMQX_LOG_V(DEBUG, TAG, "%s exception on subscriber callback thread: %s", __func__, e.what());
             AML::AMLObject *obj = nullptr;
             cb(payload.first, obj);
+        }
+        catch(...)
+        {
+            if (obj)
+            {
+                delete obj;
+                obj = nullptr;
+            }
         }
     }
 
