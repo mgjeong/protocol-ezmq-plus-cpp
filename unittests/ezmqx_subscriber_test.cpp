@@ -37,56 +37,6 @@ using testing::tuple;
 using testing::tuple_element;
 using testing::SetArgReferee;
 
-// TEST_F(DockerAmlSubscriber, ExpectThrow)
-// {
-
-//     EXPECT_CALL(*mock, verifyTopics(_, _, _))
-//     .Times(2);
-
-//     std::string topic = "/TEST";
-
-//     EXPECT_THROW(mock->initialize(topic, true), EZMQX::Exception);
-//     EXPECT_THROW(mock->initialize(topic, false), EZMQX::Exception);
-// }
-
-// TEST_F(DockerAmlSubscriber, ExpectThreeDummies)
-// {
-
-//     EXPECT_CALL(*mock, verifyTopics(_, _, _))
-//     .WillOnce(SetArgReferee<1>(getDummyTopics()));
-
-//     EXPECT_CALL(*mock, getSession(_))
-//     .Times(3);
-
-//     std::string topic = "/TEST";
-
-//     mock->initialize(topic, true);
-//     std::list<EZMQX::Topic> result = mock->getTopics();
-
-//     EXPECT_TRUE(result.size() == 3);
-
-//     EZMQX::Topic first = result.front();
-//     EXPECT_TRUE(first.getName().compare("/TEST/A") == 0);
-//     EXPECT_TRUE(first.getDatamodel().compare(getDummyId()) == 0);
-//     EXPECT_TRUE(first.getEndpoint().toString().compare("localhost:4000") == 0);
-//     result.pop_front();
-
-//     EZMQX::Topic second = result.front();
-//     EXPECT_TRUE(second.getName().compare("/TEST/B") == 0);
-//     EXPECT_TRUE(second.getDatamodel().compare(getDummyId()) == 0);
-//     EXPECT_TRUE(second.getEndpoint().toString().compare("localhost:4001") == 0);
-//     result.pop_front();
-
-//     EZMQX::Topic third = result.front();
-//     EXPECT_TRUE(third.getName().compare("/TEST/C") == 0);
-//     EXPECT_TRUE(third.getDatamodel().compare(getDummyId()) == 0);
-//     EXPECT_TRUE(third.getEndpoint().toString().compare("localhost:4002") == 0);
-//     result.pop_front();
-
-    
-// }
-
-
 //Aml Test
 TEST_F(SubDockerTest, AmlSubFailTest)
 {
@@ -95,10 +45,14 @@ TEST_F(SubDockerTest, AmlSubFailTest)
 
     EZMQX::AmlSubscriber* sub1 = nullptr;
     EZMQX::AmlSubscriber* sub2 = nullptr;
+    EZMQX::AmlSubscriber* sub3 = nullptr;
+    EZMQX::AmlSubscriber* sub4 = nullptr;
 
 
     EXPECT_THROW(sub1 = EZMQX::AmlSubscriber::getSubscriber("T/A", true, subCb, errCb), EZMQX::Exception);
     EXPECT_THROW(sub2 = EZMQX::AmlSubscriber::getSubscriber("T/A", false, subCb, errCb), EZMQX::Exception);
+    EXPECT_THROW(sub3 = EZMQX::AmlSubscriber::getSubscriber("/T/A", true, subCb, errCb), EZMQX::Exception);
+    EXPECT_THROW(sub4 = EZMQX::AmlSubscriber::getSubscriber("/T/A", false, subCb, errCb), EZMQX::Exception);
 
     if (sub1)
     {
@@ -108,6 +62,16 @@ TEST_F(SubDockerTest, AmlSubFailTest)
     if (sub2)
     {
         delete sub2;
+    }
+
+    if (sub3)
+    {
+        delete sub3;
+    }
+
+    if (sub4)
+    {
+        delete sub4;
     }
 }
 
@@ -159,6 +123,7 @@ TEST_F(SubStandAloneTest, AmlSubActualTest1)
     EZMQX::SubErrCb errCb = [](std::string topic, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl << "topic: " <<  topic << std::endl << "err: " << errCode << std::endl;};
 
     EZMQX::AmlSubscriber* sub1 = EZMQX::AmlSubscriber::getSubscriber(getPositiveTestTopic(), subCb, errCb);
+    sub1->getTopics();
 
     pubTest();
     pubTest();
@@ -182,10 +147,14 @@ TEST_F(SubDockerTest, XmlSubFailTest)
 
     EZMQX::XmlSubscriber* sub1 = nullptr;
     EZMQX::XmlSubscriber* sub2 = nullptr;
+    EZMQX::XmlSubscriber* sub3 = nullptr;
+    EZMQX::XmlSubscriber* sub4 = nullptr;
 
 
     EXPECT_THROW(sub1 = EZMQX::XmlSubscriber::getSubscriber("T/A", true, subCb, errCb), EZMQX::Exception);
     EXPECT_THROW(sub2 = EZMQX::XmlSubscriber::getSubscriber("T/A", false, subCb, errCb), EZMQX::Exception);
+    EXPECT_THROW(sub3 = EZMQX::XmlSubscriber::getSubscriber("/T/A", true, subCb, errCb), EZMQX::Exception);
+    EXPECT_THROW(sub4 = EZMQX::XmlSubscriber::getSubscriber("/T/A", false, subCb, errCb), EZMQX::Exception);
 
     if (sub1)
     {
@@ -195,6 +164,16 @@ TEST_F(SubDockerTest, XmlSubFailTest)
     if (sub2)
     {
         delete sub2;
+    }
+
+    if (sub3)
+    {
+        delete sub3;
+    }
+
+    if (sub4)
+    {
+        delete sub4;
     }
 }
 

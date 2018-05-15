@@ -249,3 +249,27 @@ TEST(Publisher, invalidPath)
 
     config->reset();
 }
+
+TEST(Publisher, KeepAliveTest)
+{
+    EZMQX::FakeSingletonAccessor::setFake();
+    EZMQX::FakeRestAccessor::setFake();
+    EZMQX::Config* config = EZMQX::Config::getInstance();
+    config->startDockerMode();
+
+    std::list<std::string> amlPath(1, "sample_data_model.aml");
+    std::list<std::string> amlIds(1);
+    amlIds = config->addAmlModel(amlPath);
+    std::string amlId = amlIds.front();
+
+
+    EZMQX::AmlPublisher* pub = EZMQX::AmlPublisher::getPublisher("/T/A", EZMQX::AmlModelId, amlId, 4001);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+
+    delete pub;
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+
+    config->reset();
+}
