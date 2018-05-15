@@ -152,11 +152,6 @@ void EZMQX::Config::reset()
     {
         std::lock_guard<std::mutex> scopedLock(lock);
 
-        if (!initialized.load())
-        {
-            throw EZMQX::Exception("Could not reset not initialized", EZMQX::NotInitialized);
-        }
-
         try
         {
             // terminate
