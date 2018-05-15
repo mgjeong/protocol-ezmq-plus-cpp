@@ -55,11 +55,6 @@ static const int LOCAL_PORT_MAX = 100;
 EZMQX::Context::Context() : keepAlive(nullptr), standAlone(false), tnsEnabled(false), initialized(false), terminated(false), interval(-1), usedIdx(0), numOfPort(0)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
-    if (ezmq::EZMQ_OK != ezmq::EZMQAPI::getInstance()->initialize())
-    {
-        EZMQX_LOG_V(ERROR, TAG, "%s Could not start ezmq context", __func__);
-        throw EZMQX::Exception("Could not start ezmq context", EZMQX::UnKnownState);
-    }
 }
 
 // dtor
@@ -76,6 +71,11 @@ void EZMQX::Context::setStandAloneMode(bool mode)
     this->standAlone = mode;
     if (this->standAlone)
     {
+        if (ezmq::EZMQ_OK != ezmq::EZMQAPI::getInstance()->initialize())
+        {
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not start ezmq context", __func__);
+            throw EZMQX::Exception("Could not start ezmq context", EZMQX::UnKnownState);
+        }
         initialized.store(true);
         terminated.store(false);
     }
@@ -307,6 +307,12 @@ void EZMQX::Context::initialize()
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     // mutex lock
     {
+        if (ezmq::EZMQ_OK != ezmq::EZMQAPI::getInstance()->initialize())
+        {
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not start ezmq context", __func__);
+            throw EZMQX::Exception("Could not start ezmq context", EZMQX::UnKnownState);
+        }
+
         std::lock_guard<std::mutex> scopedLock(lock);
         if (!initialized.load())
         {
