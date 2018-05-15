@@ -30,8 +30,20 @@ void EZMQX::Config::startDockerMode()
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     // mutex lock
     {
-        std::lock_guard<std::mutex> scopedLock(lock);
-        initialize(EZMQX::Docker);
+        try
+        {
+            std::lock_guard<std::mutex> scopedLock(lock);
+            initialize(EZMQX::Docker);
+        }
+        catch(const EZMQX::Exception& e)
+        {
+            throw e;
+        }
+        catch(...)
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s Could not start ezmq plus", __func__);
+            throw EZMQX::Exception("Could not start ezmq plus", EZMQX::UnKnownState);
+        }
     }
     // mutex unlock
 
@@ -43,14 +55,25 @@ void EZMQX::Config::startStandAloneMode(bool useTns, std::string tnsAddr)
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     // mutex lock
     {
-        std::lock_guard<std::mutex> scopedLock(lock);
-        initialize(EZMQX::StandAlone);
-
-        if (useTns)
+        try
         {
-            setTnsInfo(tnsAddr);
-        }
+            std::lock_guard<std::mutex> scopedLock(lock);
+            initialize(EZMQX::StandAlone);
 
+            if (useTns)
+            {
+                setTnsInfo(tnsAddr);
+            }
+        }
+        catch(const EZMQX::Exception& e)
+        {
+            throw e;
+        }
+        catch(...)
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s Could not start ezmq plus", __func__);
+            throw EZMQX::Exception("Could not start ezmq plus", EZMQX::UnKnownState);
+        }
     }
     // mutex unlock
 
@@ -131,12 +154,24 @@ void EZMQX::Config::reset()
 
         if (!initialized.load())
         {
-            throw EZMQX::Exception("Could not add amlmodel not initialized", EZMQX::NotInitialized);
+            throw EZMQX::Exception("Could not reset not initialized", EZMQX::NotInitialized);
         }
 
-        // terminate
-        EZMQX_LOG_V(DEBUG, TAG, "%s Try terminate", __func__);
-        ctx->terminate();
+        try
+        {
+            // terminate
+            EZMQX_LOG_V(DEBUG, TAG, "%s Try terminate", __func__);
+            ctx->terminate();
+        }
+        catch(const EZMQX::Exception& e)
+        {
+            throw e;
+        }
+        catch(...)
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s Could not reset ezmq plus", __func__);
+            throw EZMQX::Exception("Could not reset ezmq plus", EZMQX::UnKnownState);
+        }
 
         // clear config
         EZMQX_LOG_V(DEBUG, TAG, "%s Clear config info", __func__);

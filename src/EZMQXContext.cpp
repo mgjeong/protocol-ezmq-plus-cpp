@@ -384,7 +384,7 @@ void EZMQX::Context::initialize()
             catch(...)
             {
                 EZMQX_LOG_V(ERROR, TAG, "%s Could not found hostname", __func__);
-                throw EZMQX::Exception("Could not found hostname", EZMQX::UnKnownState);
+                throw EZMQX::Exception("Could not found hostname", EZMQX::ServiceUnavailable);
             }
 
             // parse port mapping table
@@ -418,7 +418,7 @@ void EZMQX::Context::initialize()
                 if (!reader->parse(nodeInfo.c_str(), nodeInfo.c_str() + nodeInfo.size(), &root, &errors))
                 {
                     EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json", __func__);
-                    throw EZMQX::Exception("Could not parse json", EZMQX::UnKnownState);
+                    throw EZMQX::Exception("Could not parse json", EZMQX::ServiceUnavailable);
                 }
                 else
                 {
@@ -446,17 +446,26 @@ void EZMQX::Context::initialize()
                     }
                 }
             }
+            catch(const EZMQX::Exception& e)
+            {
+                throw e;
+            }
             catch(...)
+            {
+                EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json", __func__);
+                throw EZMQX::Exception("Could not parse json", EZMQX::ServiceUnavailable);
+            }
+
+            if (runningApps.empty())
             {
                 EZMQX_LOG_V(ERROR, TAG, "%s There is no running application", __func__);
                 throw EZMQX::Exception("There is no running application", EZMQX::ServiceUnavailable);
             }
 
             // get app info detail
+            bool found = false;
             try
             {
-                bool found = false;
-
                 for (std::list<std::string>::iterator itr = runningApps.begin(); itr != runningApps.end(); itr++)
                 {
                     if (found)
@@ -518,11 +527,18 @@ void EZMQX::Context::initialize()
             catch(...)
             {
                 EZMQX_LOG_V(ERROR, TAG, "%s Could not parse app detail info", __func__);
-                throw EZMQX::Exception("Could not parse app detail info", EZMQX::UnKnownState);
+                throw EZMQX::Exception("Could not parse app detail info", EZMQX::ServiceUnavailable);
+            }
+
+            if(!found)
+            {
+                EZMQX_LOG_V(ERROR, TAG, "%s Could not parse app detail info", __func__);
+                throw EZMQX::Exception("Could not parse app detail info", EZMQX::ServiceUnavailable);
             }
 
             try
             {
+                ports.clear();
                 for (Json::Value::ArrayIndex i = 0; i < portArray.size(); i ++)
                 {
                     if (portArray[i].isMember(PORTS_PRIVATE) && portArray[i].isMember(PORTS_PUBLIC))
@@ -541,7 +557,13 @@ void EZMQX::Context::initialize()
             catch(...)
             {
                 EZMQX_LOG_V(ERROR, TAG, "%s Could not found port mapping info", __func__);
-                throw EZMQX::Exception("Could not found port mapping info", EZMQX::UnKnownState);
+                throw EZMQX::Exception("Could not found port mapping info", EZMQX::ServiceUnavailable);
+            }
+
+            if (ports.empty())
+            {
+                EZMQX_LOG_V(ERROR, TAG, "%s Could not found port mapping info", __func__);
+                throw EZMQX::Exception("Could not found port mapping info", EZMQX::ServiceUnavailable);
             }
         }
 
