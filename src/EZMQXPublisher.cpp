@@ -250,15 +250,18 @@ void EZMQX::Publisher::terminate()
         std::lock_guard<std::mutex> scopedLock(lock);
         if (!terminated.load())
         {
-            // release resource
-            if (!(ctx->isStandAlone()))
+            if (!ctx->isTerminated())
             {
-                ctx->releaseDynamicPort(localPort);
-            }
+                // release resource
+                if (!(ctx->isStandAlone()))
+                {
+                    ctx->releaseDynamicPort(localPort);
+                }
 
-            if (ctx->isTnsEnabled())
-            {
-                ctx->deleteTopic(topic.getName());
+                if (ctx->isTnsEnabled())
+                {
+                    ctx->deleteTopic(topic.getName());
+                }
             }
 
             delete pubCtx;
