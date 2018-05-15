@@ -17,9 +17,14 @@ EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const EZMQX::AmlMode
         {
             rep = ctx->getAmlRep(amlModelInfo);
         }
+        catch (const EZMQX::Exception& e)
+        {
+            throw e;
+        }
         catch(...)
         {
             //throw model not exist exception
+            throw EZMQX::Exception("Could not find given AML model id", EZMQX::InvalidParam);
         }
     }
     else if (infoType == AmlFilePath)
@@ -30,9 +35,14 @@ EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const EZMQX::AmlMode
             tmp = ctx->addAmlRep(tmp);
             rep = ctx->getAmlRep(*(tmp.begin()));
         }
+        catch (const EZMQX::Exception& e)
+        {
+            throw e;
+        }
         catch(...)
         {
             //throw AML model parse error
+            throw EZMQX::Exception("Could not parse given AML model file", EZMQX::InvalidParam);
         }
     }
     else
