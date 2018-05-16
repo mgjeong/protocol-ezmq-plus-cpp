@@ -38,8 +38,8 @@ class Subscriber
         void initialize(const std::list<EZMQX::Topic> &topics);
 
         void validateTopic(const std::string& topic);
-        virtual void verifyTopics(const std::string &topic, std::list<EZMQX::Topic> &verified, bool isHierarchical);
-        virtual void getSession(EZMQX::Topic topic);
+        void verifyTopics(const std::string &topic, std::list<EZMQX::Topic> &verified, bool isHierarchical);
+        void getSession(EZMQX::Topic topic);
 
         Subscriber();
         virtual ~Subscriber() = 0;
