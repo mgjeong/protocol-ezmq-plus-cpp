@@ -19,7 +19,6 @@ ezmq_plus_unittest_env.AppendUnique(CPPPATH=[
     '../dependencies/protocol-ezmq-cpp/protobuf',
     '../dependencies/datamodel-aml-cpp/include',
     '../extlibs/gtest/googletest-release-1.8.0/googletest/include/gtest',
-    '../extlibs/gtest/googletest-release-1.8.0/googlemock/include/gmock',
     '../include',
     '../internal',
     '../internal/fake',
@@ -32,7 +31,7 @@ ezmq_plus_unittest_env.AppendUnique(
 
 ezmq_plus_unittest_env.AppendUnique(LIBPATH=[lib_env.get('BUILD_DIR')])
 
-ezmq_plus_unittest_env.AppendUnique(LIBS=['aml', 'ezmq_plus', 'gmock'])
+ezmq_plus_unittest_env.AppendUnique(LIBS=['aml', 'ezmq_plus'])
 
 if target_os in ['linux']:
    if not env.get('RELEASE'):

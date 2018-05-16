@@ -8,7 +8,6 @@
 #include <EZMQXFakeSingletonAccessor.h>
 #include <EZMQXFakeRestAccessor.h>
 #include <gtest.h>
-#include <gmock.h>
 #include <string>
 #include <chrono>
 #include <thread>

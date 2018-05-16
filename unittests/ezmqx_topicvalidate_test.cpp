@@ -1,5 +1,4 @@
 #include <gtest.h>
-#include <gmock.h>
 #include <iostream>
 #include <EZMQXConfig.h>
 #include <EZMQXException.h>
