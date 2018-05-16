@@ -230,42 +230,6 @@ protected:
     }
 };
 
-class MockTopicDiscovery : public EZMQX::TopicDiscovery
-{
-public:
-    MOCK_METHOD3(verifyTopic, void(std::string& topic, std::list<EZMQX::Topic>& topics, bool isHierarchical));
-};
-
-class StandAloneDiscoveryTest : public testing::Test
-{
-protected:
-    EZMQX::Config *config;
-    MockTopicDiscovery *mock;
-    virtual void SetUp()
-    {
-        config = EZMQX::Config::getInstance();
-        config->startStandAloneMode(true, "localhost:48323");
-        mock = new MockTopicDiscovery();
-    }
-
-
-    std::list<EZMQX::Topic> getDummyTopics()
-    {
-        std::list<EZMQX::Topic> dummy;
-        dummy.push_back(EZMQX::Topic("/TEST/A", "dummy1", EZMQX::Endpoint("8.8.8.8", 1)));
-        dummy.push_back(EZMQX::Topic("/TEST/B", "dummy2", EZMQX::Endpoint("8.8.8.8", 2)));
-        dummy.push_back(EZMQX::Topic("/TEST/C", "dummy3", EZMQX::Endpoint("8.8.8.8", 3)));
-        return dummy;
-    }
-
-    virtual void TearDown()
-    {
-        config->reset();
-        delete mock;
-        mock = nullptr;
-    }
-};
-
 class FakeDiscoveryTest : public testing::Test
 {
 protected:
@@ -297,36 +261,6 @@ protected:
         config->reset();
         delete discovery;
         discovery = nullptr;
-    }
-};
-
-class DockerDiscoveryTest : public testing::Test
-{
-protected:
-    EZMQX::Config *config;
-    MockTopicDiscovery *mock;
-    virtual void SetUp()
-    {
-        EZMQX::FakeSingletonAccessor::setFake();
-        config = EZMQX::Config::getInstance();
-        config->startDockerMode();
-        mock = new MockTopicDiscovery();
-    }
-
-    std::list<EZMQX::Topic> getDummyTopics()
-    {
-        std::list<EZMQX::Topic> dummy;
-        dummy.push_back(EZMQX::Topic("/TEST/A", "dummy1", EZMQX::Endpoint("8.8.8.8", 1)));
-        dummy.push_back(EZMQX::Topic("/TEST/B", "dummy2", EZMQX::Endpoint("8.8.8.8", 2)));
-        dummy.push_back(EZMQX::Topic("/TEST/C", "dummy3", EZMQX::Endpoint("8.8.8.8", 3)));
-        return dummy;
-    }
-
-    virtual void TearDown()
-    {
-        config->reset();
-        delete mock;
-        mock = nullptr;
     }
 };
 
