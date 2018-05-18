@@ -11,6 +11,9 @@
 #include <json/writer.h>
 #include <EZMQXLogger.h>
 #include <EZMQXKeepAlive.h>
+#include <EZMQXPublisher.h>
+#include <EZMQXSubscriber.h>
+#include <algorithm>
 
 #define TAG "EZMQXContext"
 static const std::string COLLON = ":";
@@ -40,6 +43,9 @@ static const std::string PORTS_PRIVATE = "PrivatePort";
 static const std::string PORTS_PUBLIC = "PublicPort";
 
 static const std::string PAYLOAD_TOPIC = "topic";
+static const std::string PAYLOAD_NAME = "name";
+static const std::string PAYLOAD_ENDPOINT = "endpoint";
+static const std::string PAYLOAD_DATAMODEL = "datamodel";
 
 // hostname path
 static const std::string HOSTNAME = "/etc/hostname";
@@ -49,14 +55,9 @@ static const int LOCAL_PORT_START = 4000;
 static const int LOCAL_PORT_MAX = 100;
 
 // ctor
-EZMQX::Context::Context() : keepAlive(nullptr), initialized(false), terminated(false), usedIdx(0), numOfPort(0), standAlone(false), tnsEnabled(false)
+EZMQX::Context::Context() : keepAlive(nullptr), standAlone(false), tnsEnabled(false), initialized(false), terminated(false), interval(-1), usedIdx(0), numOfPort(0)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
-    if (ezmq::EZMQ_OK != ezmq::EZMQAPI::getInstance()->initialize())
-    {
-        EZMQX_LOG_V(ERROR, TAG, "%s Could not start ezmq context", __func__);
-        throw EZMQX::Exception("Could not start ezmq context", EZMQX::UnKnownState);
-    }
 }
 
 // dtor
@@ -73,6 +74,11 @@ void EZMQX::Context::setStandAloneMode(bool mode)
     this->standAlone = mode;
     if (this->standAlone)
     {
+        if (ezmq::EZMQ_OK != ezmq::EZMQAPI::getInstance()->initialize())
+        {
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not start ezmq context", __func__);
+            throw EZMQX::Exception("Could not start ezmq context", EZMQX::UnKnownState);
+        }
         initialized.store(true);
         terminated.store(false);
     }
@@ -86,7 +92,7 @@ void EZMQX::Context::setHostInfo(std::string hostName, std::string hostAddr)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     EZMQX_LOG_V(INFO, TAG, "%s Host infomation setted manually Hostname: %s Hostaddr: %s", __func__, hostName.c_str(), hostAddr.c_str());
-    this->hostname = hostname;
+    this->hostname = hostName;
     this->hostAddr = hostAddr;
 }
 
@@ -96,7 +102,7 @@ void EZMQX::Context::setTnsInfo(std::string remoteAddr)
     EZMQX_LOG_V(INFO, TAG, "%s TNS addr setted manually Addr: %s", __func__, remoteAddr.c_str());
     tnsEnabled = true;
     this->remoteAddr = remoteAddr;
-    keepAlive = new EZMQX::KeepAlive(this->remoteAddr);
+    
 }
 
 EZMQX::Context* EZMQX::Context::getInstance()
@@ -304,6 +310,12 @@ void EZMQX::Context::initialize()
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     // mutex lock
     {
+        if (ezmq::EZMQ_OK != ezmq::EZMQAPI::getInstance()->initialize())
+        {
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not start ezmq context", __func__);
+            throw EZMQX::Exception("Could not start ezmq context", EZMQX::UnKnownState);
+        }
+
         std::lock_guard<std::mutex> scopedLock(lock);
         if (!initialized.load())
         {
@@ -321,9 +333,12 @@ void EZMQX::Context::initialize()
                 }
                 EZMQX_LOG_V(DEBUG, TAG, "%s Rest result \n %s \n", __func__, nodeInfo.c_str());
 
+                std::string errors;
                 Json::Value root;
-                Json::Reader reader;
-                if (!reader.parse(nodeInfo, root))
+                Json::CharReaderBuilder builder;
+                std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+
+                if (!reader->parse(nodeInfo.c_str(), nodeInfo.c_str() + nodeInfo.size(), &root, &errors))
                 {
                     EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json", __func__);
                 }
@@ -365,20 +380,30 @@ void EZMQX::Context::initialize()
             try
             {
                 // get hostname
-                std::ifstream _file(HOSTNAME);
-                std::string _hostname((std::istreambuf_iterator<char>(_file)), std::istreambuf_iterator<char>());
-                // check last is '\n'
-                if (_hostname.back() == '\n')
+                if (hostname.empty())
                 {
-                    _hostname = _hostname.substr(0, _hostname.size()-1);
+                    std::ifstream _file(HOSTNAME);
+                    std::string _hostname((std::istreambuf_iterator<char>(_file)), std::istreambuf_iterator<char>());
+                    // check last is '\n'
+                    if (_hostname.back() == '\n')
+                    {
+                        _hostname = _hostname.substr(0, _hostname.size()-1);
+                    }
+                    this->hostname = _hostname;
                 }
-                this->hostname = _hostname;
-                EZMQX_LOG_V(DEBUG, TAG, "%s hostname found %s", __func__, this->hostname);
+
+                if (hostname.empty())
+                {
+                    EZMQX_LOG_V(ERROR, TAG, "%s Could not parse hostname", __func__);
+                    throw EZMQX::Exception("Could not parse hostname", EZMQX::ServiceUnavailable);
+                }
+
+                EZMQX_LOG_V(DEBUG, TAG, "%s hostname found %s", __func__, this->hostname.c_str());
             }
             catch(...)
             {
                 EZMQX_LOG_V(ERROR, TAG, "%s Could not found hostname", __func__);
-                throw EZMQX::Exception("Could not found hostname", EZMQX::UnKnownState);
+                throw EZMQX::Exception("Could not found hostname", EZMQX::ServiceUnavailable);
             }
 
             // parse port mapping table
@@ -399,18 +424,20 @@ void EZMQX::Context::initialize()
                 throw EZMQX::Exception("Internal rest service unavilable", EZMQX::ServiceUnavailable);
             }
 
+            std::string errors;
             Json::Value root;
-            Json::Reader reader;
+            Json::CharReaderBuilder builder;
+            std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
             Json::Value props;
             Json::Value portArray;
             std::list<std::string> runningApps;
 
             try
             {
-                if (!reader.parse(nodeInfo, root))
+                if (!reader->parse(nodeInfo.c_str(), nodeInfo.c_str() + nodeInfo.size(), &root, &errors))
                 {
                     EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json", __func__);
-                    throw EZMQX::Exception("Could not parse json", EZMQX::UnKnownState);
+                    throw EZMQX::Exception("Could not parse json", EZMQX::ServiceUnavailable);
                 }
                 else
                 {
@@ -438,17 +465,26 @@ void EZMQX::Context::initialize()
                     }
                 }
             }
+            catch(const EZMQX::Exception& e)
+            {
+                throw e;
+            }
             catch(...)
+            {
+                EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json", __func__);
+                throw EZMQX::Exception("Could not parse json", EZMQX::ServiceUnavailable);
+            }
+
+            if (runningApps.empty())
             {
                 EZMQX_LOG_V(ERROR, TAG, "%s There is no running application", __func__);
                 throw EZMQX::Exception("There is no running application", EZMQX::ServiceUnavailable);
             }
 
             // get app info detail
+            bool found = false;
             try
             {
-                bool found = false;
-
                 for (std::list<std::string>::iterator itr = runningApps.begin(); itr != runningApps.end(); itr++)
                 {
                     if (found)
@@ -471,21 +507,25 @@ void EZMQX::Context::initialize()
                     }
                     else
                     {
-                        root.clear();
-                        if (!reader.parse(nodeInfo, root))
+                        Json::Value tmp;
+                        if (!reader->parse(nodeInfo.c_str(), nodeInfo.c_str() + nodeInfo.size(), &tmp, &errors))
                         {
+                            EZMQX_LOG_V(ERROR, TAG, "%s failed at parse json", __func__);
                             continue;
                         }
                         else
                         {
                             props.clear();
-                            props = root[SERVICES_PROPS];
+                            props = tmp[SERVICES_PROPS];
                             for (Json::Value::ArrayIndex i = 0; i < props.size(); i++)
                             {
+                                EZMQX_LOG_V(DEBUG, TAG, "%s seeking json object", __func__);
                                 if (props[i].isMember(SERVICES_CON_ID) && props[i].isMember(SERVICES_CON_PORTS))
                                 {
+                                    EZMQX_LOG_V(DEBUG, TAG, "%s this json object have cid, ports member", __func__);
                                     std::string conId = props[i][SERVICES_CON_ID].asString();
                                     conId = conId.substr(0, hostname.size());
+                                    EZMQX_LOG_V(DEBUG, TAG, "%s cid %s, host %s", __func__, conId.c_str(), hostname.c_str());
                                     if (!conId.compare(hostname))
                                     {
                                         portArray = props[i][SERVICES_CON_PORTS];
@@ -506,11 +546,18 @@ void EZMQX::Context::initialize()
             catch(...)
             {
                 EZMQX_LOG_V(ERROR, TAG, "%s Could not parse app detail info", __func__);
-                throw EZMQX::Exception("Could not parse app detail info", EZMQX::UnKnownState);
+                throw EZMQX::Exception("Could not parse app detail info", EZMQX::ServiceUnavailable);
+            }
+
+            if(!found)
+            {
+                EZMQX_LOG_V(ERROR, TAG, "%s Could not parse app detail info", __func__);
+                throw EZMQX::Exception("Could not parse app detail info", EZMQX::ServiceUnavailable);
             }
 
             try
             {
+                ports.clear();
                 for (Json::Value::ArrayIndex i = 0; i < portArray.size(); i ++)
                 {
                     if (portArray[i].isMember(PORTS_PRIVATE) && portArray[i].isMember(PORTS_PUBLIC))
@@ -529,12 +576,18 @@ void EZMQX::Context::initialize()
             catch(...)
             {
                 EZMQX_LOG_V(ERROR, TAG, "%s Could not found port mapping info", __func__);
-                throw EZMQX::Exception("Could not found port mapping info", EZMQX::UnKnownState);
+                throw EZMQX::Exception("Could not found port mapping info", EZMQX::ServiceUnavailable);
             }
 
-            initialized.store(true);
-            terminated.store(false);
+            if (ports.empty())
+            {
+                EZMQX_LOG_V(ERROR, TAG, "%s Could not found port mapping info", __func__);
+                throw EZMQX::Exception("Could not found port mapping info", EZMQX::ServiceUnavailable);
+            }
         }
+
+        initialized.store(true);
+        terminated.store(false);
     }
     // mutex unlock
     return;
@@ -583,19 +636,28 @@ void EZMQX::Context::terminate()
 
         if (!terminated.load())
         {
+
+            for (std::list<EZMQX::Publisher*>::iterator itr = publishers.begin(); itr != publishers.end(); itr++)
+            {
+                if (*itr)
+                {
+                    (*itr)->terminateOwnResource();
+                }
+            }
+
+            for (std::list<EZMQX::Subscriber*>::iterator itr = subscribers.begin(); itr != subscribers.end(); itr++)
+            {
+                if (*itr)
+                {
+                    (*itr)->terminateOwnResource();
+                }
+            }
+
             if (keepAlive)
             {
-                if (topicList.empty())
-                {
-                    EZMQX_LOG_V(DEBUG, TAG, "%s topic list is empty try delete KeepAlive", __func__);
-                    delete keepAlive;
-                }
-                else
-                {
-                    // throw exception
-                    EZMQX_LOG_V(ERROR, TAG, "%s Could not terminate context threre are active topic", __func__);
-                    throw EZMQX::Exception("Could not terminate context threre are active topic", EZMQX::UnKnownState);
-                }
+                EZMQX_LOG_V(DEBUG, TAG, "%s try delete KeepAlive", __func__);
+                delete keepAlive;
+                keepAlive = nullptr;
             }
 
             // release resource
@@ -635,6 +697,11 @@ void EZMQX::Context::insertTopic(std::string topic)
         std::lock_guard<std::mutex> scopedLock(lock);
         topicList.push_back(topic);
         EZMQX_LOG_V(DEBUG, TAG, "%s topic inserted %s", __func__, topic.c_str());
+
+        if (!keepAlive && isTnsEnabled() && (getKeepAliveInterval() > 0))
+        {
+            keepAlive = new EZMQX::KeepAlive(this->remoteAddr, getKeepAliveInterval());
+        }
     }
     // mutex unlock
 }
@@ -656,16 +723,8 @@ void EZMQX::Context::deleteTopic(std::string topic)
             {
                 try
                 {
-                    Json::Value value;
-                    value[PAYLOAD_TOPIC] = topic;
-
-                    Json::FastWriter writer;
-                    std::string payload = writer.write(value);
-                    if (!payload.empty())
-                    {
-                        EZMQX_LOG_V(DEBUG, TAG, "%s Request unregister topic %s payload: %s", __func__, topic.c_str(), payload.c_str());
-                        keepAlive->inQue(EZMQX::UnregisterTopic, payload);
-                    }
+                    EZMQX_LOG_V(DEBUG, TAG, "%s Request unregister topic %s", __func__, topic.c_str());
+                    keepAlive->inQue(EZMQX::UnregisterTopic, topic);
                 }
                 catch(...)
                 {
@@ -687,4 +746,99 @@ std::list<std::string> EZMQX::Context::getTopicList()
     }
     // mutex unlock
     return topicList;
+}
+
+int EZMQX::Context::updateKeepAliveInterval(int keepAliveInterval)
+{
+    interval.store(keepAliveInterval);
+    return interval.load();
+}
+
+int EZMQX::Context::getKeepAliveInterval()
+{
+    return interval.load();
+}
+
+void EZMQX::Context::registerPublisher(EZMQX::Publisher* publisher)
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+
+        if (nullptr == publisher)
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s invalid pointer", __func__);
+            return;
+        }
+
+        publishers.push_back(publisher);
+    }
+
+    return;
+}
+
+void EZMQX::Context::unregisterPublisher(EZMQX::Publisher* publisher)
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+
+        if (nullptr == publisher)
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s invalid pointer", __func__);
+            return;
+        }
+
+        auto itr = std::find(publishers.begin(), publishers.end(), publisher);
+        if (itr != publishers.end())
+        {
+            publishers.erase(itr);
+        }
+    }
+
+    return;
+}
+
+void EZMQX::Context::registerSubscriber(EZMQX::Subscriber* subscriber)
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+
+        if (nullptr == subscriber)
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s invalid pointer", __func__);
+            return ;
+        }
+
+        subscribers.push_back(subscriber);
+    }
+
+    return;
+}
+
+void EZMQX::Context::unregisterSubscriber(EZMQX::Subscriber* subscriber)
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+
+        if (nullptr == subscriber)
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s invalid pointer", __func__);
+            return;
+        }
+
+        auto itr = std::find(subscribers.begin(), subscribers.end(), subscriber);
+        if (itr != subscribers.end())
+        {
+            subscribers.erase(itr);
+        }
+    }
+
+    return;
 }

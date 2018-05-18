@@ -54,9 +54,6 @@ if not os.path.exists(gtest_unpacked_sentinel):
 gtest_dir = os.path.join(src_dir, 'extlibs', 'gtest',
                          'googletest-release-' + GTEST_VERSION + '/googletest')
 
-gmock_dir = os.path.join(src_dir, 'extlibs', 'gtest',
-                         'googletest-release-' + GTEST_VERSION + '/googlemock')
-
 host_arch = platform.machine()
 print 'Host Arch: %s' % host_arch
 
@@ -91,49 +88,12 @@ if target_os in ['linux']:
     print 'Making google unit test'
     make_ran = gtest_env.Configure(gtest_dir, 'make')
 
-#gmock
-if target_os in ['linux']:
-    if not os.path.exists(gtest_configured_sentinel):
-        # Run configure on gtest
-        print 'Configuring google unit test'
-        reconfigure_ran = gtest_env.Configure(gmock_dir, 'autoreconf -i')
-
-        if target_arch in ['arm']:
-               configure_ran = env.Configure(
-                gmock_dir,
-                './configure --disable-shared --host=arm-none-linux-gnueabi CC=/usr/bin/arm-linux-gnueabi-gcc CXX=/usr/bin/arm-linux-gnueabi-g++')
-        elif target_arch in ['arm64']:
-                configure_ran = env.Configure(
-                gmock_dir,
-                './configure --disable-shared --host=aarch64-unknown-linux-gnu CC=/usr/bin/aarch64-linux-gnu-gcc-4.8 CXX=/usr/bin/aarch64-linux-gnu-g++-4.8')
-        elif target_arch in ['armhf']:
-                if host_arch in ['armv7l', 'armhf']:
-                        configure_ran = env.Configure(gmock_dir,'./configure --disable-shared')
-                else:
-                        configure_ran = env.Configure(
-                        gmock_dir,
-                        './configure --disable-shared --host=arm-linux-gnueabihf CC=arm-linux-gnueabihf-gcc-4.8 CXX=arm-linux-gnueabihf-g++-4.8')
-        else:
-                configure_ran = env.Configure(gmock_dir,'./configure --disable-shared')
-
-        gtest_env.Depends(configure_ran, reconfigure_ran)
-
-    # Run make on gtest
-    print 'Making google unit test'
-    make_ran = gtest_env.Configure(gmock_dir, 'make')
-
 # Export flags once for all
 gtest_lib_dir = os.path.join(gtest_dir, 'lib')
-gmock_lib_dir = os.path.join(gmock_dir, 'lib')
 gtest_dotlib_dir = os.path.join(gtest_lib_dir, '.libs')
-gmock_dotlib_dir = os.path.join(gmock_lib_dir, '.libs')
-gtest_env.AppendUnique(LIBPATH=[gtest_dotlib_dir, gmock_dotlib_dir])
+gtest_env.AppendUnique(LIBPATH=[gtest_dotlib_dir])
 gtest_env.PrependUnique(CPPPATH=[os.path.join(gtest_dir, 'include')])
-gtest_env.PrependUnique(CPPPATH=[os.path.join(gmock_dir, 'include')])
-
-
 gtest_env.AppendENVPath('LD_LIBRARY_PATH', gtest_dotlib_dir)
-gtest_env.AppendENVPath('LD_LIBRARY_PATH', gmock_dotlib_dir)
 
 if 'g++' in gtest_env.get('CXX'):
     gtest_env.AppendUnique(CXXFLAGS=['-std=c++0x'])
@@ -144,9 +104,7 @@ if 'g++' in gtest_env.get('CXX'):
     if target_os not in ['android']:
         gtest_env.AppendUnique(CXXFLAGS=['-pthread'])
         gtest_env.PrependUnique(LIBS=['pthread'])
-gtest_env.PrependUnique(LIBS=['gtest', 'gtest_main', 'gmock'])
-
-
+gtest_env.PrependUnique(LIBS=['gtest', 'gtest_main'])
 
 Return('gtest_env')
 

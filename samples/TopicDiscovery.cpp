@@ -5,10 +5,11 @@
 
 int main()
 {
-    std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::Docker));
-    // std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::StandAlone));
-    // config->setHostInfo("TestPublisher", "10.113.77.33");
-    // config->setTnsInfo("10.113.65.174");
+    EZMQX::Config* config = EZMQX::Config::getInstance();
+
+    config->startDockerMode();
+    //config->startStandAloneMode(true, "10.113.65.174");
+
     std::shared_ptr<EZMQX::TopicDiscovery> discovery(new EZMQX::TopicDiscovery());
     std::list<EZMQX::Topic> result;
     while (1)
@@ -23,15 +24,15 @@ int main()
             {
                 result.clear();
             }
-            result = discovery->query(topic);
+            result = discovery->hierarchicalQuery(topic);
 
             for (auto itr = result.begin(); itr != result.end(); itr++)
             {
                 std::cout<<"========================================"<<std::endl;
                 EZMQX::Topic tmp = *itr;
-                std::cout<<"Topic: "<<tmp.getTopic()<<std::endl;
+                std::cout<<"Topic: "<<tmp.getName()<<std::endl;
                 std::cout<<"Endpoint: "<<tmp.getEndpoint().toString()<<std::endl;
-                std::cout<<"Schema: "<<tmp.getSchema()<<std::endl;
+                std::cout<<"Schema: "<<tmp.getDatamodel()<<std::endl;
             }
             std::cout<<"========================================"<<std::endl;
         }

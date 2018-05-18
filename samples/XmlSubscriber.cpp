@@ -37,16 +37,18 @@ int main()
         // get config class instance & add aml model file path
         std::list<std::string> amlPath(1, "sample_data_model.aml");
         std::list<std::string> amlId(1);
-        std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::Docker));
-        //config->setHostInfo("TestSubscriber", "10.113.77.33");
-        //config->setTnsInfo("10.113.65.174:8323");
+        EZMQX::Config* config = EZMQX::Config::getInstance();
+
+        config->startDockerMode();
+        //config->startStandAloneMode(true, "10.113.65.174");
+
         amlId = config->addAmlModel(amlPath);
 
         // error callback
         // typedef std::function<void(std::string topic, const AMLObject& payload)> SubCb;
         // typedef std::function<void(std::string topic, EZMQX::ErrorCode errCode)> SubErrCb;
-        EZMQX::XmlSubCb subCb = [](std::string topic, const std::string& payload){std::cout << "subCb called" << std::endl; std::cout << payload << std::endl;};
-        EZMQX::SubErrCb errCb = [](std::string topic, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl;};
+        EZMQX::XmlSubCb subCb = [](std::string topic, const std::string& payload){std::cout << "subCb called" << std::endl << "topic: " <<  topic << std::endl << payload << std::endl; std::cout << payload << std::endl;};
+        EZMQX::SubErrCb errCb = [](std::string topic, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl << "topic: " <<  topic << errCode << std::endl;};
 
         // create subscriber with test topic
         // EZMQX::Endpoint ep("localhost", 4000);
@@ -60,7 +62,7 @@ int main()
         std::cout<<"amlId: " << amlId.front() << std::endl;
         //EZMQX::Topic knownTopic("/test/A/", amlId.front(), ep);
         //std::shared_ptr<EZMQX::XmlSubscriber> subscriber = EZMQX::XmlSubscriber::getSubscriber(knownTopic, subCb, errCb);
-        std::shared_ptr<EZMQX::XmlSubscriber> subscriber(EZMQX::XmlSubscriber::getSubscriber(topic, subCb, errCb));
+        std::shared_ptr<EZMQX::XmlSubscriber> subscriber(EZMQX::XmlSubscriber::getSubscriber(topic, true, subCb, errCb));
 
         std::cout<<"subscriber created"<<std::endl;
 

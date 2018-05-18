@@ -8,6 +8,10 @@ ezmq_plus_sample_env = env.Clone()
 # Build flags
 ######################################################################
 ezmq_plus_sample_env.AppendUnique(CPPPATH=[
+    '/usr/local/include',
+    '/usr/local/include/curl',
+    '/usr/local/include/datamodel-aml-cpp',
+    '/usr/local/include/protocol-ezmq-cpp',
 	'../dependencies/protocol-ezmq-cpp/include',
     '../dependencies/protocol-ezmq-cpp/extlibs/zmq',
     '../dependencies/protocol-ezmq-cpp/protobuf',

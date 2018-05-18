@@ -5,7 +5,7 @@ EZMQX::Topic::Topic()
 
 }
 
-EZMQX::Topic::Topic(std::string topic, std::string schema, EZMQX::Endpoint endpoint): endpoint(endpoint), topic(topic), schema(schema)
+EZMQX::Topic::Topic(std::string name, std::string datamodel, EZMQX::Endpoint endpoint): name(name), datamodel(datamodel), endpoint(endpoint)
 {
 
 }
@@ -15,12 +15,12 @@ EZMQX::Endpoint EZMQX::Topic::getEndpoint()
     return endpoint;
 }
 
-std::string EZMQX::Topic::getSchema()
+std::string EZMQX::Topic::getDatamodel()
 {
-    return schema;
+    return datamodel;
 }
 
-std::string EZMQX::Topic::getTopic()
+std::string EZMQX::Topic::getName()
 {
-    return topic;
+    return name;
 }

@@ -1,10 +1,26 @@
-FROM arm32v7/ubuntu:14.04
+FROM docker.sec.samsung.net:5000/edge/base-messaging-build-docker:latest AS build
 MAINTAINER bg.chun@samsung.com
 
-COPY libs /libs
-COPY publisher publisher
-COPY AmlSubscriber AmlSubscriber
-COPY XmlSubscriber XmlSubscriber
-COPY samples/sample_data_model.aml sample_data_model.aml
-COPY run.sh run.sh
+#build protocol-ezmq-plus-cpp
+WORKDIR /
+RUN git clone git@github.sec.samsung.net:RS7-EdgeComputing/protocol-ezmq-plus-cpp.git
+WORKDIR /protocol-ezmq-plus-cpp
+RUN sh build_arm.sh --with_dependencies=false --build_mode=release
+RUN sh install_arm.sh
+
+# create real image
+FROM docker.sec.samsung.net:5000/edge/base-messaging-docker:latest
+WORKDIR /
+
+#copy lib from build
+COPY --from=build /protocol-ezmq-plus-cpp/out/linux/armhf/release/libezmq_plus.so /usr/local/lib/libezmq_plus.so
+
+#copy samples from build
+COPY --from=build /protocol-ezmq-plus-cpp/out/linux/armhf/release/samples/publisher /publisher
+COPY --from=build /protocol-ezmq-plus-cpp/out/linux/armhf/release/samples/AmlSubscriber /AmlSubscriber
+COPY --from=build /protocol-ezmq-plus-cpp/out/linux/armhf/release/samples/XmlSubscriber /XmlSubscriber
+COPY --from=build /protocol-ezmq-plus-cpp/out/linux/armhf/release/samples/TopicDiscovery /TopicDiscovery
+COPY --from=build /protocol-ezmq-plus-cpp/samples/sample_data_model.aml /sample_data_model.aml
+COPY --from=build /protocol-ezmq-plus-cpp/run.sh /run.sh
+
 CMD ["./run.sh", "arg1", "arg2", "arg3"]

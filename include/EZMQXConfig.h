@@ -23,23 +23,23 @@ class Config
     private:
         std::mutex lock;
         std::atomic_bool initialized;
-        ModeOption configMode;
         EZMQX::Context* ctx;
-        virtual void initialize();
-        virtual void terminate();
+        void setTnsInfo(std::string remoteAddr);
+        void initialize(EZMQX::ModeOption configMode);
+        void terminate();
 
-        // make noncopyable        
+        // make noncopyable
         Config();
         Config(const Config&) = delete;
         Config& operator = (const Config&) = delete;
+        ~Config();
 
     public:
-        Config(ModeOption mode);
-        ~Config();
-        void setHostInfo(std::string hostName, std::string hostAddr);
-        void setTnsInfo(std::string remoteAddr);
+        static Config* getInstance();
+        void startDockerMode();
+        void startStandAloneMode(bool useTns, std::string tnsAddr);
         std::list<std::string> addAmlModel(const std::list<std::string>& amlFilePath);
-        void reset(ModeOption mode);
+        void reset();
 
 };
 

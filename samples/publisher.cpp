@@ -102,11 +102,11 @@ int main()
       // get config class instance & add aml model file path
       std::list<std::string> amlPath(1, "sample_data_model.aml");
       std::list<std::string> amlId(1);
-      std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::Docker));
-      // std::shared_ptr<EZMQX::Config> config(new EZMQX::Config(EZMQX::StandAlone));
-      // config->setHostInfo("TestPublisher", "10.113.77.33");
-      // config->setTnsInfo("10.113.65.174");
-      // config->setTnsInfo("localhost");
+      EZMQX::Config* config = EZMQX::Config::getInstance();
+
+      config->startDockerMode();
+      //config->startStandAloneMode(true, "10.113.65.174");
+
       amlId = config->addAmlModel(amlPath);
 
       // create publisher with test topic
@@ -148,7 +148,7 @@ int main()
       amlObj.addData("Model", model);
       amlObj.addData("Sample", sample);
 
-      terminater = new std::thread(deleteTopic);
+      //terminater = new std::thread(deleteTopic);
 
       while(1)
       {
@@ -158,7 +158,7 @@ int main()
           publisherC->publish(amlObj);
           std::cout << "Publish!!!" << std::endl;
           printAMLObject(amlObj);
-          std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+          std::this_thread::sleep_for(std::chrono::milliseconds(100));
       }
 
     }

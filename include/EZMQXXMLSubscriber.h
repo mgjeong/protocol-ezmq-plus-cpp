@@ -16,16 +16,16 @@ class XmlSubscriber : public Subscriber
         void cb(const std::string &topic, const AML::AMLObject* obj);
 
         // delete default ctor
-        XmlSubscriber();
+        XmlSubscriber() = delete;
         XmlSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
-        XmlSubscriber(const std::string &topic, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
+        XmlSubscriber(const std::string &topic, bool isHierarchical, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
         // make noncopyable
         XmlSubscriber(const XmlSubscriber&) = delete;
         XmlSubscriber& operator = (const XmlSubscriber&) = delete;
 
     public:
         ~XmlSubscriber();
-        static EZMQX::XmlSubscriber* getSubscriber(const std::string &topic, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
+        static EZMQX::XmlSubscriber* getSubscriber(const std::string &topic, bool isHierarchical, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
         static EZMQX::XmlSubscriber* getSubscriber(const EZMQX::Topic &topic, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
         static EZMQX::XmlSubscriber* getSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
         bool isTerminated();

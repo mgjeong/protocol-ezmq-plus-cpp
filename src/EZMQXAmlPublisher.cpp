@@ -17,9 +17,14 @@ EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const EZMQX::AmlMode
         {
             rep = ctx->getAmlRep(amlModelInfo);
         }
+        catch (const EZMQX::Exception& e)
+        {
+            throw e;
+        }
         catch(...)
         {
             //throw model not exist exception
+            throw EZMQX::Exception("Could not find given AML model id", EZMQX::InvalidParam);
         }
     }
     else if (infoType == AmlFilePath)
@@ -30,9 +35,14 @@ EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const EZMQX::AmlMode
             tmp = ctx->addAmlRep(tmp);
             rep = ctx->getAmlRep(*(tmp.begin()));
         }
+        catch (const EZMQX::Exception& e)
+        {
+            throw e;
+        }
         catch(...)
         {
             //throw AML model parse error
+            throw EZMQX::Exception("Could not parse given AML model file", EZMQX::InvalidParam);
         }
     }
     else
@@ -70,13 +80,19 @@ void EZMQX::AmlPublisher::publish(const AML::AMLObject& payload)
     // mutex lock
     {
         std::lock_guard<std::mutex> scopedLock(lock);
-        if (!terminated.load())
+
+        if (ctx->isTerminated())
+        {
+            terminate();
+            throw EZMQX::Exception("Publisher terminated", EZMQX::Terminated);
+        }
+        else
         {
             // get AML model id
             // get AMLRep
             if (!rep)
             {
-                rep = ctx->getAmlRep(topic.getSchema());
+                rep = ctx->getAmlRep(topic.getDatamodel());
             }
 
             // transform // throw exception
@@ -89,11 +105,7 @@ void EZMQX::AmlPublisher::publish(const AML::AMLObject& payload)
             }
 
             ezmq::EZMQByteData data(reinterpret_cast<const uint8_t*>(byteAml.c_str()), byteAml.length());
-            pubCtx->publish(topic.getTopic(), data);
-        }
-        else
-        {
-            throw EZMQX::Exception("Publisher terminated", EZMQX::Terminated);
+            pubCtx->publish(topic.getName(), data);
         }
     }
     // mutex unlock
@@ -102,5 +114,21 @@ void EZMQX::AmlPublisher::publish(const AML::AMLObject& payload)
 
 EZMQX::Topic EZMQX::AmlPublisher::getTopic()
 {
+    if (ctx->isTerminated())
+    {
+        terminate();
+        throw EZMQX::Exception("Publisher terminated", EZMQX::Terminated);
+    }
+
     return Publisher::getTopic();
+}
+
+bool EZMQX::AmlPublisher::isTerminated()
+{
+    return EZMQX::Publisher::isTerminated();
+}
+
+void EZMQX::AmlPublisher::terminate()
+{
+    return EZMQX::Publisher::terminate();
 }

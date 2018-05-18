@@ -9,6 +9,7 @@
 #include <EZMQXContext.h>
 #include <chrono>
 #include <EZMQXLogger.h>
+#include <iostream>
 
 #define TAG "EZMQXKeepAlive"
 
@@ -19,13 +20,15 @@ const static std::string UNREGISTER_TOPIC = "UNREGISTER_TOPIC";
 // Rest Endpoints
 static const std::string PREFIX = "/api/v1";
 static const std::string TNS_KNOWN_PORT = ":48323";
-static const std::string TNS_KEEP_ALIVE_PORT = ":48324";
+static const std::string TNS_KEEP_ALIVE_PORT = ":48323";
 static const std::string TNS_KEEP_ALIVE = "/tns/keepalive";
 static const std::string TNS_UNREGISTER = "/tns/topic";
 
 // Json keys
+static const std::string PAYLOAD_OPTION = "indentation";
 static const std::string PAYLOAD_CID = "c_id";
-static const std::string PAYLOAD_TOPIC = "topic";
+static const std::string PAYLOAD_TOPIC = "topic_names";
+static const std::string PAYLOAD_NAME = "name=";
 static const std::string PAYLOAD_ENDPOINT = "endpoint";
 static const std::string PAYLOAD_SCHEMA = "schema";
 static const std::string RESULT_KEY = "result";
@@ -83,43 +86,54 @@ void EZMQX::KeepAlive::queHandler()
                 throw EZMQX::Exception("empty payload", EZMQX::UnKnownState);
             }
 
-            // send Rest here
-            std::string ret;
+            EZMQX::RestResponse resp;
 
             if (payload.first.compare(KEEP_ALIVE) == 0)
             {
-                EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request %s", __func__, (remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE).c_str(), payload.second.c_str());
-                ret = EZMQX::RestService::Post(remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE, payload.second).getPayload();
-                EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, ret.c_str());
+                std::string KeepAliveUrl = remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE;
+                EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request to %s, payload: %s", __func__, KeepAliveUrl.c_str(), payload.second.c_str());
+                resp = EZMQX::RestService::Post(remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE, payload.second);
+                EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, resp.getPayload().c_str());
+
+                if (resp.getStatus() == EZMQX::Success)
+                {
+                    EZMQX_LOG_V(DEBUG, TAG, "%s KeepAlive successfully", __func__);
+                }
+                else if (resp.getStatus() == EZMQX::NotFound)
+                {
+                    EZMQX_LOG_V(ERROR, TAG, "%s KeepAlive unnsuccessfully some topic notfound: %s", __func__, resp.getPayload().c_str());
+                }
+                else
+                {
+                    EZMQX_LOG_V(ERROR, TAG, "%s KeepAlive failed unknown response status: %d, response : %s", __func__, resp.getStatus(), resp.getPayload().c_str());
+                }
             }
             else if (payload.first.compare(UNREGISTER_TOPIC) == 0)
             {
-                EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request %s", __func__, (remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER).c_str(), payload.second.c_str());
-                ret = EZMQX::RestService::Delete(remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER, payload.second).getPayload();
-                EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, ret.c_str());
+                EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request %s query %s", __func__, (remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER).c_str(), (PAYLOAD_NAME + payload.second).c_str());
+                resp = EZMQX::RestService::Delete(remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER, PAYLOAD_NAME+payload.second);
+                EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, resp.getPayload().c_str());
+
+                if (resp.getStatus() == EZMQX::Success)
+                {
+                    EZMQX_LOG_V(DEBUG, TAG, "%s topic %s unregister successfully", __func__, payload.second.c_str());
+                }
+                else if (resp.getStatus() == EZMQX::NotFound)
+                {
+                    EZMQX_LOG_V(ERROR, TAG, "%s Could not unregister topic, topic notfound: %s", __func__, payload.second.c_str());
+                }
+                else if (resp.getStatus() == EZMQX::BadRequest)
+                {
+                    EZMQX_LOG_V(ERROR, TAG, "%s Could not unregister topic, bad request: %s", __func__, payload.second.c_str());
+                }
+                else
+                {
+                    EZMQX_LOG_V(ERROR, TAG, "%s Could not unregister topic failed unknown response status: %d, response: %s", __func__, resp.getStatus(), resp.getPayload().c_str());
+                }
             }
             else
             {
                 continue;
-            }
-
-            Json::Value root;
-            Json::Reader reader;
-            if (reader.parse(ret, root))
-            {
-                ret = root[RESULT_KEY].asString();
-
-                if (ret.compare(RESULT_SUCCESS) == 0)
-                {
-                    EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result is Success", __func__);
-                    continue;
-                }
-                else
-                {
-                    // try again
-                    EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result is %s, try again", __func__, ret.c_str());
-                    que->inQue(payload);
-                }
             }
 
         }
@@ -147,17 +161,20 @@ void EZMQX::KeepAlive::timerHandler()
         if (!topicList.empty())
         {
             EZMQX_LOG_V(DEBUG, TAG, "%s Build KeepAlive Rest payload", __func__);
-            Json::Value root = Json::Value(Json::arrayValue);
+            Json::Value root = Json::Value(Json::objectValue);
+            root[PAYLOAD_TOPIC] = Json::Value(Json::arrayValue);
             // add task for rest
             for (auto itr = topicList.begin(); itr != topicList.end(); itr++)
             {
-                Json::Value value;
-                value[PAYLOAD_TOPIC] = *itr;
-                root.append(value);
+                Json::Value value(*itr);
+                root[PAYLOAD_TOPIC].append(value);
             }
 
-            Json::FastWriter writer;
-            std::string payload = writer.write(root);
+            Json::StreamWriterBuilder builder;
+            builder[PAYLOAD_OPTION] = "";
+
+            std::string payload = Json::writeString(builder, root);
+
             EZMQX_LOG_V(DEBUG, TAG, "%s Payload: %s", __func__, payload.c_str());
 
             // queing here
@@ -165,7 +182,7 @@ void EZMQX::KeepAlive::timerHandler()
         }
 
         // sleep for ....
-        timerCond.wait_for(timerLock, std::chrono::minutes(1));
+        timerCond.wait_for(timerLock, std::chrono::seconds(interval));
     }
 }
 
@@ -179,7 +196,7 @@ void EZMQX::KeepAlive::stopTimer()
 
 EZMQX::KeepAlive::KeepAlive(){/*DoNotUseIt*/}
 
-EZMQX::KeepAlive::KeepAlive(std::string addr) : remoteAddr(addr), timerIsTerminate(false), timerCond()
+EZMQX::KeepAlive::KeepAlive(std::string addr, int KeepAliveInterval) : timerCond(), timerIsTerminate(false), remoteAddr(addr), interval(KeepAliveInterval)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     que = new EZMQX::BlockingQue();

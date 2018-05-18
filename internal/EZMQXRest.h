@@ -36,11 +36,12 @@ public:
 class rest
 {
 public:
+    virtual ~rest() = 0;
     virtual RestResponse Get(const std::string &url) = 0;
     virtual RestResponse Get(const std::string &url, const std::string &query) = 0;
     virtual RestResponse Put(const std::string &url, const std::string &payload) = 0;
     virtual RestResponse Post(const std::string &url, const std::string &payload) = 0;
-    virtual RestResponse Delete(const std::string &url, const std::string &payload) = 0;
+    virtual RestResponse Delete(const std::string &url, const std::string &query) = 0;
 };
 
 class SimpleRest : public rest
@@ -57,13 +58,14 @@ public:
     RestResponse Get(const std::string &url, const std::string &query);
     RestResponse Put(const std::string &url, const std::string &payload);
     RestResponse Post(const std::string &url, const std::string &payload);
-    RestResponse Delete(const std::string &url, const std::string &payload);
+    RestResponse Delete(const std::string &url, const std::string &query);
 };
 
 class RestFactoryInterface
 {
 public:
     virtual rest* getSomeRest() = 0;
+    virtual ~RestFactoryInterface() = 0;
 };
 
 // rest Factory
@@ -90,7 +92,7 @@ public:
     static RestResponse Get(const std::string &url, const std::string &query);
     static RestResponse Put(const std::string &url, const std::string &payload);
     static RestResponse Post(const std::string &url, const std::string &payload);
-    static RestResponse Delete(const std::string &url, const std::string &payload);
+    static RestResponse Delete(const std::string &url, const std::string &query);
 };
 
 } // namespace EZMQX

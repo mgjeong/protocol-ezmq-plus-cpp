@@ -28,8 +28,6 @@ cd out/linux/x86_64/debug/unittests
 ./ezmqx_topicdiscovery_test
 ./ezmqx_topicvalidate_test
 
-sleep 3
-
 cd $PROJECT_ROOT
 # gen report.html
 gcovr -r . \
@@ -40,6 +38,8 @@ gcovr -r . \
         -e "unittests.*" \
         -e "samples.*" \
         -e "src/logger.*" \
+        -e "internal/logger.*" \
+        -e "internal/fake.*" \
 --html --html-details -o ./cov/report.html
 
 echo "done"

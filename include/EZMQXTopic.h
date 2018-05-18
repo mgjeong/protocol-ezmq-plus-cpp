@@ -9,15 +9,16 @@ namespace EZMQX {
 class Topic
 {
     private:
+        std::string name;
+        std::string datamodel;
         EZMQX::Endpoint endpoint;
-        std::string schema;
-        std::string topic;
+        
     public:
         Topic();
-        Topic(std::string topic, std::string schema, EZMQX::Endpoint endpoint);
+        Topic(std::string name, std::string datamodel, EZMQX::Endpoint endpoint);
         EZMQX::Endpoint getEndpoint();
-        std::string getSchema();
-        std::string getTopic();
+        std::string getDatamodel();
+        std::string getName();
 };
 
 } //namespace EZMQX

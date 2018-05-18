@@ -20,24 +20,30 @@ static const std::string PREFIX = "/api/v1";
 static const std::string TOPIC = "/tns/topic";
 static const std::string HEALTH = "/health";
 
+static const std::string PAYLOAD_OPTION = "indentation";
 static const std::string PAYLOAD_TOPIC = "topic";
+static const std::string PAYLOAD_NAME = "name";
 static const std::string PAYLOAD_ENDPOINT = "endpoint";
-static const std::string PAYLOAD_SCHEMA = "schema";
+static const std::string PAYLOAD_DATAMODEL = "datamodel";
 
-static const std::string RESULT_KEY = "result";
-static const std::string RESULT_SUCCESS = "success";
-static const std::string RESULT_DUPLICATED = "duplicated";
+static const std::string PAYLOAD_KEEPALIVE_INTERVAL = "ka_interval";
 
-static const std::string TOPIC_PATTERN = "(\/[a-zA-Z0-9-_*.]+)+";
+static const std::string TOPIC_PATTERN = "(\\/[a-zA-Z0-9-_*.]+)+";
 
 static const std::string TOPIC_WILD_CARD = "*";
 static const std::string TOPIC_WILD_PATTERNN = "/*/";
 
-static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQErrorCode code)->void{std::cout<<"errCb"<<std::endl; return;};
+static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQErrorCode code)->void{std::cout<<"errCode"<< code <<std::endl; return;};
 
-EZMQX::Publisher::Publisher(int optionalPort) : terminated(false), localPort(0), token(""), ctx(EZMQX::Context::getInstance())
+EZMQX::Publisher::Publisher(int optionalPort) : terminated(false), ctx(EZMQX::Context::getInstance()), localPort(0), token("")
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    if (!ctx->isInitialized())
+    {
+        throw EZMQX::Exception("Could not create publisher context not initialized", EZMQX::NotInitialized);
+    }
+
     bool isStandAlone = ctx->isStandAlone();
     //validate topic
     try
@@ -63,8 +69,8 @@ EZMQX::Publisher::Publisher(int optionalPort) : terminated(false), localPort(0),
     // check error and throw exception
     if (!pubCtx)
     {
-        EZMQX_LOG_V(ERROR, TAG, "%s Could not start publisher", __func__);
-        throw EZMQX::Exception("Could not start publisher", EZMQX::UnKnownState);
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not create publisher", __func__);
+        throw EZMQX::Exception("Could not create publisher", EZMQX::UnKnownState);
     }
 
     if (ezmq::EZMQ_OK != pubCtx->start())
@@ -72,6 +78,8 @@ EZMQX::Publisher::Publisher(int optionalPort) : terminated(false), localPort(0),
         EZMQX_LOG_V(ERROR, TAG, "%s Could not start publisher", __func__);
         throw EZMQX::Exception("Could not start publisher", EZMQX::UnKnownState);
     }
+
+    // register on CTX
 }
 
 EZMQX::Publisher::~Publisher()
@@ -89,13 +97,13 @@ void EZMQX::Publisher::validateTopic(const std::string topic)
     // simple grammer check
     if (tmp.front() != SLASH || tmp.back() == SLASH || tmp.find(DOUBLE_SLASH) != std::string::npos)
     {
-        EZMQX_LOG_V(DEBUG, TAG, "%s Invalid topic %s", __func__, topic);
+        EZMQX_LOG_V(DEBUG, TAG, "%s Invalid topic %s", __func__, topic.c_str());
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
 
     if (tmp.find(TOPIC_WILD_CARD) != std::string::npos && tmp.find(TOPIC_WILD_PATTERNN) == std::string::npos)
     {
-        EZMQX_LOG_V(DEBUG, TAG, "%s Invalid topic %s", __func__, topic);
+        EZMQX_LOG_V(DEBUG, TAG, "%s Invalid topic %s", __func__, topic.c_str());
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
 
@@ -122,68 +130,109 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
     }
 
     std::string tmp;
+    int interval = 0;
+    EZMQX::RestResponse resp;
 
     try
     {
-        Json::Value value;
-        value[PAYLOAD_TOPIC] = regTopic.getTopic();
-        value[PAYLOAD_ENDPOINT] = regTopic.getEndpoint().toString();
-        value[PAYLOAD_SCHEMA] = regTopic.getSchema();
+        Json::Value root = Json::Value(Json::objectValue);
+        root[PAYLOAD_TOPIC] = Json::Value(Json::objectValue);
 
-        Json::FastWriter writer;
-        tmp = writer.write(value);
+        root[PAYLOAD_TOPIC][PAYLOAD_NAME] = regTopic.getName();
+        root[PAYLOAD_TOPIC][PAYLOAD_ENDPOINT] = regTopic.getEndpoint().toString();
+        root[PAYLOAD_TOPIC][PAYLOAD_DATAMODEL] = regTopic.getDatamodel();
+
+        Json::StreamWriterBuilder builder;
+        builder[PAYLOAD_OPTION] = "";
+
+        tmp = Json::writeString(builder, root);
+        EZMQX_LOG_V(DEBUG, TAG, "%s payload %s", __func__, tmp.c_str());
     }
     catch (...)
     {
-        EZMQX_LOG_V(ERROR, TAG, "%s Could not build json payload %s", __func__, regTopic.getTopic());
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not build json payload %s", __func__, regTopic.getName().c_str());
         throw EZMQX::Exception("Could not build json payload", EZMQX::UnKnownState);
     }
 
     try
     {
-        tmp = EZMQX::RestService::Post(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, tmp).getPayload();
+        resp = EZMQX::RestService::Post(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, tmp);
+    }
+    catch(const EZMQX::Exception &e)
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s %s", __func__, e.what());
+        throw e;
     }
     catch (...)
     {
-        EZMQX_LOG_V(ERROR, TAG, "%s Could not send rest post request %s", __func__, ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, tmp);
         throw EZMQX::Exception("Could not send rest post request", EZMQX::UnKnownState);
+    }
+
+    if (resp.getStatus() == EZMQX::Created)
+    {
+        EZMQX_LOG_V(DEBUG, TAG, "%s topic %s register successfully", __func__, regTopic.getName().c_str());
+    }
+    else if (resp.getStatus() == EZMQX::Conflict)
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not register topic: duplicated", __func__);
+        throw EZMQX::Exception("Could not register topic: duplicated", EZMQX::RestError);
+    }
+    else if (resp.getStatus() == EZMQX::InternalError)
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not register topic: Internal Server Error", __func__);
+        throw EZMQX::Exception("Could not register topic: Internal Server Error", EZMQX::RestError);
+    }
+    else
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not register topic: unknown rest error", __func__);
+        throw EZMQX::Exception("Could not register topic: unknown rest error", EZMQX::RestError);
     }
 
     try
     {
+        std::string response = resp.getPayload();
+        std::string errors;
         Json::Value root;
-        Json::Reader reader;
-        if (!reader.parse(tmp, root))
+        Json::CharReaderBuilder builder;
+        std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+        if (!reader->parse(response.c_str(), response.c_str() + response.size(), &root, &errors))
         {
-            EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json response %s", __func__, tmp);
-            throw EZMQX::Exception("Could not parse json response", EZMQX::UnKnownState);
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json response %s", __func__, response.c_str());
+            throw EZMQX::Exception("Could not parse json response", EZMQX::RestError);
         }
         else
         {
-            tmp = root[RESULT_KEY].asString();
+            interval = root[PAYLOAD_KEEPALIVE_INTERVAL].asInt();
+
+            if (interval < 1)
+            {
+                EZMQX_LOG_V(ERROR, TAG, "%s Invalid keepAlive option parsed", __func__);
+                throw EZMQX::Exception("Invalid keepAlive option parsed", EZMQX::RestError);
+            }
+            else
+            {
+                if (ctx->getKeepAliveInterval() < 1)
+                {
+                    ctx->updateKeepAliveInterval(interval);
+                }
+
+                ctx->insertTopic(regTopic.getName());
+            }
         }
+    }
+    catch (const EZMQX::Exception& e)
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s %s", __func__, e.what());
+        throw e;
     }
     catch (...)
     {
-        EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json response %s", __func__, regTopic.getTopic());
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json response %s", __func__, regTopic.getName().c_str());
         throw EZMQX::Exception("Could not parse json response", EZMQX::UnKnownState);
     }
 
-    if (tmp.compare(RESULT_SUCCESS) == 0)
-    {
-        ctx->insertTopic(regTopic.getTopic());
-        return;
-    }
-    else if (tmp.compare(RESULT_DUPLICATED) == 0)
-    {
-        EZMQX_LOG_V(ERROR, TAG, "%s Could not register topic: duplicated topic", __func__);
-        throw EZMQX::Exception("Could not register topic: duplicated topic", EZMQX::UnKnownState);
-    }
-    else
-    {
-        EZMQX_LOG_V(ERROR, TAG, "%s Could not register topic: unknown state", __func__);
-        throw EZMQX::Exception("Could not register topic: unknown state", EZMQX::UnKnownState);
-    }
+    // TODO
+    // Update keepAlive interval
 
     return;
 }
@@ -203,23 +252,50 @@ void EZMQX::Publisher::terminate()
         std::lock_guard<std::mutex> scopedLock(lock);
         if (!terminated.load())
         {
-            // release resource
-            if (!(ctx->isStandAlone()))
+            if (!ctx->isTerminated())
             {
-                ctx->releaseDynamicPort(localPort);
-            }
+                // release resource
+                if (!(ctx->isStandAlone()))
+                {
+                    ctx->releaseDynamicPort(localPort);
+                }
 
-            if (ctx->isTnsEnabled())
-            {
-                ctx->deleteTopic(topic.getTopic());
+                if (ctx->isTnsEnabled())
+                {
+                    ctx->deleteTopic(topic.getName());
+                }
+
+                ctx->unregisterPublisher(this);
             }
 
             delete pubCtx;
         }
         else
         {
-            EZMQX_LOG_V(ERROR, TAG, "%s Publisher terminated", __func__);
-            throw EZMQX::Exception("Publisher terminated", EZMQX::Terminated);
+            EZMQX_LOG_V(ERROR, TAG, "%s Publisher already terminated", __func__);
+            return;
+        }
+
+        terminated.store(true);
+    }
+    // mutex unlock
+    return;
+}
+
+void EZMQX::Publisher::terminateOwnResource()
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+    // mutex lock
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+        if (!terminated.load())
+        {
+            delete pubCtx;
+        }
+        else
+        {
+            EZMQX_LOG_V(ERROR, TAG, "%s Publisher already terminated", __func__);
+            return;
         }
 
         terminated.store(true);

@@ -13,12 +13,6 @@
 
 #define TAG "EZMQXAmlSubscriber"
 
-EZMQX::AmlSubscriber::AmlSubscriber() : Subscriber(), mSubCb([](std::string topic, const AML::AMLObject& payload){}), mSubErrCb([](std::string topic, EZMQX::ErrorCode errCode){})
-{
-    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
-    // do nothing
-}
-
 EZMQX::AmlSubscriber::~AmlSubscriber()
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
@@ -43,13 +37,13 @@ EZMQX::AmlSubscriber::AmlSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX
     }
 }
 
-EZMQX::AmlSubscriber::AmlSubscriber(const std::string &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
+EZMQX::AmlSubscriber::AmlSubscriber(const std::string &topic, bool isHierarchical, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
  : Subscriber(), mSubCb(subCb), mSubErrCb(errCb)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     try
     {
-        Subscriber::initialize(topic);
+        Subscriber::initialize(topic, isHierarchical);
     }
     catch(const EZMQX::Exception& e)
     {
@@ -64,6 +58,13 @@ EZMQX::AmlSubscriber::AmlSubscriber(const std::string &topic, EZMQX::AmlSubCb &s
 void EZMQX::AmlSubscriber::cb(const std::string &_topic, const AML::AMLObject *obj)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    if (ctx->isTerminated())
+    {
+        terminate();
+        throw EZMQX::Exception("Subscriber terminated", EZMQX::Terminated);
+    }
+
     if (!_topic.empty() && obj != NULL)
     {
         // call subCb
@@ -78,16 +79,18 @@ void EZMQX::AmlSubscriber::cb(const std::string &_topic, const AML::AMLObject *o
     return;
 }
 
-EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const std::string &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
+EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const std::string &topic, bool isHierarchical, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
-    EZMQX::AmlSubscriber* subInstance = new AmlSubscriber(topic, subCb, errCb);
+
+    EZMQX::AmlSubscriber* subInstance = new AmlSubscriber(topic, isHierarchical, subCb, errCb);
     return subInstance;
 }
 
 EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const EZMQX::Topic &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
     std::list<EZMQX::Topic> topics(1, topic);
     EZMQX::AmlSubscriber* subInstance = new AmlSubscriber(topics, subCb, errCb);
     return subInstance;
@@ -96,6 +99,7 @@ EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const EZMQX::Topic &to
 EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
     EZMQX::AmlSubscriber* subInstance = new AmlSubscriber(topics, subCb, errCb);
     return subInstance;
 }
@@ -115,5 +119,12 @@ void EZMQX::AmlSubscriber::terminate()
 std::list<EZMQX::Topic> EZMQX::AmlSubscriber::getTopics()
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    if (ctx->isTerminated())
+    {
+        terminate();
+        throw EZMQX::Exception("Subscriber terminated", EZMQX::Terminated);
+    }
+
     return EZMQX::Subscriber::getTopics();
 }

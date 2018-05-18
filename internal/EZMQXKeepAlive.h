@@ -26,6 +26,7 @@ private:
     std::condition_variable timerCond;
     std::atomic_bool timerIsTerminate;
     std::string remoteAddr;
+    int interval;
     KeepAlive();
     void queHandler();
     void timerHandler();
@@ -33,7 +34,7 @@ private:
 
 public:
     void inQue(EZMQX::TaskOption opt, std::string payload);
-    KeepAlive(std::string addr);
+    KeepAlive(std::string addr, int KeepAliveInterval);
     ~KeepAlive();
 };
 
