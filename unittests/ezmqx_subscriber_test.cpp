@@ -207,3 +207,27 @@ TEST_F(SubStandAloneTest, XmlSubActualTest1)
     }
 
 }
+
+TEST(SubscriberTest, TerminateTest)
+{
+    EZMQX::Config* config = EZMQX::Config::getInstance();
+
+    config->startStandAloneMode(false, "127.0.0.1");
+
+    std::list<std::string> amlPath(1, "sample_data_model.aml");
+    std::list<std::string> amlIds(1);
+    amlIds = config->addAmlModel(amlPath);
+    std::string amlId = amlIds.front();
+
+    EZMQX::XmlSubCb subCb = [](std::string topic, const std::string& payload){std::cout << "subCb called" << std::endl << "topic: " <<  topic << std::endl << payload << std::endl; std::cout << payload << std::endl;};
+    EZMQX::SubErrCb errCb = [](std::string topic, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl << "topic: " <<  topic << std::endl << "err: " << errCode << std::endl;};
+
+    EZMQX::XmlSubscriber* sub1 = EZMQX::XmlSubscriber::getSubscriber(EZMQX::Topic("/T/A", amlId, EZMQX::Endpoint("localhost", 4000)), subCb, errCb);
+
+    config->reset();
+
+    if (sub1)
+    {
+        delete sub1;
+    }
+}

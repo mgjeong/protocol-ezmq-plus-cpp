@@ -76,6 +76,8 @@ void EZMQX::Subscriber::initialize(const std::string &topic, bool isHierarchical
     try
     {
         Subscriber::initialize(verified);
+
+        // register on CTX
     }
     catch(const EZMQX::Exception& e)
     {
@@ -192,6 +194,8 @@ void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics)
         storedTopics.push_back(topic);
         EZMQX_LOG_V(DEBUG, TAG, "%s Topic: %s Model_Id: %s Endpoint: %s ", __func__, topic.getName().c_str(), topic.getDatamodel().c_str(), topic.getEndpoint().toString().c_str());
     }
+
+    // register on CTX
 
     return;
 }
@@ -457,11 +461,56 @@ void EZMQX::Subscriber::terminate()
             mThread.join();
             EZMQX_LOG_V(DEBUG, TAG, "%s callback thread stoped", __func__);
             delete que;
+
+            // unregister from CTX
+            if (!ctx->isTerminated())
+            {
+                ctx->unregisterSubscriber(this);
+            }
+
             terminated.store(true);
         }
         else
         {
             EZMQX_LOG_V(INFO, TAG, "%s Subscriber already terminated", __func__);
+            return;
+        }
+    }
+    // mutex unlock
+    return;
+}
+
+void EZMQX::Subscriber::terminateOwnResource()
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+    // mutex lock
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+        if (!terminated.load())
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s try terminate ezmq subscribers", __func__);
+            // release resource
+            for (std::list<ezmq::EZMQSubscriber*>::iterator itr = subscribers.begin() ; itr != subscribers.end(); itr++)
+            {
+                if (*itr)
+                {
+                    EZMQX_LOG_V(DEBUG, TAG, "%s try ezmq subscribers terminated", __func__);
+                    delete *itr;
+                }
+            }
+
+            EZMQX_LOG_V(DEBUG, TAG, "%s try stop callback thread", __func__);
+            que->stop();
+            mThread.join();
+            EZMQX_LOG_V(DEBUG, TAG, "%s callback thread stoped", __func__);
+            delete que;
+
+            terminated.store(true);
+        }
+        else
+        {
+            EZMQX_LOG_V(INFO, TAG, "%s Subscriber already terminated", __func__);
+            return;
         }
     }
     // mutex unlock

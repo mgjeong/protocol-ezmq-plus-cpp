@@ -20,6 +20,7 @@ class Context;
 class Subscriber
 {
     protected:
+        friend class Context;
         std::mutex lock;
         std::atomic_bool terminated;
         EZMQX::Context* ctx;
@@ -49,6 +50,7 @@ class Subscriber
 
         bool isTerminated();
         void terminate();
+        void terminateOwnResource();
         std::list<EZMQX::Topic> getTopics();
 };
 

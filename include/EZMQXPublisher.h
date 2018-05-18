@@ -13,6 +13,7 @@ class Context;
 class Publisher
 {
     protected:
+        friend class Context;
         std::mutex lock;
         std::atomic_bool terminated;
         EZMQX::Context* ctx;
@@ -34,6 +35,7 @@ class Publisher
 
         bool isTerminated();
         void terminate();
+        void terminateOwnResource();
         EZMQX::Topic getTopic();
 
     public:

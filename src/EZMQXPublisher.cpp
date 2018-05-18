@@ -78,6 +78,8 @@ EZMQX::Publisher::Publisher(int optionalPort) : terminated(false), ctx(EZMQX::Co
         EZMQX_LOG_V(ERROR, TAG, "%s Could not start publisher", __func__);
         throw EZMQX::Exception("Could not start publisher", EZMQX::UnKnownState);
     }
+
+    // register on CTX
 }
 
 EZMQX::Publisher::~Publisher()
@@ -262,14 +264,38 @@ void EZMQX::Publisher::terminate()
                 {
                     ctx->deleteTopic(topic.getName());
                 }
+
+                ctx->unregisterPublisher(this);
             }
 
             delete pubCtx;
         }
         else
         {
-            EZMQX_LOG_V(ERROR, TAG, "%s Publisher terminated", __func__);
-            throw EZMQX::Exception("Publisher terminated", EZMQX::Terminated);
+            EZMQX_LOG_V(ERROR, TAG, "%s Publisher already terminated", __func__);
+            return;
+        }
+
+        terminated.store(true);
+    }
+    // mutex unlock
+    return;
+}
+
+void EZMQX::Publisher::terminateOwnResource()
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+    // mutex lock
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+        if (!terminated.load())
+        {
+            delete pubCtx;
+        }
+        else
+        {
+            EZMQX_LOG_V(ERROR, TAG, "%s Publisher already terminated", __func__);
+            return;
         }
 
         terminated.store(true);

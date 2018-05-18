@@ -16,6 +16,8 @@ namespace EZMQX {
 class FakeSingletonAccessor;
 class Config;
 class KeepAlive;
+class Publisher;
+class Subscriber;
 class Context
 {
     private:
@@ -37,6 +39,8 @@ class Context
         std::map<int, bool> usedPorts;
         int usedIdx;
         int numOfPort;
+        std::list<EZMQX::Publisher*> publishers;
+        std::list<EZMQX::Subscriber*> subscribers;
         std::map<std::string, std::shared_ptr<AML::Representation>> amlRepDic;
         void setStandAloneMode(bool mode);
         void setHostInfo(std::string hostName, std::string hostAddr);
@@ -67,6 +71,10 @@ class Context
         std::list<std::string> getTopicList();
         int updateKeepAliveInterval(int keepAliveInterval);
         int getKeepAliveInterval();
+        void registerPublisher(EZMQX::Publisher* publisher);
+        void unregisterPublisher(EZMQX::Publisher* publisher);
+        void registerSubscriber(EZMQX::Subscriber* subscriber);
+        void unregisterSubscriber(EZMQX::Subscriber* subscriber);
 };
 
 } // namespace EZMQX

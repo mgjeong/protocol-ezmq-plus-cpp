@@ -241,3 +241,25 @@ TEST(Publisher, KeepAliveTest)
 
     config->reset();
 }
+
+TEST(publisher, teminateTest)
+{
+    EZMQX::Config* config = EZMQX::Config::getInstance();
+
+    config->startStandAloneMode(false, "127.0.0.1");
+
+    std::list<std::string> amlPath(1, "sample_data_model.aml");
+    std::list<std::string> amlIds(1);
+    amlIds = config->addAmlModel(amlPath);
+    std::string amlId = amlIds.front();
+
+    //wrong case : invalid amlfile path
+    EZMQX::AmlPublisher* pub = EZMQX::AmlPublisher::getPublisher("/T/C", EZMQX::AmlModelId, amlId, 4000);
+
+    config->reset();
+
+    if (pub)
+    {
+        delete pub;
+    }    
+}

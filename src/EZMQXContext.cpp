@@ -11,6 +11,9 @@
 #include <json/writer.h>
 #include <EZMQXLogger.h>
 #include <EZMQXKeepAlive.h>
+#include <EZMQXPublisher.h>
+#include <EZMQXSubscriber.h>
+#include <algorithm>
 
 #define TAG "EZMQXContext"
 static const std::string COLLON = ":";
@@ -633,19 +636,28 @@ void EZMQX::Context::terminate()
 
         if (!terminated.load())
         {
+
+            for (std::list<EZMQX::Publisher*>::iterator itr = publishers.begin(); itr != publishers.end(); itr++)
+            {
+                if (*itr)
+                {
+                    (*itr)->terminateOwnResource();
+                }
+            }
+
+            for (std::list<EZMQX::Subscriber*>::iterator itr = subscribers.begin(); itr != subscribers.end(); itr++)
+            {
+                if (*itr)
+                {
+                    (*itr)->terminateOwnResource();
+                }
+            }
+
             if (keepAlive)
             {
-                if (topicList.empty())
-                {
-                    EZMQX_LOG_V(DEBUG, TAG, "%s topic list is empty try delete KeepAlive", __func__);
-                    delete keepAlive;
-                }
-                else
-                {
-                    // throw exception
-                    EZMQX_LOG_V(ERROR, TAG, "%s Could not terminate context threre are active topic", __func__);
-                    throw EZMQX::Exception("Could not terminate context threre are active topic", EZMQX::UnKnownState);
-                }
+                EZMQX_LOG_V(DEBUG, TAG, "%s try delete KeepAlive", __func__);
+                delete keepAlive;
+                keepAlive = nullptr;
             }
 
             // release resource
@@ -745,4 +757,88 @@ int EZMQX::Context::updateKeepAliveInterval(int keepAliveInterval)
 int EZMQX::Context::getKeepAliveInterval()
 {
     return interval.load();
+}
+
+void EZMQX::Context::registerPublisher(EZMQX::Publisher* publisher)
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+
+        if (nullptr == publisher)
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s invalid pointer", __func__);
+            return;
+        }
+
+        publishers.push_back(publisher);
+    }
+
+    return;
+}
+
+void EZMQX::Context::unregisterPublisher(EZMQX::Publisher* publisher)
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+
+        if (nullptr == publisher)
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s invalid pointer", __func__);
+            return;
+        }
+
+        auto itr = std::find(publishers.begin(), publishers.end(), publisher);
+        if (itr != publishers.end())
+        {
+            publishers.erase(itr);
+        }
+    }
+
+    return;
+}
+
+void EZMQX::Context::registerSubscriber(EZMQX::Subscriber* subscriber)
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+
+        if (nullptr == subscriber)
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s invalid pointer", __func__);
+            return ;
+        }
+
+        subscribers.push_back(subscriber);
+    }
+
+    return;
+}
+
+void EZMQX::Context::unregisterSubscriber(EZMQX::Subscriber* subscriber)
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    {
+        std::lock_guard<std::mutex> scopedLock(lock);
+
+        if (nullptr == subscriber)
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s invalid pointer", __func__);
+            return;
+        }
+
+        auto itr = std::find(subscribers.begin(), subscribers.end(), subscriber);
+        if (itr != subscribers.end())
+        {
+            subscribers.erase(itr);
+        }
+    }
+
+    return;
 }
