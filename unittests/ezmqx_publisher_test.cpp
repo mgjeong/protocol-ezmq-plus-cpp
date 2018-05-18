@@ -258,6 +258,9 @@ TEST(publisher, teminateTest)
 
     config->reset();
 
+    pub->isTerminated();
+    pub->terminate();
+
     if (pub)
     {
         delete pub;

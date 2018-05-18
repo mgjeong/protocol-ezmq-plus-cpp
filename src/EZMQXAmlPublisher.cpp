@@ -122,3 +122,13 @@ EZMQX::Topic EZMQX::AmlPublisher::getTopic()
 
     return Publisher::getTopic();
 }
+
+bool EZMQX::AmlPublisher::isTerminated()
+{
+    return EZMQX::Publisher::isTerminated();
+}
+
+void EZMQX::AmlPublisher::terminate()
+{
+    return EZMQX::Publisher::terminate();
+}
