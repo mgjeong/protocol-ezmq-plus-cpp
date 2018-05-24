@@ -150,10 +150,5 @@ std::list<EZMQX::Topic> EZMQX::XmlSubscriber::getTopics()
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
 
-    if (!ctx->isInitialized())
-    {
-        throw EZMQX::Exception("Could not create Subscriber context not initialized", EZMQX::NotInitialized);
-    }
-
     return EZMQX::Subscriber::getTopics();
 }

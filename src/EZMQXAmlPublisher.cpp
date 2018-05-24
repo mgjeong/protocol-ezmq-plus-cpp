@@ -114,12 +114,6 @@ void EZMQX::AmlPublisher::publish(const AML::AMLObject& payload)
 
 EZMQX::Topic EZMQX::AmlPublisher::getTopic()
 {
-    if (ctx->isTerminated())
-    {
-        terminate();
-        throw EZMQX::Exception("Publisher terminated", EZMQX::Terminated);
-    }
-
     return Publisher::getTopic();
 }
 

@@ -119,12 +119,5 @@ void EZMQX::AmlSubscriber::terminate()
 std::list<EZMQX::Topic> EZMQX::AmlSubscriber::getTopics()
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
-
-    if (ctx->isTerminated())
-    {
-        terminate();
-        throw EZMQX::Exception("Subscriber terminated", EZMQX::Terminated);
-    }
-
     return EZMQX::Subscriber::getTopics();
 }
