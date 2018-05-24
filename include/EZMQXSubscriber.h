@@ -17,6 +17,13 @@ namespace EZMQX
 {
 class BlockingQue;
 class Context;
+
+class Context;
+/**
+* @class Subscriber
+* Super class for Subscriber.
+*
+*/
 class Subscriber
 {
     protected:

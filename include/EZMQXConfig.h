@@ -11,13 +11,18 @@
 namespace EZMQX {
 
 class Context;
-
 typedef enum
 {
     StandAlone,
     Docker
 }ModeOption;
 
+
+/**
+* @class Config
+* This class Contains the APIs that initialize ,reset, set modes of EMQZX stack.
+*
+*/
 class Config
 {
     private:
@@ -35,10 +40,55 @@ class Config
         ~Config();
 
     public:
+        /**
+        * Get instance of Config class.
+        * @note Do not delete this pointer.
+        *
+        * @throws EZMQX::Exception thrown with ErrorCode
+        * @see EZMQX::Exception
+        *
+        * @return Instance of Config class
+        */
         static Config* getInstance();
+
+        /**
+        * Start as DockerMode that working with Pharos system.\n
+        * In DockerMode, stack automatically using Tns service.
+        *
+        * @throws EZMQX::Exception thrown with ErrorCode
+        * @see EZMQX::Exception
+        *
+        */
         void startDockerMode();
+
+        /**
+        * Start as StandAloneMode that working without pharos system.
+        *
+        * @param useTns bool value for whether to use tns.
+        * @param tnsAddr address of tns located, if useTns is false this value will be ignored.
+        *
+        * @throws EZMQX::Exception thrown with ErrorCode
+        * @see EZMQX::Exception
+        *
+        */
         void startStandAloneMode(bool useTns, std::string tnsAddr);
+
+        /**
+        * Add aml model file for publish or subscribe AML data.
+        *
+        * @throws EZMQX::Exception thrown with ErrorCode
+        * @see ErrorCode
+        *
+        */
         std::list<std::string> addAmlModel(const std::list<std::string>& amlFilePath);
+        
+        /**
+        * Reset whole EZMQX stack.
+        *
+        * @throws EZMQX::Exception thrown with ErrorCode
+        * @see EZMQX::Exception
+        *
+        */
         void reset();
 
 };
