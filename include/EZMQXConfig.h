@@ -44,9 +44,6 @@ class Config
         * Get instance of Config class.
         * @note Do not delete this pointer.
         *
-        * @throws EZMQX::Exception thrown with ErrorCode
-        * @see EZMQX::Exception
-        *
         * @return Instance of Config class
         */
         static Config* getInstance();
