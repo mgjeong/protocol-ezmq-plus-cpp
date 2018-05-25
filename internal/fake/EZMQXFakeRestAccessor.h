@@ -49,7 +49,12 @@ class FakeRest : public rest
 private:
     RestResponse fake(const std::string& op, const std::string& url, const std::string& query, const std::string& payload)
     {
-        EZMQX_LOG_V(DEBUG, TAG, "%s %s Entered url is  %s query is %s payload is %s", __func__, op.c_str(), url.c_str(), query.c_str(), payload.c_str());
+        EZMQX_LOG_V(DEBUG, TAG, "%s %s Entered url is  %s query is %s", __func__, op.c_str(), url.c_str(), query.c_str());
+
+        if (!payload.empty())
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s %s payload is %s", __func__, op.c_str(), payload.c_str());
+        }
 
         RestResponse resp;
 
