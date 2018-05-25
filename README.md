@@ -1,6 +1,6 @@
 # protocol-ezmq-plus-cpp
 
-protocol-ezmq-plus-cpp is a library which provides a messaging interface for AML data.
+protocol-ezmq-plus-cpp is a library which provides a messaging interface with AutomationML(AML) data model.
 
 ## Prerequisites ##
  - You must install basic prerequisites for build
