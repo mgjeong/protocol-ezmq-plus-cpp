@@ -24,7 +24,7 @@ EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const EZMQX::AmlMode
         catch(...)
         {
             //throw model not exist exception
-            throw EZMQX::Exception("Could not find given AML model id", EZMQX::InvalidParam);
+            throw EZMQX::Exception("Could not find given AML model id", EZMQX::UnknownAmlModel);
         }
     }
     else if (infoType == AmlFilePath)
@@ -42,7 +42,7 @@ EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const EZMQX::AmlMode
         catch(...)
         {
             //throw AML model parse error
-            throw EZMQX::Exception("Could not parse given AML model file", EZMQX::InvalidParam);
+            throw EZMQX::Exception("Could not parse given AML model file", EZMQX::InvalidAmlModel);
         }
     }
     else
@@ -56,9 +56,13 @@ EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const EZMQX::AmlMode
     {
         _topic = EZMQX::Topic(topic, rep->getRepresentationId(), ctx->getHostEp(localPort));
     }
+    catch (const EZMQX::Exception& e)
+    {
+        throw e;
+    }
     catch(...)
     {
-        throw EZMQX::Exception("Invalid Port", EZMQX::UnKnownState);
+        throw EZMQX::Exception("Unnknown state", EZMQX::UnKnownState);
     }
 
     registerTopic(_topic);
