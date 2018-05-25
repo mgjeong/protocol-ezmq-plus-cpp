@@ -171,7 +171,7 @@ echo "build protocol-ezmq-plus-cpp"
 if [ "debug" = ${EZMQ_PLUS_BUILD_MODE} ]; then
     scons TARGET_OS=linux LOGGING=1 RELEASE=0 TARGET_ARCH=armhf TEST=0
 else
-    scons TARGET_OS=linux TARGET_ARCH=armhf LOGGING=1
+    scons TARGET_OS=linux TARGET_ARCH=armhf LOGGING=0
 fi
 
 
