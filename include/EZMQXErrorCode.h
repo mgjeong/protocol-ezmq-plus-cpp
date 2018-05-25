@@ -22,7 +22,7 @@ namespace EZMQX
         NotInitialized,         /**< enum  Stack is not initialized. */
         Terminated,             /**< enum  Stack is terminated. */
         UnKnownState,           /**< enum  UnkownState. */
-        ServiceUnavailable,     /**< enum  Could not initialize with given tns info. */
+        ServiceUnavailable,     /**< enum  Could not initialize with given info. */
         InvalidTopic,           /**< enum  Invalid topic that validation failed. */
         DuplicatedTopic,        /**< enum  Topic is duplicated. */
         UnknownTopic,           /**< enum  Unknown Topic. */
@@ -32,7 +32,10 @@ namespace EZMQX
         MaximumPortExceed,      /**< enum  Maximum port exceed. */
         ReleaseWrongPort,       /**< enum  Try release wrong port. */
         NoTopicMatched,         /**< enum  Could not find topic from tns service. */
-        TnsNotAvailable         /**< enum  Tns not available. */
+        TnsNotAvailable,        /**< enum  Tns not available. */
+        UnknownAmlModel,        /**< enum  Could not find AML Model. */
+        InvalidAmlModel,        /**< enum  Could not parse AML Model. */
+        SessionUnavailable      /**< enum  Could not connect to given endpoint. */
     }ErrorCode;
 }
 

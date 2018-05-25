@@ -45,7 +45,13 @@ class AmlPublisher : public Publisher
         * @param amlModelInfo  string of modelId of filePath.
         * @param optionalPort Port to be used for publish when StandAloneMode.
         *
-        * @throws EZMQX::Exception thrown with ErrorCode
+        * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
+        * EZMQX::InvalidTopic - Topic validation fail.\n
+        * EZMQX::InvalidParam - Invalid file path.\n
+        * EZMQX::InvalidAmlModel - Could not parse given AML model file.\n
+        * EZMQX::UnknownAmlModel - Could not find Aml Model.\n
+        * EZMQX::UnKnownState - Unknown reason.\n
+        *
         * @see EZMQX::Exception
         *
         * @return Instance of AmlPublisher class
@@ -57,7 +63,10 @@ class AmlPublisher : public Publisher
         *
         * @param payload AMLObject to be published.
         *
-        * @throws EZMQX::Exception thrown with ErrorCode.
+        * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n.
+        * EZMQX::Terminated - Stack terminated.\n
+        * EZMQX::UnknownAmlModel - Could not find Aml Model.\n
+        *
         * @see EZMQX::Exception
         *
         */

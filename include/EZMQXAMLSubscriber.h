@@ -56,7 +56,16 @@ class AmlSubscriber : public Subscriber
         * @param subCb Callback to get AMLObject data on given topic.
         * @param errCb Error callback to get error code with topic information.
         *
-        * @throws EZMQX::Exception thrown with ErrorCode
+        * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
+        * EZMQX::NotInitialized - Stack not initialized.\n
+        * EZMQX::InvalidTopic - Topic validation fail.\n
+        * EZMQX::TnsNotAvailable - Tns service not available, use DockerMode or set Tns information for StandAloneMode.\n
+        * EZMQX::RestError - Rest error, see detail on contained message.\n
+        * EZMQX::NoTopicMatched - Could not find matched topic on tns service with given topic.\n
+        * EZMQX::SessionUnavailable - Could not connect with given endpoint.\n
+        * EZMQX::UnknownAmlModel - Could not find Aml Model.\n
+        * EZMQX::UnknownState - Unknown reason.\n
+        *
         * @see EZMQX::Exception
         *
         * @return instance of AmlSubscriber class.
@@ -70,7 +79,12 @@ class AmlSubscriber : public Subscriber
         * @param subCb Callback to get AMLObject data on given topic.
         * @param errCb errCb Error callback to get error code with topic information.
         *
-        * @throws EZMQX::Exception thrown with ErrorCode
+        * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
+        * EZMQX::NotInitialized - Stack not initialized.\n
+        * EZMQX::SessionUnavailable - Could not connect with given endpoint.\n
+        * EZMQX::UnknownAmlModel - Could not find Aml Model.\n
+        * EZMQX::UnknownState - Unknown reason.\n
+        *
         * @see EZMQX::Exception
         *
         * @return instance of AmlSubscriber class.
@@ -84,7 +98,12 @@ class AmlSubscriber : public Subscriber
         * @param subCb Callback to get AMLObject data on given topic.
         * @param errCb errCb Error callback to get error code with topic information.
         *
-        * @throws EZMQX::Exception thrown with ErrorCode
+        * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
+        * EZMQX::NotInitialized - Stack not initialized.\n
+        * EZMQX::SessionUnavailable - Could not connect with given endpoint.\n
+        * EZMQX::UnknownAmlModel - Could not find Aml Model.\n
+        * EZMQX::UnknownState - Unknown reason.\n
+        *
         * @see EZMQX::Exception
         *
         * @return instance of AmlSubscriber class.

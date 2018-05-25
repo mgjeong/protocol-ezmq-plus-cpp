@@ -52,7 +52,11 @@ class Config
         * Start as DockerMode that working with Pharos system.\n
         * In DockerMode, stack automatically using Tns service.
         *
-        * @throws EZMQX::Exception thrown with ErrorCode
+        * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
+        * EZMQX::Initialized - Stack already initialized try it after reset.\n
+        * EZMQX::ServiceUnavailable - Could not initialize stack in current environment.\n
+        * EZMQX::UnKnownState - Unknown reason.\n
+        *
         * @see EZMQX::Exception
         *
         */
@@ -64,7 +68,11 @@ class Config
         * @param useTns bool value for whether to use tns.
         * @param tnsAddr address of tns located, if useTns is false this value will be ignored.
         *
-        * @throws EZMQX::Exception thrown with ErrorCode
+        * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
+        * EZMQX::Initialized - Stack already initialized try it after reset.\n
+        * EZMQX::ServiceUnavailable -Could not initialize stack in current environment.\n
+        * EZMQX::UnknownState - Unknown reason.\n
+        *
         * @see EZMQX::Exception
         *
         */
@@ -73,7 +81,12 @@ class Config
         /**
         * Add aml model file for publish or subscribe AML data.
         *
-        * @throws EZMQX::Exception thrown with ErrorCode
+        * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
+        * EZMQX::NotInitialized - Stack not initialized.\n
+        * EZMQX::InvalidParam - Invalid file path.\n
+        * EZMQX::InvalidAmlModel - Could not parse given AML model file.\n
+        * EZMQX::UnknownState - Unknown reason.\n
+        *
         * @see ErrorCode
         *
         */
@@ -82,7 +95,9 @@ class Config
         /**
         * Reset whole EZMQX stack.
         *
-        * @throws EZMQX::Exception thrown with ErrorCode
+        * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
+        * EZMQX::UnknownState - Unknown reason.\n
+        *
         * @see EZMQX::Exception
         *
         */

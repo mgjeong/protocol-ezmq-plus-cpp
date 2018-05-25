@@ -27,7 +27,7 @@ class TopicDiscovery
         * @param Name of topic that will be queried to Tns server.
         *
         *
-        * @throws EZMQX::Exception thrown with ErrorCode
+        * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
         * @see EZMQX::Exception
         *
         * @return instance of topic.
@@ -40,7 +40,13 @@ class TopicDiscovery
         *
         * @param Name of topic that will be queried to Tns server with hierarchical query option.
         *
-        * @throws EZMQX::Exception thrown with ErrorCode
+        * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
+        * EZMQX::Terminated - Stack terminated.\n
+        * EZMQX::InvalidTopic - Topic validation fail.\n
+        * EZMQX::RestError - Rest error, see detail on contained message.\n
+        * EZMQX::TnsNotAvailable - Tns service not available, use DockerMode or set Tns information for StandAloneMode.\n
+        * EZMQX::UnknownState - Unknown reason.\n
+        *
         * @see EZMQX::Exception
         *
         * @return list of instance of topic.
@@ -51,7 +57,13 @@ class TopicDiscovery
         /**
         * Constructor
         *
-        * @throws EZMQX::Exception thrown with ErrorCode
+        * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
+        * EZMQX::Terminated - Stack terminated.\n
+        * EZMQX::InvalidTopic - Topic validation fail.\n
+        * EZMQX::RestError - Rest error, see detail on contained message.\n
+        * EZMQX::TnsNotAvailable - Tns service not available, use DockerMode or set Tns information for StandAloneMode.\n
+        * EZMQX::UnknownState - Unknown reason.\n
+        *
         * @see EZMQX::Exception
         *
         */
