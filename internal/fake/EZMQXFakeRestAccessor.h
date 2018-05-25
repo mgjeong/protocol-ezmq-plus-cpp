@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright 2018 Samsung Electronics All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ *******************************************************************************/
+
+
 #ifndef EZMQ_X_FAKE_REST_H
 #define EZMQ_X_FAKE_REST_H
 
@@ -31,7 +49,12 @@ class FakeRest : public rest
 private:
     RestResponse fake(const std::string& op, const std::string& url, const std::string& query, const std::string& payload)
     {
-        EZMQX_LOG_V(DEBUG, TAG, "%s %s Entered url is  %s query is %s payload is %s", __func__, op.c_str(), url.c_str(), query.c_str(), payload.c_str());
+        EZMQX_LOG_V(DEBUG, TAG, "%s %s Entered url is  %s query is %s", __func__, op.c_str(), url.c_str(), query.c_str());
+
+        if (!payload.empty())
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s %s payload is %s", __func__, op.c_str(), payload.c_str());
+        }
 
         RestResponse resp;
 

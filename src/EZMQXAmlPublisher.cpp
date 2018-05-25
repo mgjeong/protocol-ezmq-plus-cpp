@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright 2018 Samsung Electronics All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ *******************************************************************************/
+
 #include <EZMQXAmlPublisher.h>
 #include <EZMQXException.h>
 #include <EZMQXContext.h>
@@ -24,7 +41,7 @@ EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const EZMQX::AmlMode
         catch(...)
         {
             //throw model not exist exception
-            throw EZMQX::Exception("Could not find given AML model id", EZMQX::InvalidParam);
+            throw EZMQX::Exception("Could not find given AML model id", EZMQX::UnknownAmlModel);
         }
     }
     else if (infoType == AmlFilePath)
@@ -42,7 +59,7 @@ EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const EZMQX::AmlMode
         catch(...)
         {
             //throw AML model parse error
-            throw EZMQX::Exception("Could not parse given AML model file", EZMQX::InvalidParam);
+            throw EZMQX::Exception("Could not parse given AML model file", EZMQX::InvalidAmlModel);
         }
     }
     else
@@ -56,9 +73,13 @@ EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const EZMQX::AmlMode
     {
         _topic = EZMQX::Topic(topic, rep->getRepresentationId(), ctx->getHostEp(localPort));
     }
+    catch (const EZMQX::Exception& e)
+    {
+        throw e;
+    }
     catch(...)
     {
-        throw EZMQX::Exception("Invalid Port", EZMQX::UnKnownState);
+        throw EZMQX::Exception("Unnknown state", EZMQX::UnKnownState);
     }
 
     registerTopic(_topic);
@@ -114,12 +135,6 @@ void EZMQX::AmlPublisher::publish(const AML::AMLObject& payload)
 
 EZMQX::Topic EZMQX::AmlPublisher::getTopic()
 {
-    if (ctx->isTerminated())
-    {
-        terminate();
-        throw EZMQX::Exception("Publisher terminated", EZMQX::Terminated);
-    }
-
     return Publisher::getTopic();
 }
 

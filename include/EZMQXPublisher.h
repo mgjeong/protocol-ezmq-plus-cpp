@@ -10,6 +10,11 @@
 
 namespace EZMQX {
 class Context;
+/**
+* @class Publisher
+* Super class for Publisher.
+*
+*/
 class Publisher
 {
     protected:

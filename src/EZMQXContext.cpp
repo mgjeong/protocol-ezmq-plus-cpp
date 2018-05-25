@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright 2018 Samsung Electronics All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ *******************************************************************************/
+
 #include <EZMQXContext.h>
 #include <EZMQXErrorCode.h>
 #include <EZMQXException.h>
@@ -157,7 +174,7 @@ std::list<std::string> EZMQX::Context::addAmlRep(const std::list<std::string>& a
             if (path.empty())
             {
                 EZMQX_LOG_V(ERROR, TAG, "%s Invalid aml model path %s", __func__, path.c_str());
-                throw EZMQX::Exception("Invalid aml model path", EZMQX::UnKnownState);
+                throw EZMQX::Exception("Invalid aml model path", EZMQX::InvalidParam);
             }
             else
             {
@@ -170,13 +187,13 @@ std::list<std::string> EZMQX::Context::addAmlRep(const std::list<std::string>& a
                 catch(...)
                 {
                     EZMQX_LOG_V(ERROR, TAG, "%s Could not parse aml model file: %s", __func__, path.c_str());
-                    throw EZMQX::Exception("Could not parse aml model file : " + path, EZMQX::UnKnownState);
+                    throw EZMQX::Exception("Could not parse aml model file : " + path, EZMQX::InvalidAmlModel);
                 }
 
                 if (!repPtr)
                 {
                     EZMQX_LOG_V(ERROR, TAG, "%s Could not parse aml model file: %s", __func__, path.c_str());
-                    throw EZMQX::Exception("Could not parse aml model file : " + path, EZMQX::UnKnownState);
+                    throw EZMQX::Exception("Could not parse aml model file : " + path, EZMQX::InvalidAmlModel);
                 }
 
                 std::shared_ptr<AML::Representation> rep(repPtr);
@@ -188,13 +205,13 @@ std::list<std::string> EZMQX::Context::addAmlRep(const std::list<std::string>& a
                 catch(...)
                 {
                     EZMQX_LOG_V(ERROR, TAG, "%s Invalid aml model id", __func__);
-                    throw EZMQX::Exception("Invalid aml model id", EZMQX::UnKnownState);
+                    throw EZMQX::Exception("Invalid aml model id", EZMQX::InvalidParam);
                 }
 
                 if (amlModelId.empty())
                 {
                     EZMQX_LOG_V(ERROR, TAG, "%s Invalid aml model id", __func__);
-                    throw EZMQX::Exception("Invalid aml model id", EZMQX::UnKnownState);
+                    throw EZMQX::Exception("Invalid aml model id", EZMQX::InvalidParam);
                 }
 
                 try
@@ -231,7 +248,7 @@ std::shared_ptr<AML::Representation> EZMQX::Context::getAmlRep(const std::string
         if (itr == amlRepDic.end())
         {
             EZMQX_LOG_V(ERROR, TAG, "%s Could not find matched Aml Rep: %s", __func__, amlModelId.c_str());
-            throw EZMQX::Exception("Could not find matched Aml Rep", EZMQX::UnKnownState);
+            throw EZMQX::Exception("Could not find matched Aml Rep", EZMQX::UnknownAmlModel);
         }
         else
         {
