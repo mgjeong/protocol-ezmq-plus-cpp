@@ -17,6 +17,15 @@ protocol-ezmq-plus-cpp is a library which provides a messaging interface with Au
   - Version : 2.3.0 or above
   - [How to install](http://scons.org/doc/2.3.0/HTML/scons-user/c95.html)
 
+- GCC
+  - Version : 5.4.0 or above
+  - How to install
+  ```
+  $ sudo apt-get install -y gcc-5 g++-5
+  $ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 1
+  $ sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 1
+  ```
+
 ## How to build ##
 1. Goto: ~/protocol-ezmq-plus-cpp/</br>
 2. Following are the scripts for building ezmq plus library:</br>
@@ -99,4 +108,4 @@ help:-
         - libjsoncpp.a</br>
         - libprotobuf.a</br>
         - libzmq.a </br>
-2. Reference ezmq plus library APIs : [doc/doxygen/docs/html/index.html](doc/doxygen/docs/html/index.html)
+2. Reference ezmq plus library APIs : [doc/index.html](doc/index.html)
