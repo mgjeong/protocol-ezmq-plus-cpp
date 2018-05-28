@@ -104,8 +104,8 @@ usage() {
     echo "build:-"
     echo "  $ ./build_arm.sh"
     echo "  $ ./build_arm.sh --with_dependencies=true"
-    echo "  $ ./build.sh --with_dependencies=false --build_mode=release"
-    echo "  $ ./build.sh --with_dependencies=false --build_mode=debug"
+    echo "  $ ./build_arm.sh --with_dependencies=false --build_mode=release"
+    echo "  $ ./build_arm.sh --with_dependencies=false --build_mode=debug"
     echo "help:-"
     echo "  $ ./build_arm.sh -h"
 }
