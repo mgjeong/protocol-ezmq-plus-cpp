@@ -59,18 +59,20 @@ help:-
  Built ezmq plus library
 
 ### Publisher sample ###
-1. Goto: ~/protocol-ezmq-plus-cpp/out/linux/{ARCH}/{MODE}/samples/
-2. export LD_LIBRARY_PATH=../
-3. Run the sample:
+1. copy ~/protocol-ezmq-plus-cpp/samples/sample_data_model.aml to ~/protocol-ezmq-plus-cpp/out/linux/{ARCH}/{MODE}/samples/
+2. Goto: ~/protocol-ezmq-plus-cpp/out/linux/{ARCH}/{MODE}/samples/
+3. export LD_LIBRARY_PATH=../
+4. Run the sample:
     ```
      ./publisher
     ```
     - **It will give list of options for running the sample.** </br>
 
 ### Subscriber sample ###
-1. Goto: ~/protocol-ezmq-plus-cpp/out/linux/{ARCH}/{MODE}/samples/
-2. export LD_LIBRARY_PATH=../
-3. Run the sample:
+1. copy ~/protocol-ezmq-plus-cpp/samples/sample_data_model.aml to ~/protocol-ezmq-plus-cpp/out/linux/{ARCH}/{MODE}/samples/
+2. Goto: ~/protocol-ezmq-plus-cpp/out/linux/{ARCH}/{MODE}/samples/
+3. export LD_LIBRARY_PATH=../
+4. Run the sample:
     ```
      ./AmlSubscriber
      ./XmlSubscriber
