@@ -1,0 +1,10 @@
+version: '2'
+services:
+  ezmq-plus-loop:
+    image: docker.sec.samsung.net:5000/edge/protocol-ezmq-plus-cpp/rpi_arm:latest
+    container_name: "ezmq-plus-loop"
+    command: ["./run.sh", "loop"]
+    ports:
+      - "4000-4100"
+
+...
