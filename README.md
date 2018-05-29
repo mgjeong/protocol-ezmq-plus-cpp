@@ -26,6 +26,9 @@ protocol-ezmq-plus-cpp is a library which provides a messaging interface with Au
   $ sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 1
   ```
 
+## API Reference ##
+- Reference ezmq plus library APIs : [doc/index.html](doc/index.html)
+
 ## How to build ##
 1. Goto: ~/protocol-ezmq-plus-cpp/</br>
 2. Following are the scripts for building ezmq plus library:</br>
@@ -88,25 +91,6 @@ help:-
     ```
     - **It will give list of options for running the sample.** </br>
 
-## Docker Build sample ##
-1. Reference [Dockerfile_arm](Dockerfile_arm) on repository.
-
-## Docker Compose yaml sample ##
-1. Expose ports 4000-4100, see below reference with [official guide](https://docs.docker.com/compose/compose-file/compose-file-v2/#ports)
-2. Reference [docker-compose.yml](docker-compose.yml) on repository.
-    ```
-    version: '2'
-    services:
-      ezmq-plus-loop:
-      image: docker.sec.samsung.net:5000/edge/protocol-ezmq-plus-cpp/rpi_arm:latest
-      container_name: "ezmq-plus-loop"
-      command: ["./run.sh", "loop"]
-      ports:
-      - "4000-4100"
-
-    ...
-    ```
-
 ## Usage guide for ezmq library (for microservices)
 
 1. The microservice which wants to use ezmq plus APIs has to link following libraries:</br></br>
@@ -126,4 +110,28 @@ help:-
         - libjsoncpp.a</br>
         - libprotobuf.a</br>
         - libzmq.a </br>
-2. Reference ezmq plus library APIs : [doc/index.html](doc/index.html)
+
+## Docker Build sample ##
+1. Reference [Dockerfile_arm](Dockerfile_arm) on repository.
+
+## Docker Compose yaml sample ##
+1. Expose ports 4000-4100, see below reference with [official guide](https://docs.docker.com/compose/compose-file/compose-file-v2/#ports)
+2. Reference [docker-compose.yml](docker-compose.yml) on repository.
+    ```
+    version: '2'
+    services:
+      ezmq-plus-loop:
+      image: docker.sec.samsung.net:5000/edge/protocol-ezmq-plus-cpp/rpi_arm:latest
+      container_name: "ezmq-plus-loop"
+      command: ["./run.sh", "loop"]
+      ports:
+      - "4000-4100"
+
+    ...
+    ```
+
+## How to deploy using Pharos anchor ##
+- Way1) Using Pharos Web Client with yaml file.
+   - see [Pharos Web Client Guide](https://github.sec.samsung.net/RS7-EdgeComputing/system-pharos-web-client)
+- Way2) Using Pharos Anchor rest api with yaml file.
+   - see [Pharos Anchor Guide](https://github.sec.samsung.net/RS7-EdgeComputing/system-pharos-anchor-go#3-deploy-a-new-service-to-pharos-node-device)
