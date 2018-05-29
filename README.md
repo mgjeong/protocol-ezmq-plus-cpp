@@ -91,6 +91,22 @@ help:-
 ## Docker Build sample ##
 1. Reference [Dockerfile_arm](Dockerfile_arm) on repository.
 
+## Docker Compose yaml sample ##
+1. Expose ports 4000-4100, see below reference with [official guide](https://docs.docker.com/compose/compose-file/compose-file-v2/#ports)
+2. Reference [docker-compose.yml](docker-compose.yml) on repository.
+    ```
+    version: '2'
+    services:
+      ezmq-plus-loop:
+      image: docker.sec.samsung.net:5000/edge/protocol-ezmq-plus-cpp/rpi_arm:latest
+      container_name: "ezmq-plus-loop"
+      command: ["./run.sh", "loop"]
+      ports:
+      - "4000-4100"
+
+    ...
+    ```
+
 ## Usage guide for ezmq library (for microservices)
 
 1. The microservice which wants to use ezmq plus APIs has to link following libraries:</br></br>
