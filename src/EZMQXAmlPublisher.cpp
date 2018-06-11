@@ -22,6 +22,10 @@
 #include <AMLException.h>
 #include <EZMQErrorCodes.h>
 #include <EZMQByteData.h>
+#include <EZMQXException.h>
+#include <EZMQXLogger.h>
+
+#define TAG "EZMQXAmlPublisher"
 
 EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
  : Publisher(optionalPort)
@@ -123,6 +127,8 @@ void EZMQX::AmlPublisher::publish(const AML::AMLObject& payload)
             if (!pubCtx)
             {
                 // throw exception
+                EZMQX_LOG_V(ERROR, TAG, "%s Could publish payload, pubCtx is null", __func__);
+                throw EZMQX::Exception("Could publish payload, pubCtx is null", EZMQX::UnKnownState);
             }
 
             ezmq::EZMQByteData data(reinterpret_cast<const uint8_t*>(byteAml.c_str()), byteAml.length());
