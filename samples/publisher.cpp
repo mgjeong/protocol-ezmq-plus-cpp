@@ -23,6 +23,7 @@
 #include <EZMQXAmlPublisher.h>
 #include <EZMQXConfig.h>
 #include <EZMQXException.h>
+#include <AMLException.h>
 #include <thread>
 #include <condition_variable>
 
@@ -182,9 +183,22 @@ int main()
     }
     catch(EZMQX::Exception& e)
     {
-        // catch terminated exception
+        std::cout << "catch EXMQX exception" << std::endl;
+        std::cout << e.what() << std::endl;
+    }
+    catch (AML::AMLException& e)
+    {
+        std::cout << "catch AML exception" << std::endl;
+        std::cout << e.what() << std::endl;
+    }
+    catch (std::exception& e)
+    {
         std::cout << "catch exception" << std::endl;
         std::cout << e.what() << std::endl;
+    }
+    catch (...)
+    {
+        std::cout << "unknown exception" << std::endl;
     }
 
     std::cout << "done" << std::endl;
