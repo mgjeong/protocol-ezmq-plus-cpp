@@ -84,6 +84,7 @@ class AmlPublisher : public Publisher
         * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n.
         * EZMQX::Terminated - Stack terminated.\n
         * EZMQX::UnknownAmlModel - Could not find Aml Model.\n
+        * EZMQX::UnKnownState - Unknown reason.\n
         *
         * @see EZMQX::Exception
         *
