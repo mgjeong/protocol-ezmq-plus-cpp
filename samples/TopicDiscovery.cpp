@@ -23,13 +23,25 @@
 
 int main()
 {
-    EZMQX::Config* config = EZMQX::Config::getInstance();
+    try
+    {
+        EZMQX::Config* config = EZMQX::Config::getInstance();
 
-    config->startDockerMode();
-    //config->startStandAloneMode(true, "10.113.65.174");
+        config->startDockerMode();
+        //config->startStandAloneMode(true, "10.113.65.174");
+    }
+    catch (const EZMQX::Exception& e)
+    {
+        std::cout<<"Catch Exception: "<<e.what()<<std::endl;
+    }
+    catch (...)
+    {
+        std::cout<<"Unknown exception throwed"<<std::endl;
+    }
 
     std::shared_ptr<EZMQX::TopicDiscovery> discovery(new EZMQX::TopicDiscovery());
     std::list<EZMQX::Topic> result;
+
     while (1)
     {
         std::string topic;
