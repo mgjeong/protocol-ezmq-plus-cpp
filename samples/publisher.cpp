@@ -23,10 +23,11 @@
 #include <EZMQXAmlPublisher.h>
 #include <EZMQXConfig.h>
 #include <EZMQXException.h>
+#include <AMLException.h>
 #include <thread>
 #include <condition_variable>
 
-void printAMLData(AML::AMLData amlData, int depth)
+void printAMLData(const AML::AMLData& amlData, int depth)
 {
     std::string indent;
     for (int i = 0; i < depth; i++) indent += "    ";
@@ -68,7 +69,7 @@ void printAMLData(AML::AMLData amlData, int depth)
     std::cout << indent << "}";
 }
 
-void printAMLObject(AML::AMLObject amlObj)
+void printAMLObject(const AML::AMLObject& amlObj)
 {
     std::cout << "{" << std::endl;
     std::cout << "    \"device\" : " << amlObj.getDeviceId() << "," << std::endl;
@@ -123,7 +124,7 @@ int main()
       EZMQX::Config* config = EZMQX::Config::getInstance();
 
       config->startDockerMode();
-      //config->startStandAloneMode(true, "10.113.65.174");
+      //config->startStandAloneMode(true, "10.113.66.234");
 
       amlId = config->addAmlModel(amlPath);
 
@@ -182,9 +183,22 @@ int main()
     }
     catch(EZMQX::Exception& e)
     {
-        // catch terminated exception
+        std::cout << "catch EXMQX exception" << std::endl;
+        std::cout << e.what() << std::endl;
+    }
+    catch (AML::AMLException& e)
+    {
+        std::cout << "catch AML exception" << std::endl;
+        std::cout << e.what() << std::endl;
+    }
+    catch (std::exception& e)
+    {
         std::cout << "catch exception" << std::endl;
         std::cout << e.what() << std::endl;
+    }
+    catch (...)
+    {
+        std::cout << "unknown exception" << std::endl;
     }
 
     std::cout << "done" << std::endl;
