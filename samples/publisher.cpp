@@ -27,7 +27,7 @@
 #include <thread>
 #include <condition_variable>
 
-void printAMLData(AML::AMLData amlData, int depth)
+void printAMLData(const AML::AMLData& amlData, int depth)
 {
     std::string indent;
     for (int i = 0; i < depth; i++) indent += "    ";
@@ -69,7 +69,7 @@ void printAMLData(AML::AMLData amlData, int depth)
     std::cout << indent << "}";
 }
 
-void printAMLObject(AML::AMLObject amlObj)
+void printAMLObject(const AML::AMLObject& amlObj)
 {
     std::cout << "{" << std::endl;
     std::cout << "    \"device\" : " << amlObj.getDeviceId() << "," << std::endl;
@@ -124,7 +124,7 @@ int main()
       EZMQX::Config* config = EZMQX::Config::getInstance();
 
       config->startDockerMode();
-      //config->startStandAloneMode(true, "10.113.65.174");
+      //config->startStandAloneMode(true, "10.113.66.234");
 
       amlId = config->addAmlModel(amlPath);
 

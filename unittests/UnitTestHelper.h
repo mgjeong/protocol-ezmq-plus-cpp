@@ -30,7 +30,7 @@
 #include <chrono>
 #include <thread>
 
-void printAMLData(AML::AMLData amlData, int depth)
+void printAMLData(const AML::AMLData& amlData, int depth)
 {
     std::string indent;
     for (int i = 0; i < depth; i++) indent += "    ";
@@ -72,7 +72,7 @@ void printAMLData(AML::AMLData amlData, int depth)
     std::cout << indent << "}";
 }
 
-void printAMLObject(AML::AMLObject amlObj)
+void printAMLObject(const AML::AMLObject& amlObj)
 {
     std::cout << "{" << std::endl;
     std::cout << "    \"device\" : " << amlObj.getDeviceId() << "," << std::endl;
