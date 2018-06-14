@@ -55,6 +55,7 @@ class Subscriber
         std::string token;
         EZMQX::BlockingQue* que;
         std::thread mThread;
+        std::atomic_bool mTerminated;
 
         void handler();
         virtual void cb(const std::string &_topic, const AML::AMLObject* obj) = 0;
