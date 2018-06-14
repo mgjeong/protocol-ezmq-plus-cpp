@@ -26,6 +26,7 @@
 #include <json/reader.h>
 #include <EZMQXBlockingQue.h>
 #include <EZMQXLogger.h>
+#include <chrono>
 
 #define TAG "EZMQXSubscriber"
 #define SLASH '/'
@@ -52,7 +53,7 @@ static const std::string PAYLOAD_DATAMODEL = "datamodel";
 static const std::string TOPIC_WILD_CARD = "*";
 static const std::string TOPIC_WILD_PATTERNN = "/*/";
 
-EZMQX::Subscriber::Subscriber() : terminated(false), ctx(EZMQX::Context::getInstance()), token(""), que(new EZMQX::BlockingQue()), mThread(std::thread(&EZMQX::Subscriber::handler, this))
+EZMQX::Subscriber::Subscriber() : terminated(false), ctx(EZMQX::Context::getInstance()), token(""), que(new EZMQX::BlockingQue()), mThread(std::thread(&EZMQX::Subscriber::handler, this)), mTerminated(false)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
 }
@@ -230,6 +231,7 @@ void EZMQX::Subscriber::handler()
 
         if (!que || que->isTerminated())
         {
+            mTerminated.store(true);
             EZMQX_LOG_V(DEBUG, TAG, "%s Que is terminated exit handler", __func__);
             return;
         }
@@ -242,10 +244,14 @@ void EZMQX::Subscriber::handler()
                 throw EZMQX::Exception("que is not initiated", EZMQX::UnKnownState);
             }
 
+            EZMQX_LOG_V(DEBUG, TAG, "%s try deque", __func__);
             que->deQue(payload);
+
+            EZMQX_LOG_V(DEBUG, TAG, "%s deque successfully", __func__);
 
             if (que->isTerminated())
             {
+                mTerminated.store(true);
                 EZMQX_LOG_V(DEBUG, TAG, "%s Que is terminated exit handler", __func__);
                 return;
             }
@@ -465,8 +471,26 @@ void EZMQX::Subscriber::terminate()
         std::lock_guard<std::mutex> scopedLock(lock);
         if (!terminated.load())
         {
-            EZMQX_LOG_V(DEBUG, TAG, "%s try terminate ezmq subscribers", __func__);
             // release resource
+
+            EZMQX_LOG_V(DEBUG, TAG, "%s try stop callback thread", __func__);
+            while(mTerminated.load() == false)
+            {
+                EZMQX_LOG_V(DEBUG, TAG, "%s try stop", __func__);
+                que->stop();
+                EZMQX_LOG_V(DEBUG, TAG, "%s stop successfully", __func__);
+
+                EZMQX_LOG_V(DEBUG, TAG, "%s wait thread become to joinable", __func__);
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            }
+
+            EZMQX_LOG_V(DEBUG, TAG, "%s try join", __func__);
+            mThread.join();
+            EZMQX_LOG_V(DEBUG, TAG, "%s join successfully", __func__);
+
+            delete que;
+
+            EZMQX_LOG_V(DEBUG, TAG, "%s try terminate ezmq subscribers", __func__);
             for (std::list<ezmq::EZMQSubscriber*>::iterator itr = subscribers.begin() ; itr != subscribers.end(); itr++)
             {
                 if (*itr)
@@ -475,12 +499,6 @@ void EZMQX::Subscriber::terminate()
                     delete *itr;
                 }
             }
-
-            EZMQX_LOG_V(DEBUG, TAG, "%s try stop callback thread", __func__);
-            que->stop();
-            mThread.join();
-            EZMQX_LOG_V(DEBUG, TAG, "%s callback thread stoped", __func__);
-            delete que;
 
             // unregister from CTX
             if (!ctx->isTerminated())
@@ -508,8 +526,28 @@ void EZMQX::Subscriber::terminateOwnResource()
         std::lock_guard<std::mutex> scopedLock(lock);
         if (!terminated.load())
         {
-            EZMQX_LOG_V(DEBUG, TAG, "%s try terminate ezmq subscribers", __func__);
             // release resource
+
+            EZMQX_LOG_V(DEBUG, TAG, "%s try stop callback thread", __func__);
+
+            while(mTerminated.load() == false)
+            {
+                EZMQX_LOG_V(DEBUG, TAG, "%s try stop", __func__);
+                que->stop();
+                EZMQX_LOG_V(DEBUG, TAG, "%s stop successfully", __func__);
+
+                EZMQX_LOG_V(DEBUG, TAG, "%s wait thread become to joinable", __func__);
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            }
+
+
+            EZMQX_LOG_V(DEBUG, TAG, "%s try join", __func__);
+            mThread.join();
+            EZMQX_LOG_V(DEBUG, TAG, "%s join successfully", __func__);
+
+            delete que;
+
+            EZMQX_LOG_V(DEBUG, TAG, "%s try terminate ezmq subscribers", __func__);
             for (std::list<ezmq::EZMQSubscriber*>::iterator itr = subscribers.begin() ; itr != subscribers.end(); itr++)
             {
                 if (*itr)
@@ -518,12 +556,6 @@ void EZMQX::Subscriber::terminateOwnResource()
                     delete *itr;
                 }
             }
-
-            EZMQX_LOG_V(DEBUG, TAG, "%s try stop callback thread", __func__);
-            que->stop();
-            mThread.join();
-            EZMQX_LOG_V(DEBUG, TAG, "%s callback thread stoped", __func__);
-            delete que;
 
             terminated.store(true);
         }

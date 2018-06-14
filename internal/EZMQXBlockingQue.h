@@ -84,6 +84,7 @@ public:
     {
         terminate.store(true);
         cond.notify_all();
+        return;
     }
 
     bool isTerminated()
