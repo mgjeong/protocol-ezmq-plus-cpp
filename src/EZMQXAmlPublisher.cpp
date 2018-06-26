@@ -102,39 +102,32 @@ EZMQX::AmlPublisher* EZMQX::AmlPublisher::getPublisher(const std::string &topic,
 
 void EZMQX::AmlPublisher::publish(const AML::AMLObject& payload)
 {
-
+    if (ctx->isTerminated())
     {
-        if (ctx->isTerminated())
-        {
-            terminate();
-            throw EZMQX::Exception("Publisher terminated", EZMQX::Terminated);
-        }
-
-        // mutex lock
-        std::lock_guard<std::mutex> scopedLock(lock);
-
-        // get AML model id
-        // get AMLRep
-        if (!rep)
-        {
-            rep = ctx->getAmlRep(topic.getDatamodel());
-        }
-
-        // transform // throw exception
-        std::string byteAml = rep->DataToByte(payload);
-
-        // publish
-        if (!pubCtx)
-        {
-            // throw exception
-            EZMQX_LOG_V(ERROR, TAG, "%s Could publish payload, pubCtx is null", __func__);
-            throw EZMQX::Exception("Could publish payload, pubCtx is null", EZMQX::UnKnownState);
-        }
-
-        ezmq::EZMQByteData data(reinterpret_cast<const uint8_t*>(byteAml.c_str()), byteAml.length());
-        pubCtx->publish(topic.getName(), data);
+        terminate();
+        throw EZMQX::Exception("Publisher terminated", EZMQX::Terminated);
     }
-    // mutex unlock
+
+    // get AML model id
+    // get AMLRep
+    if (!rep)
+    {
+        rep = ctx->getAmlRep(topic.getDatamodel());
+    }
+
+    // transform // throw exception
+    std::string byteAml = rep->DataToByte(payload);
+
+    // publish
+    if (!pubCtx)
+    {
+        // throw exception
+        EZMQX_LOG_V(ERROR, TAG, "%s Could publish payload, pubCtx is null", __func__);
+        throw EZMQX::Exception("Could publish payload, pubCtx is null", EZMQX::UnKnownState);
+    }
+
+    ezmq::EZMQByteData data(reinterpret_cast<const uint8_t*>(byteAml.c_str()), byteAml.length());
+    pubCtx->publish(topic.getName(), data);
     return;
 }
 
