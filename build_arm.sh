@@ -73,18 +73,19 @@ install_dependencies() {
         echo "protocol-ezmq-cpp exist"
     else
         git clone git@github.sec.samsung.net:RS7-EdgeComputing/protocol-ezmq-cpp.git
-        cd ./protocol-ezmq-cpp
-        echo "build protocol-ezmq-cpp"
-        if [ "debug" = ${EZMQ_PLUS_BUILD_MODE} ]; then
-            ./build_auto.sh --with_dependencies=false --target_arch=armhf --build_mode=debug
-            sudo cp out/linux/armhf/debug/libezmq.so /usr/local/lib
-        else
-            ./build_auto.sh --with_dependencies=false --target_arch=armhf --build_mode=release
-            sudo cp out/linux/armhf/release/libezmq.so /usr/local/lib
-        fi
-            sudo ldconfig
-            echo "done"
     fi
+        cd ./protocol-ezmq-cpp
+        
+    echo "build protocol-ezmq-cpp"
+    if [ "debug" = ${EZMQ_PLUS_BUILD_MODE} ]; then
+        ./build_auto.sh --with_dependencies=false --target_arch=armhf --build_mode=debug
+        sudo cp out/linux/armhf/debug/libezmq.so /usr/local/lib
+    else
+        ./build_auto.sh --with_dependencies=false --target_arch=armhf --build_mode=release
+        sudo cp out/linux/armhf/release/libezmq.so /usr/local/lib
+    fi
+        sudo ldconfig
+        echo "done"
 
     #build AML
     cd $DEP_ROOT
@@ -92,17 +93,19 @@ install_dependencies() {
         echo "datamodel-aml-cpp exist"
     else
         git clone git@github.sec.samsung.net:RS7-EdgeComputing/datamodel-aml-cpp.git
-        cd datamodel-aml-cpp
-        if [ "debug" = ${EZMQ_PLUS_BUILD_MODE} ]; then
-             ./build_common.sh --target_arch=armhf-native --build_mode=debug --logging=on
-             sudo cp out/linux/armhf/debug/libaml.so /usr/local/lib
-        else
-             ./build_common.sh --target_arch=armhf-native
-             sudo cp out/linux/armhf/release/libaml.so /usr/local/lib
-        fi
-             sudo ldconfig
-             echo "done"
     fi
+        cd datamodel-aml-cpp
+
+    echo "build datamodel-aml-cpp"
+    if [ "debug" = ${EZMQ_PLUS_BUILD_MODE} ]; then
+         ./build_common.sh --target_arch=armhf-native --build_mode=debug --logging=on
+         sudo cp out/linux/armhf/debug/libaml.so /usr/local/lib
+    else
+         ./build_common.sh --target_arch=armhf-native
+         sudo cp out/linux/armhf/release/libaml.so /usr/local/lib
+    fi
+         sudo ldconfig
+         echo "done"
 }
 
 usage() {
