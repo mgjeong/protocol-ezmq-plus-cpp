@@ -73,18 +73,19 @@ install_dependencies() {
         echo "protocol-ezmq-cpp exist"
     else
         git clone git@github.sec.samsung.net:RS7-EdgeComputing/protocol-ezmq-cpp.git
-        cd ./protocol-ezmq-cpp
-        echo "build protocol-ezmq-cpp"
-        if [ "debug" = ${EZMQ_PLUS_BUILD_MODE} ]; then
-            ./build_auto.sh --with_dependencies=false --target_arch=x86_64 --build_mode=debug
-            sudo cp out/linux/x86_64/debug/libezmq.so /usr/local/lib
-        else
-            ./build_auto.sh --with_dependencies=false --target_arch=x86_64 --build_mode=release
-            sudo cp out/linux/x86_64/release/libezmq.so /usr/local/lib
-        fi
-            sudo ldconfig
-            echo "done"
     fi
+        cd ./protocol-ezmq-cpp
+
+    echo "build protocol-ezmq-cpp"
+    if [ "debug" = ${EZMQ_PLUS_BUILD_MODE} ]; then
+        ./build_auto.sh --with_dependencies=false --target_arch=x86_64 --build_mode=debug
+        sudo cp out/linux/x86_64/debug/libezmq.so /usr/local/lib
+    else
+        ./build_auto.sh --with_dependencies=false --target_arch=x86_64 --build_mode=release
+        sudo cp out/linux/x86_64/release/libezmq.so /usr/local/lib
+    fi
+        sudo ldconfig
+        echo "done"
 
     #build AML
     cd $DEP_ROOT
@@ -92,18 +93,18 @@ install_dependencies() {
         echo "datamodel-aml-cpp exist"
     else
         git clone git@github.sec.samsung.net:RS7-EdgeComputing/datamodel-aml-cpp.git
+    fi
         cd datamodel-aml-cpp
 
-        if [ "debug" = ${EZMQ_PLUS_BUILD_MODE} ]; then
-             ./build_common.sh --target_arch=x86_64 --build_mode=debug --logging=on
-             sudo cp out/linux/x86_64/debug/libaml.so /usr/local/lib
-        else
-             ./build_common.sh --target_arch=x86_64
-             sudo cp out/linux/x86_64/release/libaml.so /usr/local/lib
-        fi
-             sudo ldconfig
-             echo "done"
+    if [ "debug" = ${EZMQ_PLUS_BUILD_MODE} ]; then
+         ./build_common.sh --target_arch=x86_64 --build_mode=debug --logging=on
+         sudo cp out/linux/x86_64/debug/libaml.so /usr/local/lib
+    else
+         ./build_common.sh --target_arch=x86_64
+         sudo cp out/linux/x86_64/release/libaml.so /usr/local/lib
     fi
+         sudo ldconfig
+         echo "done"
 }
 
 usage() {
