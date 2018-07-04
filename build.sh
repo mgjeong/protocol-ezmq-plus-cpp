@@ -74,7 +74,7 @@ install_dependencies() {
     else
         git clone git@github.sec.samsung.net:RS7-EdgeComputing/protocol-ezmq-cpp.git
     fi
-        cd ./protocol-ezmq-cpp
+    cd ./protocol-ezmq-cpp
 
     echo "build protocol-ezmq-cpp"
     if [ "debug" = ${EZMQ_PLUS_BUILD_MODE} ]; then
@@ -84,8 +84,8 @@ install_dependencies() {
         ./build_auto.sh --with_dependencies=false --target_arch=x86_64 --build_mode=release
         sudo cp out/linux/x86_64/release/libezmq.so /usr/local/lib
     fi
-        sudo ldconfig
-        echo "done"
+    sudo ldconfig
+    echo "done"
 
     #build AML
     cd $DEP_ROOT
@@ -94,7 +94,7 @@ install_dependencies() {
     else
         git clone git@github.sec.samsung.net:RS7-EdgeComputing/datamodel-aml-cpp.git
     fi
-        cd datamodel-aml-cpp
+    cd datamodel-aml-cpp
 
     if [ "debug" = ${EZMQ_PLUS_BUILD_MODE} ]; then
          ./build_common.sh --target_arch=x86_64 --build_mode=debug --logging=on
@@ -103,8 +103,8 @@ install_dependencies() {
          ./build_common.sh --target_arch=x86_64
          sudo cp out/linux/x86_64/release/libaml.so /usr/local/lib
     fi
-         sudo ldconfig
-         echo "done"
+    sudo ldconfig
+    echo "done"
 }
 
 usage() {
