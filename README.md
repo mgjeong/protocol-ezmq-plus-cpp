@@ -26,6 +26,13 @@ protocol-ezmq-plus-cpp is a library which provides a messaging interface with Au
   $ sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 1
   ```
 
+- CMake
+  - Version : 3.1 or above
+  - How to install
+  ```
+  $ sudo apt-get install cmake3
+  ```
+
 ## API Reference ##
 - Reference ezmq plus library APIs : [doc/index.html](doc/index.html)
 
