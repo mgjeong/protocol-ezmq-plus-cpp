@@ -38,7 +38,7 @@ static const std::string SLASH = "/";
 static const std::string TNS_KNOWN_PORT = "48323";
 
 // Rest Endpoints
-static const std::string NODE = "http://172.17.0.1:48098";
+static const std::string NODE = "http://pharos-node::48098";
 static const std::string PREFIX = "/api/v1";
 static const std::string API_CONFIG = "/management/device/configuration";
 static const std::string API_APPS = "/management/apps";
