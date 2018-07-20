@@ -50,7 +50,8 @@ class Context
         std::atomic_bool reverseProxy;
         std::string hostname;
         std::string hostAddr;
-        std::string remoteAddr;
+        std::string anchorAddr;
+        std::string tnsAddr;
         std::list<std::string> topicList;
         std::atomic_int interval;
         std::string imageName;

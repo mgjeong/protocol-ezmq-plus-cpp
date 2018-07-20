@@ -46,7 +46,7 @@ static const std::string API_DETAIL = "/management/detail";
 
 // JSON Keys
 static const std::string CONF_PROPS = "properties";
-static const std::string CONF_REMOTE_ADDR = "anchorendpoint";
+static const std::string CONF_ANCHOR_ADDR = "anchorendpoint";
 static const std::string CONF_NODE_ADDR = "nodeaddress";
 static const std::string CONF_REVERSE_PROXY = "reverseproxy";
 static const std::string CONF_REVERSE_PROXY_ENABLED = "enabled";
@@ -130,7 +130,7 @@ void EZMQX::Context::setTnsInfo(std::string remoteAddr,const std::string& tnsCon
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     EZMQX_LOG_V(INFO, TAG, "%s TNS addr setted manually Addr: %s", __func__, remoteAddr.c_str());
     tnsEnabled = true;
-    this->remoteAddr = remoteAddr;
+    this->tnsAddr = remoteAddr;
     
 }
 
@@ -377,15 +377,15 @@ void EZMQX::Context::initialize(const std::string& tnsConfPathRef)
                     Json::Value props = root[CONF_PROPS];
                     for (Json::Value::ArrayIndex i = 0; i < props.size(); i ++)
                     {
-                        if (!this->remoteAddr.empty() && !this->hostAddr.empty())
+                        if (!this->anchorAddr.empty() && !this->hostAddr.empty())
                         {
                             break;
                         }
 
-                        if (props[i].isMember(CONF_REMOTE_ADDR))
+                        if (props[i].isMember(CONF_ANCHOR_ADDR))
                         {
-                            EZMQX_LOG_V(DEBUG, TAG, "%s TNS info found %s", __func__, (props[i][CONF_REMOTE_ADDR].asString()).c_str());
-                            setTnsInfo(props[i][CONF_REMOTE_ADDR].asString(), tnsConfPathRef);
+                            EZMQX_LOG_V(DEBUG, TAG, "%s ANCHOR info found %s", __func__, (props[i][CONF_ANCHOR_ADDR].asString()).c_str());
+                            this->anchorAddr = props[i][CONF_ANCHOR_ADDR].asString();
                         }
 
                         if (props[i].isMember(CONF_NODE_ADDR))
@@ -658,7 +658,7 @@ bool EZMQX::Context::isReverseProxyEnabled()
 std::string EZMQX::Context::getTnsAddr()
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
-    return remoteAddr;
+    return tnsAddr;
 }
 
 void EZMQX::Context::terminate()
@@ -703,7 +703,8 @@ void EZMQX::Context::terminate()
             amlRepDic.clear();
             hostname.clear();
             hostAddr.clear();
-            remoteAddr.clear();
+            anchorAddr.clear();
+            tnsAddr.clear();
             usedIdx = 0;
             numOfPort = 0;
             standAlone = false;
@@ -736,7 +737,7 @@ void EZMQX::Context::insertTopic(std::string topic)
 
         if (!keepAlive && isTnsEnabled() && (getKeepAliveInterval() > 0))
         {
-            keepAlive = new EZMQX::KeepAlive(this->remoteAddr, getKeepAliveInterval());
+            keepAlive = new EZMQX::KeepAlive(this->tnsAddr, getKeepAliveInterval());
         }
     }
     // mutex unlock
