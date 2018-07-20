@@ -46,8 +46,10 @@ static const std::string API_DETAIL = "/management/detail";
 
 // JSON Keys
 static const std::string CONF_PROPS = "properties";
-static const std::string CONF_REMOTE_ADDR = "anchoraddress";
+static const std::string CONF_REMOTE_ADDR = "anchorendpoint";
 static const std::string CONF_NODE_ADDR = "nodeaddress";
+static const std::string CONF_REVERSE_PROXY = "reverseproxy";
+static const std::string CONF_REVERSE_PROXY_ENABLED = "enabled";
 static const std::string APPS_PROPS = "apps";
 static const std::string APPS_ID = "id";
 static const std::string APPS_STATE = "state";
