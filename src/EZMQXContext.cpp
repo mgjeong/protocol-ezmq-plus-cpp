@@ -72,7 +72,7 @@ static const int LOCAL_PORT_START = 4000;
 static const int LOCAL_PORT_MAX = 100;
 
 // ctor
-EZMQX::Context::Context() : keepAlive(nullptr), standAlone(false), tnsEnabled(false), initialized(false), terminated(false), interval(-1), usedIdx(0), numOfPort(0)
+EZMQX::Context::Context() : keepAlive(nullptr), standAlone(false), tnsEnabled(false), initialized(false), terminated(false), reverseProxy(false), interval(-1), usedIdx(0), numOfPort(0)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
 }
@@ -637,6 +637,12 @@ bool EZMQX::Context::isTnsEnabled()
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     return tnsEnabled;
+}
+
+bool EZMQX::Context::isReverseProxyEnabled()
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+    return reverseProxy;
 }
 
 std::string EZMQX::Context::getTnsAddr()

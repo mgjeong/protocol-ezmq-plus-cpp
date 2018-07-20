@@ -47,6 +47,7 @@ class Context
         std::mutex lock;
         std::atomic_bool initialized;
         std::atomic_bool terminated;
+        std::atomic_bool reverseProxy;
         std::string hostname;
         std::string hostAddr;
         std::string remoteAddr;
@@ -80,6 +81,7 @@ class Context
         bool isTerminated();
         bool isStandAlone();
         bool isTnsEnabled();
+        bool isReverseProxyEnabled();
         std::string getTnsAddr();
         int assignDynamicPort();
         void releaseDynamicPort(int port);
