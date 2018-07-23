@@ -36,8 +36,6 @@ const static std::string UNREGISTER_TOPIC = "UNREGISTER_TOPIC";
 
 // Rest Endpoints
 static const std::string PREFIX = "/api/v1";
-static const std::string TNS_KNOWN_PORT = ":48323";
-static const std::string TNS_KEEP_ALIVE_PORT = ":48323";
 static const std::string TNS_KEEP_ALIVE = "/tns/keepalive";
 static const std::string TNS_UNREGISTER = "/tns/topic";
 
@@ -107,9 +105,9 @@ void EZMQX::KeepAlive::queHandler()
 
             if (payload.first.compare(KEEP_ALIVE) == 0)
             {
-                std::string KeepAliveUrl = remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE;
+                std::string KeepAliveUrl = remoteAddr + PREFIX + TNS_KEEP_ALIVE;
                 EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request to %s, payload: %s", __func__, KeepAliveUrl.c_str(), payload.second.c_str());
-                resp = EZMQX::RestService::Post(remoteAddr + TNS_KEEP_ALIVE_PORT + PREFIX + TNS_KEEP_ALIVE, payload.second);
+                resp = EZMQX::RestService::Post(KeepAliveUrl, payload.second);
                 EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, resp.getPayload().c_str());
 
                 if (resp.getStatus() == EZMQX::Success)
@@ -127,8 +125,9 @@ void EZMQX::KeepAlive::queHandler()
             }
             else if (payload.first.compare(UNREGISTER_TOPIC) == 0)
             {
-                EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request %s query %s", __func__, (remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER).c_str(), (PAYLOAD_NAME + payload.second).c_str());
-                resp = EZMQX::RestService::Delete(remoteAddr + TNS_KNOWN_PORT + PREFIX + TNS_UNREGISTER, PAYLOAD_NAME+payload.second);
+                std::string unRegisterUrl = remoteAddr + PREFIX + TNS_UNREGISTER;
+                EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request %s query %s", __func__, unRegisterUrl.c_str(), (PAYLOAD_NAME + payload.second).c_str());
+                resp = EZMQX::RestService::Delete(unRegisterUrl, PAYLOAD_NAME+payload.second);
                 EZMQX_LOG_V(DEBUG, TAG, "%s Rest Result \n %s \n", __func__, resp.getPayload().c_str());
 
                 if (resp.getStatus() == EZMQX::Success)

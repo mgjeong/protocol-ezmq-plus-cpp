@@ -30,9 +30,6 @@
 #define SLASH '/'
 #define DOUBLE_SLASH "//"
 
-static const std::string TNS_KNOWN_PORT = "48323";
-static const std::string COLLON = ":";
-
 static const std::string PREFIX = "/api/v1";
 static const std::string TOPIC = "/tns/topic";
 static const std::string HEALTH = "/health";
@@ -173,7 +170,7 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
 
     try
     {
-        resp = EZMQX::RestService::Post(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, tmp);
+        resp = EZMQX::RestService::Post(ctx->getTnsAddr() + PREFIX + TOPIC, tmp);
     }
     catch(const EZMQX::Exception &e)
     {
