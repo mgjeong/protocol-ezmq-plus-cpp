@@ -53,6 +53,7 @@ static const std::string REVERSE_PROXY_PREFIX = "/tns-server";
 static const std::string ANCHOR_IMAGE_NAME = "imageName=";
 
 // JSON Keys
+static const std::string IMG_NAME = "imageName";
 static const std::string CONF_PROPS = "properties";
 static const std::string CONF_ANCHOR_ADDR = "anchorendpoint";
 static const std::string CONF_NODE_ADDR = "nodeaddress";
@@ -983,7 +984,7 @@ void EZMQX::Context::getImageName(const std::string& tnsConfPathRef)
         }
         else
         {
-            imageName = root["imageName"].asString();
+            imageName = root[IMG_NAME].asString();
         }
     }
     catch(...)
