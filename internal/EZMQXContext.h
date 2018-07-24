@@ -66,9 +66,7 @@ class Context
         void setTnsInfo(std::string remoteAddr,const std::string& tnsConfPathRef);
         void initialize(const std::string& tnsConfPathRef);
         void terminate();
-        //
         void getImageName(const std::string& tnsConfPathRef);        
-        //
 
         // make noncopyable
         Context();
