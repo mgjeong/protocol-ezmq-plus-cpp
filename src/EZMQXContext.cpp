@@ -882,7 +882,7 @@ void EZMQX::Context::getImageName(const std::string& tnsConfPathRef)
         }
         else
         {
-            imageName = root["imagename"].asString();
+            imageName = root["imageName"].asString();
         }
     }
     catch(...)
