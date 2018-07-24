@@ -103,7 +103,7 @@ protected:
     virtual void SetUp()
     {
         config = EZMQX::Config::getInstance();
-        config->startStandAloneMode(false, "localhost", "../tnsConf.json");
+        config->startStandAloneMode(false, "localhost", "tnsConf.json");
         std::list<std::string> amlPath(1, "sample_data_model.aml");
         std::list<std::string> amlId = config->addAmlModel(amlPath);
         dummyId = amlId.front();
@@ -216,7 +216,7 @@ protected:
     {
         EZMQX::FakeSingletonAccessor::setFake();
         config = EZMQX::Config::getInstance();
-        config->startDockerMode("../tnsConf.json");
+        config->startDockerMode("tnsConf.json");
         std::list<std::string> amlPath(1, "sample_data_model.aml");
         std::list<std::string> amlId = config->addAmlModel(amlPath);
         dummyId = amlId.front();
@@ -257,7 +257,7 @@ protected:
         EZMQX::FakeSingletonAccessor::setFake();
         EZMQX::FakeRestAccessor::setFake();
         config = EZMQX::Config::getInstance();
-        config->startDockerMode("../tnsConf.json");
+        config->startDockerMode("tnsConf.json");
         discovery = new EZMQX::TopicDiscovery();
     }
 
@@ -290,7 +290,7 @@ protected:
     virtual void SetUp()
     {
         config = EZMQX::Config::getInstance();
-        config->startStandAloneMode(false, "","../tnsConf.json");
+        config->startStandAloneMode(false, "","tnsConf.json");
         discovery = new EZMQX::TopicDiscovery();
     }
 
