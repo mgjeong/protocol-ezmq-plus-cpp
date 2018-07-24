@@ -73,9 +73,8 @@ private:
         }
         else if (op.compare(POST) == 0)
         {
-            // publish register stun
-            //EZMQX::RestService::Post(ctx->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC, tmp);
-            if (url.compare(EZMQX::Context::getInstance()->getTnsAddr() + COLLON + TNS_KNOWN_PORT + PREFIX + TOPIC) == 0)
+            // publish register stub
+            if (url.compare(EZMQX::Context::getInstance()->getTnsAddr() + PREFIX + TOPIC) == 0)
             {
                 RestResponse fake(EZMQX::Created, "{ \"ka_interval\" : 180 }");
                 return fake;
