@@ -70,6 +70,8 @@ class Config
         * Start as DockerMode that working with Pharos system.\n
         * In DockerMode, stack automatically using Tns service.
         *
+        * @param tnsConfPath path to tns configuration file location.\n
+        *  
         * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
         * EZMQX::Initialized - Stack already initialized try it after reset.\n
         * EZMQX::ServiceUnavailable - Could not initialize stack in current environment.\n
@@ -85,7 +87,8 @@ class Config
         *
         * @param useTns bool value for whether to use tns.
         * @param tnsAddr address of tns located, if useTns is false this value will be ignored.
-        *
+        * @param tnsConfPath path to tns configuration file location, if useTns is false this value will be ignored.\n
+        * 
         * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
         * EZMQX::Initialized - Stack already initialized try it after reset.\n
         * EZMQX::ServiceUnavailable -Could not initialize stack in current environment.\n
