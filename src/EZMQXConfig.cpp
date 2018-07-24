@@ -135,8 +135,7 @@ void EZMQX::Config::setTnsInfo(std::string remoteAddr,  std::string tnsConfPath)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     EZMQX_LOG_V(DEBUG, TAG, "%s Set TNS address %s", __func__, remoteAddr.c_str());
-             const std::string& tnsConfPathRef = tnsConfPath;
-    
+    const std::string& tnsConfPathRef = tnsConfPath;
     ctx->setTnsInfo(remoteAddr, tnsConfPathRef);
     // mutex unlock
 }
