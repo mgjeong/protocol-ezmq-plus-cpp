@@ -107,17 +107,16 @@ void EZMQX::Config::initialize(EZMQX::ModeOption configMode,  std::string tnsCon
     }
     else
     {
+        const std::string& tnsConfPathRef = tnsConfPath;
         if (EZMQX::StandAlone == configMode)
         {
             EZMQX_LOG_V(DEBUG, TAG, "%s Set StandAlone mode", __func__);
-             const std::string& tnsConfPathRef = tnsConfPath;
             ctx->setStandAloneMode(true, tnsConfPathRef);
             ctx->setHostInfo("localhost", "localhost");
         }
         else if(EZMQX::Docker == configMode)
         {
             EZMQX_LOG_V(DEBUG, TAG, "%s Set as Docker", __func__);
-             const std::string& tnsConfPathRef = tnsConfPath;
             ctx->initialize(tnsConfPathRef);
         }
         else
