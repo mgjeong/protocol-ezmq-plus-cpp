@@ -52,6 +52,7 @@ class Context
         std::string remoteAddr;
         std::list<std::string> topicList;
         std::atomic_int interval;
+        std::string imageName;
         static std::shared_ptr<EZMQX::Context> _instance;
         std::map<int, int> ports;
         std::map<int, bool> usedPorts;
@@ -60,11 +61,14 @@ class Context
         std::list<EZMQX::Publisher*> publishers;
         std::list<EZMQX::Subscriber*> subscribers;
         std::map<std::string, std::shared_ptr<AML::Representation>> amlRepDic;
-        void setStandAloneMode(bool mode);
+        void setStandAloneMode(bool mode, const std::string& tnsConfPathRef);
         void setHostInfo(std::string hostName, std::string hostAddr);
-        void setTnsInfo(std::string remoteAddr);
-        void initialize();
+        void setTnsInfo(std::string remoteAddr,const std::string& tnsConfPathRef);
+        void initialize(const std::string& tnsConfPathRef);
         void terminate();
+        //
+        void getImageName(const std::string& tnsConfPathRef);        
+        //
 
         // make noncopyable
         Context();

@@ -47,8 +47,8 @@ class Config
         std::mutex lock;
         std::atomic_bool initialized;
         EZMQX::Context* ctx;
-        void setTnsInfo(std::string remoteAddr);
-        void initialize(EZMQX::ModeOption configMode);
+        void setTnsInfo(std::string remoteAddr, std::string tnsConfPath);
+        void initialize(EZMQX::ModeOption configMode,  std::string tnsConfPath);
         void terminate();
 
         // make noncopyable
@@ -78,7 +78,7 @@ class Config
         * @see EZMQX::Exception
         *
         */
-        void startDockerMode();
+        void startDockerMode( std::string tnsConfPath);
 
         /**
         * Start as StandAloneMode that working without pharos system.
@@ -94,7 +94,7 @@ class Config
         * @see EZMQX::Exception
         *
         */
-        void startStandAloneMode(bool useTns, std::string tnsAddr);
+        void startStandAloneMode(bool useTns, std::string tnsAddr, std::string tnsConfPath);
 
         /**
         * Add aml model file for publish or subscribe AML data.
