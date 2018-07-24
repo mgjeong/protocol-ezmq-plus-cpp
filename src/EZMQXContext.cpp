@@ -133,7 +133,7 @@ void EZMQX::Context::setHostInfo(std::string hostName, std::string hostAddr)
     this->hostAddr = hostAddr;
 }
 
-void EZMQX::Context::setTnsInfo(std::string remoteAddr,const std::string& tnsConfPathRef)
+void EZMQX::Context::setTnsInfo(std::string remoteAddr)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     EZMQX_LOG_V(INFO, TAG, "%s TNS addr setted manually Addr: %s", __func__, remoteAddr.c_str());

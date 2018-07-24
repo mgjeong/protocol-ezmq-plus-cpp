@@ -79,7 +79,7 @@ void EZMQX::Config::startStandAloneMode(bool useTns, std::string tnsAddr,  std::
 
             if (useTns)
             {
-                setTnsInfo(tnsAddr, tnsConfPath);
+                setTnsInfo(tnsAddr);
             }
         }
         catch(const EZMQX::Exception& e)
@@ -131,12 +131,11 @@ void EZMQX::Config::initialize(EZMQX::ModeOption configMode,  std::string tnsCon
     return;
 }
 
-void EZMQX::Config::setTnsInfo(std::string remoteAddr,  std::string tnsConfPath)
+void EZMQX::Config::setTnsInfo(std::string remoteAddr)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     EZMQX_LOG_V(DEBUG, TAG, "%s Set TNS address %s", __func__, remoteAddr.c_str());
-    const std::string& tnsConfPathRef = tnsConfPath;
-    ctx->setTnsInfo(remoteAddr, tnsConfPathRef);
+    ctx->setTnsInfo(remoteAddr);
     // mutex unlock
 }
 
