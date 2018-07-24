@@ -47,7 +47,7 @@ class Config
         std::mutex lock;
         std::atomic_bool initialized;
         EZMQX::Context* ctx;
-        void setTnsInfo(std::string remoteAddr, std::string tnsConfPath);
+        void setTnsInfo(std::string remoteAddr);
         void initialize(EZMQX::ModeOption configMode,  std::string tnsConfPath);
         void terminate();
 

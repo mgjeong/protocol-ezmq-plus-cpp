@@ -38,7 +38,7 @@ class FakeSingletonAccessor
         {
             EZMQX::Context* ctx = EZMQX::Context::getInstance();
             ctx->setHostInfo(FAKE_HOST_NAME, FAKE_HOST_ADDR);
-            ctx->setTnsInfo(FAKE_REMOTE_ADDR,"../../samples/tnsConf.json");
+            ctx->setTnsInfo(FAKE_REMOTE_ADDR);
 
             for (int i = LOCAL_PORT_START; i <= LOCAL_PORT_START + LOCAL_PORT_MAX; i++)
             {

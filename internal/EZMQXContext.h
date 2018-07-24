@@ -65,7 +65,7 @@ class Context
         std::map<std::string, std::shared_ptr<AML::Representation>> amlRepDic;
         void setStandAloneMode(bool mode, const std::string& tnsConfPathRef);
         void setHostInfo(std::string hostName, std::string hostAddr);
-        void setTnsInfo(std::string remoteAddr,const std::string& tnsConfPathRef);
+        void setTnsInfo(std::string remoteAddr);
         void initialize(const std::string& tnsConfPathRef);
         void terminate();
         void getImageName(const std::string& tnsConfPathRef);        
