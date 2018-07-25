@@ -120,7 +120,7 @@ int main()
         EZMQX::Config* config = EZMQX::Config::getInstance();
 
         config->startDockerMode("tnsConf.json");
-        //config->startStandAloneMode(true, "10.113.66.234","tnsConf.json");
+        //config->startStandAloneMode(true, "10.113.66.234");
 
         std::list<std::string> amlId = config->addAmlModel(amlPath);
 

@@ -67,15 +67,16 @@ void EZMQX::Config::startDockerMode( std::string tnsConfPath)
     return;
 }
 
-void EZMQX::Config::startStandAloneMode(bool useTns, std::string tnsAddr,  std::string tnsConfPath)
+void EZMQX::Config::startStandAloneMode(bool useTns, std::string tnsAddr)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     // mutex lock
     {
         try
         {
+            std::string empty = "";
             std::lock_guard<std::mutex> scopedLock(lock);
-            initialize(EZMQX::StandAlone,  tnsConfPath);
+            initialize(EZMQX::StandAlone, empty);
 
             if (useTns)
             {
@@ -97,7 +98,7 @@ void EZMQX::Config::startStandAloneMode(bool useTns, std::string tnsAddr,  std::
     return;
 }
 
-void EZMQX::Config::initialize(EZMQX::ModeOption configMode,  std::string tnsConfPath)
+void EZMQX::Config::initialize(EZMQX::ModeOption configMode, const std::string& tnsConfPath)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
 
@@ -111,7 +112,7 @@ void EZMQX::Config::initialize(EZMQX::ModeOption configMode,  std::string tnsCon
         if (EZMQX::StandAlone == configMode)
         {
             EZMQX_LOG_V(DEBUG, TAG, "%s Set StandAlone mode", __func__);
-            ctx->setStandAloneMode(true, tnsConfPathRef);
+            ctx->setStandAloneMode(true, tnsConfPath);
             ctx->setHostInfo("localhost", "localhost");
         }
         else if(EZMQX::Docker == configMode)

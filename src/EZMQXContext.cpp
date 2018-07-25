@@ -115,7 +115,6 @@ void EZMQX::Context::setStandAloneMode(bool mode, const std::string& tnsConfPath
             EZMQX_LOG_V(ERROR, TAG, "%s Could not start ezmq context", __func__);
             throw EZMQX::Exception("Could not start ezmq context", EZMQX::UnKnownState);
         }
-        getImageName(tnsConfPathRef);
         
         initialized.store(true);
         terminated.store(false);

@@ -48,7 +48,7 @@ class Config
         std::atomic_bool initialized;
         EZMQX::Context* ctx;
         void setTnsInfo(std::string remoteAddr);
-        void initialize(EZMQX::ModeOption configMode,  std::string tnsConfPath);
+        void initialize(EZMQX::ModeOption configMode, const std::string& tnsConfPath);
         void terminate();
 
         // make noncopyable
@@ -87,7 +87,6 @@ class Config
         *
         * @param useTns bool value for whether to use tns.
         * @param tnsAddr address of tns located, if useTns is false this value will be ignored.
-        * @param tnsConfPath path to tns configuration file location, if useTns is false this value will be ignored.\n
         * 
         * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
         * EZMQX::Initialized - Stack already initialized try it after reset.\n
@@ -97,7 +96,7 @@ class Config
         * @see EZMQX::Exception
         *
         */
-        void startStandAloneMode(bool useTns, std::string tnsAddr, std::string tnsConfPath);
+        void startStandAloneMode(bool useTns, std::string tnsAddr);
 
         /**
         * Add aml model file for publish or subscribe AML data.

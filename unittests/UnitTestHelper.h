@@ -103,7 +103,7 @@ protected:
     virtual void SetUp()
     {
         config = EZMQX::Config::getInstance();
-        config->startStandAloneMode(false, "localhost", "tnsConf.json");
+        config->startStandAloneMode(false, "localhost");
         std::list<std::string> amlPath(1, "sample_data_model.aml");
         std::list<std::string> amlId = config->addAmlModel(amlPath);
         dummyId = amlId.front();
@@ -290,7 +290,7 @@ protected:
     virtual void SetUp()
     {
         config = EZMQX::Config::getInstance();
-        config->startStandAloneMode(false, "","tnsConf.json");
+        config->startStandAloneMode(false, "");
         discovery = new EZMQX::TopicDiscovery();
     }
 

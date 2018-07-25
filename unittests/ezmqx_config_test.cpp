@@ -51,7 +51,7 @@ TEST(Config, startStandAloneModeWithTns)
 {
     EZMQX::Config* config = EZMQX::Config::getInstance();
 
-    config->startStandAloneMode(true, "127.0.0.1","tnsConf.json");
+    config->startStandAloneMode(true, "127.0.0.1");
 
     config->reset();
 
@@ -61,7 +61,7 @@ TEST(Config, startStandAloneModeWithoutTns)
 {
     EZMQX::Config* config = EZMQX::Config::getInstance();
 
-    config->startStandAloneMode(false, "127.0.0.1","tnsConf.json");
+    config->startStandAloneMode(false, "127.0.0.1");
 
     config->reset();
 
@@ -71,7 +71,7 @@ TEST(Config, addAmlModel)
 {
     EZMQX::Config* config = EZMQX::Config::getInstance();
 
-    config->startStandAloneMode(false, "127.0.0.1","tnsConf.json");
+    config->startStandAloneMode(false, "127.0.0.1");
     std::list<std::string> amlPath(1, "sample_data_model.aml");
     std::list<std::string> amlId = config->addAmlModel(amlPath);
 
