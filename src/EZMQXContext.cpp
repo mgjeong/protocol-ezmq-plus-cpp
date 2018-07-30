@@ -40,7 +40,7 @@ static const std::string REVERSE_PROXY_KNOWN_PORT = "80";
 
 // Rest Endpoints
 static const std::string HTTP = "http://";
-static const std::string NODE = "http://pharos-node::48098";
+static const std::string NODE = "http://pharos-node:48098";
 static const std::string PREFIX = "/api/v1";
 static const std::string API_CONFIG = "/management/device/configuration";
 static const std::string API_APPS = "/management/apps";
