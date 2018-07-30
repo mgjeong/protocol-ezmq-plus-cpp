@@ -6,5 +6,7 @@ services:
     command: ["./run.sh", "loop"]
     ports:
       - "4000-4100"
-
+    external_links:
+      - pharos-node
+    network_mode: "proxy"
 ...
