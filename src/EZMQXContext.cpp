@@ -461,11 +461,12 @@ void EZMQX::Context::initialize(const std::string& tnsConfPathRef)
 
                     std::string ipaddr = array[marked][NODES_IP].asString();
 
-                    for (Json::Value::ArrayIndex i = 0; i < (array[marked][NODES_PROPS]).size(); i ++)
+                    for (Json::Value::ArrayIndex i = 0; i < (array[marked][NODES_CONF][NODES_PROPS]).size(); i ++)
                     {
-                        if (array[marked][NODES_PROPS][i].isMember(NODES_REVERSE_PROXY))
+                        if (array[marked][NODES_CONF][NODES_PROPS][i].isMember(NODES_REVERSE_PROXY))
                         {
-                            reverseProxyEnabled = array[marked][NODES_PROPS][i][NODES_REVERSE_PROXY][NODES_REVERSE_PROXY_ENABLED].asBool();
+                            reverseProxyEnabled = array[marked][NODES_CONF][NODES_PROPS][i][NODES_REVERSE_PROXY][NODES_REVERSE_PROXY_ENABLED].asBool();
+                            EZMQX_LOG_V(DEBUG, TAG, "%s Found reverse proxy option!", __func__);
                             break;
                         }
                     }
