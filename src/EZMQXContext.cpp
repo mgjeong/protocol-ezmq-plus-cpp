@@ -479,6 +479,8 @@ void EZMQX::Context::initialize(const std::string& tnsConfPathRef)
                         tnsAddr = HTTP + ipaddr + COLLON + TNS_KNOWN_PORT;
                     }
 
+                    EZMQX_LOG_V(DEBUG, TAG, "%s tns server address is %s", __func__, this->tnsAddr.c_str());
+
                     this->tnsEnabled = true;
 
                     reverseProxy.store(reverseProxyEnabled);
