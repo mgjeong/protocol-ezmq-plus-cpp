@@ -66,7 +66,7 @@ TEST(Publisher, onStandAloneWithoutTns)
 {
     EZMQX::Config* config = EZMQX::Config::getInstance();
 
-    config->startStandAloneMode(false, "127.0.0.1");
+    config->startStandAloneMode("localhost", false, "127.0.0.1");
 
     std::list<std::string> amlPath(1, "sample_data_model.aml");
     std::list<std::string> amlIds(1);
@@ -98,7 +98,7 @@ TEST(Publisher, onStandAloneWithTns)
 {
     EZMQX::Config* config = EZMQX::Config::getInstance();
 
-    config->startStandAloneMode(true, "127.0.0.1");
+    config->startStandAloneMode("localhost", true, "127.0.0.1");
 
     EZMQX::AmlPublisher* pub1 = nullptr;
     EZMQX::AmlPublisher* pub2 = nullptr;
@@ -128,7 +128,7 @@ TEST(Publisher, publish)
 {
     EZMQX::Config* config = EZMQX::Config::getInstance();
 
-    config->startStandAloneMode(false, "127.0.0.1");
+    config->startStandAloneMode("localhost", false, "127.0.0.1");
 
     std::list<std::string> amlPath(1, "sample_data_model.aml");
     std::list<std::string> amlIds(1);
@@ -186,7 +186,7 @@ TEST(Publisher, duplecatedPort)
 {
     EZMQX::Config* config = EZMQX::Config::getInstance();
 
-    config->startStandAloneMode(false, "127.0.0.1");
+    config->startStandAloneMode("localhost", false, "127.0.0.1");
 
     std::list<std::string> amlPath(1, "sample_data_model.aml");
     std::list<std::string> amlIds(1);
@@ -216,7 +216,7 @@ TEST(Publisher, invalidPath)
 {
     EZMQX::Config* config = EZMQX::Config::getInstance();
 
-    config->startStandAloneMode(false, "127.0.0.1");
+    config->startStandAloneMode("localhost", false, "127.0.0.1");
 
     std::list<std::string> amlPath(1, "sample_data_model.aml");
     std::list<std::string> amlIds(1);
@@ -264,7 +264,7 @@ TEST(publisher, teminateTest)
 {
     EZMQX::Config* config = EZMQX::Config::getInstance();
 
-    config->startStandAloneMode(false, "127.0.0.1");
+    config->startStandAloneMode("localhost", false, "127.0.0.1");
 
     std::list<std::string> amlPath(1, "sample_data_model.aml");
     std::list<std::string> amlIds(1);

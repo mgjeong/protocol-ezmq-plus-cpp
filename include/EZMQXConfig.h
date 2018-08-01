@@ -48,6 +48,7 @@ class Config
         std::atomic_bool initialized;
         EZMQX::Context* ctx;
         void setTnsInfo(std::string remoteAddr);
+        void setHostInfo(std::string addr);
         void initialize(EZMQX::ModeOption configMode, const std::string& tnsConfPath);
         void terminate();
 
@@ -85,6 +86,7 @@ class Config
         /**
         * Start as StandAloneMode that working without pharos system.
         *
+        * @param hostAddr address of host.
         * @param useTns bool value for whether to use tns.
         * @param tnsAddr address of tns located, if useTns is false this value will be ignored.
         * 
@@ -96,7 +98,7 @@ class Config
         * @see EZMQX::Exception
         *
         */
-        void startStandAloneMode(bool useTns, std::string tnsAddr);
+        void startStandAloneMode(std::string hostAddr, bool useTns, std::string tnsAddr);
 
         /**
         * Add aml model file for publish or subscribe AML data.
