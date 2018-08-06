@@ -21,6 +21,8 @@ COPY --from=build /protocol-ezmq-plus-cpp/out/linux/armhf/release/samples/AmlSub
 COPY --from=build /protocol-ezmq-plus-cpp/out/linux/armhf/release/samples/XmlSubscriber /XmlSubscriber
 COPY --from=build /protocol-ezmq-plus-cpp/out/linux/armhf/release/samples/TopicDiscovery /TopicDiscovery
 COPY --from=build /protocol-ezmq-plus-cpp/samples/sample_data_model.aml /sample_data_model.aml
+COPY --from=build /protocol-ezmq-plus-cpp/samples/tnsConf.json /tnsConf.json
 COPY --from=build /protocol-ezmq-plus-cpp/run.sh /run.sh
+
 
 CMD ["./run.sh", "arg1", "arg2", "arg3"]

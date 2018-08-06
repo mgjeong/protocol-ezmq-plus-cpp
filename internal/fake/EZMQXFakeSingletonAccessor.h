@@ -26,7 +26,7 @@
 
 static const std::string FAKE_HOST_NAME = "localhost";
 static const std::string FAKE_HOST_ADDR = "localhost";
-static const std::string FAKE_REMOTE_ADDR = "localhost";
+static const std::string FAKE_REMOTE_ADDR = "http://localhost";
 static const int LOCAL_PORT_START = 4000;
 static const int LOCAL_PORT_MAX = 100;
 

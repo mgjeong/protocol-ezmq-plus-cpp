@@ -27,8 +27,8 @@ int main()
     {
         EZMQX::Config* config = EZMQX::Config::getInstance();
 
-        config->startDockerMode();
-        //config->startStandAloneMode(true, "10.113.65.174");
+        config->startDockerMode("tnsConf.json");
+        //config->startStandAloneMode("addressOfHost", true, "addressOfTns");
 
         std::shared_ptr<EZMQX::TopicDiscovery> discovery(new EZMQX::TopicDiscovery());
         std::list<EZMQX::Topic> result;

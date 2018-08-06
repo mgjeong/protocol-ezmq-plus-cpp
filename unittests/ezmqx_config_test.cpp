@@ -27,7 +27,7 @@ TEST(Config, startDockerModeWithFake)
     EZMQX::FakeSingletonAccessor::setFake();
     EZMQX::Config* config = EZMQX::Config::getInstance();
 
-    config->startDockerMode();
+    config->startDockerMode("tnsConf.json");
 
     config->reset();
 }
@@ -41,7 +41,7 @@ TEST(Config, startDockerModeWithRestStub)
     // EZMQX::RestService::Get(NODE+PREFIX+API_APPS)
     // EZMQX::RestService::Get(addr)
 
-    EXPECT_THROW(config->startDockerMode(), EZMQX::Exception);    
+    EXPECT_THROW(config->startDockerMode("tnsConf.json"), EZMQX::Exception);    
 
     config->reset();
 
@@ -51,7 +51,7 @@ TEST(Config, startStandAloneModeWithTns)
 {
     EZMQX::Config* config = EZMQX::Config::getInstance();
 
-    config->startStandAloneMode(true, "127.0.0.1");
+    config->startStandAloneMode("localhost", true, "127.0.0.1");
 
     config->reset();
 
@@ -61,7 +61,7 @@ TEST(Config, startStandAloneModeWithoutTns)
 {
     EZMQX::Config* config = EZMQX::Config::getInstance();
 
-    config->startStandAloneMode(false, "127.0.0.1");
+    config->startStandAloneMode("localhost", false, "127.0.0.1");
 
     config->reset();
 
@@ -71,7 +71,7 @@ TEST(Config, addAmlModel)
 {
     EZMQX::Config* config = EZMQX::Config::getInstance();
 
-    config->startStandAloneMode(false, "127.0.0.1");
+    config->startStandAloneMode("localhost", false, "127.0.0.1");
     std::list<std::string> amlPath(1, "sample_data_model.aml");
     std::list<std::string> amlId = config->addAmlModel(amlPath);
 

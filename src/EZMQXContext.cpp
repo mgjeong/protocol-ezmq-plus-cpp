@@ -36,18 +36,37 @@
 static const std::string COLLON = ":";
 static const std::string SLASH = "/";
 static const std::string TNS_KNOWN_PORT = "48323";
+static const std::string REVERSE_PROXY_KNOWN_PORT = "80";
 
 // Rest Endpoints
-static const std::string NODE = "http://172.17.0.1:48098";
+static const std::string HTTP = "http://";
+static const std::string NODE = "http://pharos-node:48098";
 static const std::string PREFIX = "/api/v1";
 static const std::string API_CONFIG = "/management/device/configuration";
 static const std::string API_APPS = "/management/apps";
 static const std::string API_DETAIL = "/management/detail";
+static const std::string API_SEARCH_NODE = "/search/nodes";
+static const std::string REVERSE_PROXY_PREFIX = "/tns-server";
+
+
+// REST query options
+static const std::string ANCHOR_IMAGE_NAME = "imageName=";
 
 // JSON Keys
+static const std::string IMG_NAME = "imageName";
 static const std::string CONF_PROPS = "properties";
-static const std::string CONF_REMOTE_ADDR = "anchoraddress";
+static const std::string CONF_ANCHOR_ADDR = "anchorendpoint";
 static const std::string CONF_NODE_ADDR = "nodeaddress";
+static const std::string CONF_REVERSE_PROXY = "reverseproxy";
+static const std::string CONF_REVERSE_PROXY_ENABLED = "enabled";
+static const std::string NODES = "nodes";
+static const std::string NODES_STATUS = "status";
+static const std::string NODES_CONNECTED = "connected";
+static const std::string NODES_IP = "ip";
+static const std::string NODES_CONF = "config";
+static const std::string NODES_PROPS = "properties";
+static const std::string NODES_REVERSE_PROXY = "reverseproxy";
+static const std::string NODES_REVERSE_PROXY_ENABLED = "enabled";
 static const std::string APPS_PROPS = "apps";
 static const std::string APPS_ID = "id";
 static const std::string APPS_STATE = "state";
@@ -72,7 +91,7 @@ static const int LOCAL_PORT_START = 4000;
 static const int LOCAL_PORT_MAX = 100;
 
 // ctor
-EZMQX::Context::Context() : keepAlive(nullptr), standAlone(false), tnsEnabled(false), initialized(false), terminated(false), interval(-1), usedIdx(0), numOfPort(0)
+EZMQX::Context::Context() : keepAlive(nullptr), standAlone(false), tnsEnabled(false), initialized(false), terminated(false), reverseProxy(false), interval(-1), usedIdx(0), numOfPort(0)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
 }
@@ -84,7 +103,7 @@ EZMQX::Context::~Context()
     terminate();
 }
 
-void EZMQX::Context::setStandAloneMode(bool mode)
+void EZMQX::Context::setStandAloneMode(bool mode, const std::string& tnsConfPathRef)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     EZMQX_LOG_V(INFO, TAG, "%s StandAlone mode enabled", __func__);
@@ -96,12 +115,13 @@ void EZMQX::Context::setStandAloneMode(bool mode)
             EZMQX_LOG_V(ERROR, TAG, "%s Could not start ezmq context", __func__);
             throw EZMQX::Exception("Could not start ezmq context", EZMQX::UnKnownState);
         }
+        
         initialized.store(true);
         terminated.store(false);
     }
     else
     {
-        initialize();
+        initialize(tnsConfPathRef);
     }
 }
 
@@ -118,7 +138,7 @@ void EZMQX::Context::setTnsInfo(std::string remoteAddr)
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     EZMQX_LOG_V(INFO, TAG, "%s TNS addr setted manually Addr: %s", __func__, remoteAddr.c_str());
     tnsEnabled = true;
-    this->remoteAddr = remoteAddr;
+    this->tnsAddr = remoteAddr;
     
 }
 
@@ -322,7 +342,7 @@ void EZMQX::Context::releaseDynamicPort(int port)
     return;
 }
 
-void EZMQX::Context::initialize()
+void EZMQX::Context::initialize(const std::string& tnsConfPathRef)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
     // mutex lock
@@ -341,6 +361,7 @@ void EZMQX::Context::initialize()
 
             // parse host & broker addr
             std::string nodeInfo;
+            getImageName(tnsConfPathRef);
 
             try
             {
@@ -364,15 +385,15 @@ void EZMQX::Context::initialize()
                     Json::Value props = root[CONF_PROPS];
                     for (Json::Value::ArrayIndex i = 0; i < props.size(); i ++)
                     {
-                        if (!this->remoteAddr.empty() && !this->hostAddr.empty())
+                        if (!this->anchorAddr.empty() && !this->hostAddr.empty())
                         {
                             break;
                         }
 
-                        if (props[i].isMember(CONF_REMOTE_ADDR))
+                        if (props[i].isMember(CONF_ANCHOR_ADDR))
                         {
-                            EZMQX_LOG_V(DEBUG, TAG, "%s TNS info found %s", __func__, (props[i][CONF_REMOTE_ADDR].asString()).c_str());
-                            setTnsInfo(props[i][CONF_REMOTE_ADDR].asString());
+                            EZMQX_LOG_V(DEBUG, TAG, "%s ANCHOR info found %s", __func__, (props[i][CONF_ANCHOR_ADDR].asString()).c_str());
+                            this->anchorAddr = props[i][CONF_ANCHOR_ADDR].asString();
                         }
 
                         if (props[i].isMember(CONF_NODE_ADDR))
@@ -389,9 +410,90 @@ void EZMQX::Context::initialize()
                 throw EZMQX::Exception("Internal rest service unavilable", EZMQX::ServiceUnavailable);
             }
 
-            if (nodeInfo.empty())
+            // parse tns info
+            try
             {
-                // do something
+                std::string nodesInfo;
+                // query to anchor
+                // parse result
+                // store it
+
+                EZMQX_LOG_V(DEBUG, TAG, "%s Try send rest request to Anchor for get tns info", __func__);
+                {
+                    nodesInfo = EZMQX::RestService::Get(this->anchorAddr + API_SEARCH_NODE, ANCHOR_IMAGE_NAME + this->imageName).getPayload();
+                }
+                EZMQX_LOG_V(DEBUG, TAG, "%s Rest result \n %s \n", __func__, nodesInfo.c_str());
+
+                std::string errors;
+                Json::Value root;
+                Json::CharReaderBuilder builder;
+                std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+
+                if (!reader->parse(nodesInfo.c_str(), nodesInfo.c_str() + nodesInfo.size(), &root, &errors))
+                {
+                    EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json", __func__);
+                }
+                else
+                {
+                    Json::Value array = root[NODES];
+                    int count = 0;
+                    int marked = 0;
+                    bool reverseProxyEnabled = false;
+                    for (Json::Value::ArrayIndex i = 0; i < array.size(); i ++)
+                    {
+                        if (NODES_CONNECTED.compare(array[i][NODES_STATUS].asString()) == 0)
+                        {
+                            count++;
+                            marked = i;
+                        }
+                    }
+
+                    if (count > 1)
+                    {
+                        EZMQX_LOG_V(ERROR, TAG, "%s Multiple tns server found", __func__);
+                        throw EZMQX::Exception("Multiple tns server found", EZMQX::ServiceUnavailable);
+                    }
+                    else if (count == 0)
+                    {
+                        EZMQX_LOG_V(ERROR, TAG, "%s Could not find tns server", __func__);
+                        throw EZMQX::Exception("Could not find tns server", EZMQX::ServiceUnavailable);
+                    }
+
+                    std::string ipaddr = array[marked][NODES_IP].asString();
+
+                    for (Json::Value::ArrayIndex i = 0; i < (array[marked][NODES_CONF][NODES_PROPS]).size(); i ++)
+                    {
+                        if (array[marked][NODES_CONF][NODES_PROPS][i].isMember(NODES_REVERSE_PROXY))
+                        {
+                            reverseProxyEnabled = array[marked][NODES_CONF][NODES_PROPS][i][NODES_REVERSE_PROXY][NODES_REVERSE_PROXY_ENABLED].asBool();
+                            EZMQX_LOG_V(DEBUG, TAG, "%s Found reverse proxy option!", __func__);
+                            break;
+                        }
+                    }
+
+                    if (reverseProxyEnabled)
+                    {
+                        tnsAddr = HTTP + ipaddr + COLLON + REVERSE_PROXY_KNOWN_PORT + REVERSE_PROXY_PREFIX;
+                    }
+                    else
+                    {
+                        tnsAddr = HTTP + ipaddr + COLLON + TNS_KNOWN_PORT;
+                    }
+
+                    EZMQX_LOG_V(DEBUG, TAG, "%s tns server address is %s", __func__, this->tnsAddr.c_str());
+
+                    this->tnsEnabled = true;
+
+                    reverseProxy.store(reverseProxyEnabled);
+                }
+            }
+            catch(const EZMQX::Exception& e)
+            {
+                throw e;
+            }
+            catch(...)
+            {
+                throw EZMQX::Exception("Could not find tns server", EZMQX::ServiceUnavailable);
             }
 
             try
@@ -636,10 +738,16 @@ bool EZMQX::Context::isTnsEnabled()
     return tnsEnabled;
 }
 
+bool EZMQX::Context::isReverseProxyEnabled()
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+    return reverseProxy;
+}
+
 std::string EZMQX::Context::getTnsAddr()
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
-    return remoteAddr;
+    return tnsAddr;
 }
 
 void EZMQX::Context::terminate()
@@ -684,7 +792,8 @@ void EZMQX::Context::terminate()
             amlRepDic.clear();
             hostname.clear();
             hostAddr.clear();
-            remoteAddr.clear();
+            anchorAddr.clear();
+            tnsAddr.clear();
             usedIdx = 0;
             numOfPort = 0;
             standAlone = false;
@@ -717,7 +826,7 @@ void EZMQX::Context::insertTopic(std::string topic)
 
         if (!keepAlive && isTnsEnabled() && (getKeepAliveInterval() > 0))
         {
-            keepAlive = new EZMQX::KeepAlive(this->remoteAddr, getKeepAliveInterval());
+            keepAlive = new EZMQX::KeepAlive(this->tnsAddr, getKeepAliveInterval());
         }
     }
     // mutex unlock
@@ -858,4 +967,33 @@ void EZMQX::Context::unregisterSubscriber(EZMQX::Subscriber* subscriber)
     }
 
     return;
+}
+void EZMQX::Context::getImageName(const std::string& tnsConfPathRef)
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered with %s", __func__, tnsConfPathRef.c_str());
+
+    try
+    {
+        std::ifstream _file(tnsConfPathRef);
+        std::string tnsConfInfo((std::istreambuf_iterator<char>(_file)),std::istreambuf_iterator<char>());
+        tnsConfInfo = tnsConfInfo.substr(0, tnsConfInfo.size()-1);
+        
+        std::string errors;
+        Json::Value root;
+        Json::CharReaderBuilder builder;
+        std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+        if (!reader->parse(tnsConfInfo.c_str(), tnsConfInfo.c_str() + tnsConfInfo.size(), &root, &errors))
+        {
+            EZMQX_LOG_V(ERROR, TAG, "%s Could not parse json", __func__);
+        }
+        else
+        {
+            imageName = root[IMG_NAME].asString();
+        }
+    }
+    catch(...)
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not found tns image name", __func__);
+        throw EZMQX::Exception("Could not found tns image name", EZMQX::ServiceUnavailable);
+    }
 }

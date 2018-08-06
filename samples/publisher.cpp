@@ -123,8 +123,8 @@ int main()
       std::list<std::string> amlId(1);
       EZMQX::Config* config = EZMQX::Config::getInstance();
 
-      config->startDockerMode();
-      //config->startStandAloneMode(true, "10.113.66.234");
+      config->startDockerMode("tnsConf.json");
+      //config->startStandAloneMode("addressOfHost", true, "addressOfTns");
 
       amlId = config->addAmlModel(amlPath);
 
