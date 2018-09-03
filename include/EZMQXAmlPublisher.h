@@ -43,7 +43,7 @@ class AmlPublisher : public Publisher
 
         // delete default ctor
         AmlPublisher();
-        AmlPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort);
+        AmlPublisher(const std::string &topic, const std::string &privateKey, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort);
 
         // make noncopyable
         AmlPublisher(const AmlPublisher&) = delete;
@@ -77,6 +77,28 @@ class AmlPublisher : public Publisher
         static EZMQX::AmlPublisher* getPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort);
 
         /**
+        * Get instance of AmlPublisher class.
+        *
+        * @param topic Topic to be used for publish.
+        * @param privateKey private key to enable data encryption.
+        * @param infoType enum for data model info, EZMQX::AmlModelId or EZMQX::AmlFilePath.
+        * @param amlModelInfo  string of modelId of filePath.
+        * @param optionalPort Port to be used for publish when StandAloneMode.
+        *
+        * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
+        * EZMQX::InvalidTopic - Topic validation fail.\n
+        * EZMQX::InvalidParam - Invalid file path.\n
+        * EZMQX::InvalidAmlModel - Could not parse given AML model file.\n
+        * EZMQX::UnknownAmlModel - Could not find Aml Model.\n
+        * EZMQX::UnKnownState - Unknown reason.\n
+        *
+        * @see EZMQX::Exception
+        *
+        * @return Instance of AmlPublisher class
+        */
+        static EZMQX::AmlPublisher* getSecuredPublisher(const std::string &topic, const std::string &privateKey, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort);
+
+        /**
         * Publish AMLObject on the socket for subscribers.
         *
         * @param payload AMLObject to be published.
@@ -98,6 +120,14 @@ class AmlPublisher : public Publisher
         *
         */
         EZMQX::Topic getTopic();
+
+        /**
+        * Return true if publisher is secured
+        *
+        * @return bool Return true if publisher is secured
+        *
+        */
+        bool isSecured();
 
         /**
         * Get status of AmlPublisher instance.

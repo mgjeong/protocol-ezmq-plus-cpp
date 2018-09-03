@@ -27,8 +27,8 @@
 
 #define TAG "EZMQXAmlPublisher"
 
-EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
- : Publisher(optionalPort)
+EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const std::string &privateKey, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
+ : Publisher(optionalPort, privateKey)
 {
     validateTopic(topic);
 
@@ -75,7 +75,7 @@ EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const EZMQX::AmlMode
     EZMQX::Topic _topic;
     try
     {
-        _topic = EZMQX::Topic(topic, rep->getRepresentationId(), ctx->getHostEp(localPort));
+        _topic = EZMQX::Topic(topic, rep->getRepresentationId(), isSecured, ctx->getHostEp(localPort));
     }
     catch (const EZMQX::Exception& e)
     {
@@ -96,7 +96,14 @@ EZMQX::AmlPublisher::~AmlPublisher()
 
 EZMQX::AmlPublisher* EZMQX::AmlPublisher::getPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
 {
-    EZMQX::AmlPublisher* pubInstance = new AmlPublisher(topic, infoType, amlModelInfo, optionalPort);
+    std::string emptyString = "";
+    EZMQX::AmlPublisher* pubInstance = new AmlPublisher(topic, emptyString, infoType, amlModelInfo, optionalPort);
+    return pubInstance;
+}
+
+EZMQX::AmlPublisher* EZMQX::AmlPublisher::getSecuredPublisher(const std::string &topic, const std::string &privateKey, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
+{
+    EZMQX::AmlPublisher* pubInstance = new AmlPublisher(topic, privateKey, infoType, amlModelInfo, optionalPort);
     return pubInstance;
 }
 
