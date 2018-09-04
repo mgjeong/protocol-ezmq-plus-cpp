@@ -75,7 +75,7 @@ EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const std::string &p
     EZMQX::Topic _topic;
     try
     {
-        _topic = EZMQX::Topic(topic, rep->getRepresentationId(), isSecured, ctx->getHostEp(localPort));
+        _topic = EZMQX::Topic(topic, rep->getRepresentationId(), secured, ctx->getHostEp(localPort));
     }
     catch (const EZMQX::Exception& e)
     {
@@ -141,6 +141,11 @@ void EZMQX::AmlPublisher::publish(const AML::AMLObject& payload)
 EZMQX::Topic EZMQX::AmlPublisher::getTopic()
 {
     return Publisher::getTopic();
+}
+
+bool EZMQX::AmlPublisher::isSecured()
+{
+    return Publisher::isSecured();
 }
 
 bool EZMQX::AmlPublisher::isTerminated()

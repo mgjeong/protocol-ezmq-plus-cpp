@@ -56,6 +56,9 @@ class XmlSubscriber : public Subscriber
         XmlSubscriber() = delete;
         XmlSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
         XmlSubscriber(const std::string &topic, bool isHierarchical, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
+        XmlSubscriber(const EZMQX::Topic &topic, const std::string &serverPublicKey, const std::string &clientPublicKey, const std::string &clientSecretKey, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
+        XmlSubscriber(const std::map<EZMQX::Topic, std::string> &topics, const std::string &clientPublicKey, const std::string &clientSecretKey, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
+
         // make noncopyable
         XmlSubscriber(const XmlSubscriber&) = delete;
         XmlSubscriber& operator = (const XmlSubscriber&) = delete;
@@ -64,7 +67,7 @@ class XmlSubscriber : public Subscriber
         ~XmlSubscriber();
 
         /**
-        * Get instance of AmlSubscriber class.
+        * Get instance of XmlSubscriber class.
         * @note This api will query to tns server with given topic and Hierarchical option.
         *
         * @param topic Topic to be subscribed.
@@ -89,7 +92,7 @@ class XmlSubscriber : public Subscriber
         static EZMQX::XmlSubscriber* getSubscriber(const std::string &topic, bool isHierarchical, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
 
         /**
-        * Get instance of AmlSubscriber class.
+        * Get instance of XmlSubscriber class.
         *
         * @param topic Instance of topic class to be Subscribed.
         * @param subCb Callback to get Xml formatted string data on given topic.
@@ -108,7 +111,7 @@ class XmlSubscriber : public Subscriber
         static EZMQX::XmlSubscriber* getSubscriber(const EZMQX::Topic &topic, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
 
         /**
-        * Get instance of AmlSubscriber class.
+        * Get instance of XmlSubscriber class.
         *
         * @param topics List of topic class instance to be Subscribed.
         * @param subCb Callback to get Xml formatted string data on given topic.
@@ -125,11 +128,62 @@ class XmlSubscriber : public Subscriber
         * @return instance of XmlSubscriber class.
         */
         static EZMQX::XmlSubscriber* getSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
-        
+
         /**
-        * Get status of AmlSubscriber instance.
+        * Get instance of XmlSubscriber class.
         *
-        * @return bool Current status of AmlSubscriber instance.
+        * @param topic Instance of topic class to be Subscribed.
+        * @param serverPublicKey public key for server(publisher) that related with given topic.
+        * @param clientPublicKey public key for client(subscriber) that shared with given topic's owner.
+        * @param clientSecretKey secret key for client(subscriber) that pair of given clientPublickey
+        * @param subCb Callback to get AMLObject data on given topic.
+        * @param errCb errCb Error callback to get error code with topic information.
+        *
+        * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
+        * EZMQX::NotInitialized - Stack not initialized.\n
+        * EZMQX::SessionUnavailable - Could not connect with given endpoint.\n
+        * EZMQX::UnknownAmlModel - Could not find Aml Model.\n
+        * EZMQX::UnknownState - Unknown reason.\n
+        *
+        * @see EZMQX::Exception
+        *
+        * @return instance of XmlSubscriber class.
+        */
+        static EZMQX::XmlSubscriber* getSecuredSubscriber(const EZMQX::Topic &topic, const std::string &serverPublicKey, const std::string &clientPublicKey, const std::string &clientSecretKey, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
+
+        /**
+        * Get instance of XmlSubscriber class.
+        *
+        * @param topics Map of Topic and public keys.
+        * @param clientPublicKey public key for client(subscriber) that shared with given topic's owner.
+        * @param clientSecretKey secret key for client(subscriber) that pair of given clientPublickey
+        * @param subCb Callback to get AMLObject data on given topic.
+        * @param errCb errCb Error callback to get error code with topic information.
+        *
+        * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
+        * EZMQX::NotInitialized - Stack not initialized.\n
+        * EZMQX::SessionUnavailable - Could not connect with given endpoint.\n
+        * EZMQX::UnknownAmlModel - Could not find Aml Model.\n
+        * EZMQX::UnknownState - Unknown reason.\n
+        *
+        * @see EZMQX::Exception
+        *
+        * @return instance of XmlSubscriber class.
+        */
+        static EZMQX::XmlSubscriber* getSecuredSubscriber(const std::map<EZMQX::Topic, std::string> &topics, const std::string &clientPublicKey, const std::string &clientSecretKey, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb);
+
+        /**
+        * Return true if subscriber is secured
+        *
+        * @return bool Return true if subscriber is secured
+        *
+        */
+        bool isSecured();
+
+        /**
+        * Get status of XmlSubscriber instance.
+        *
+        * @return bool Current status of XmlSubscriber instance.
         *
         */
         bool isTerminated();

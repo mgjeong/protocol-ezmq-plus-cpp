@@ -72,6 +72,45 @@ EZMQX::AmlSubscriber::AmlSubscriber(const std::string &topic, bool isHierarchica
     }
 }
 
+EZMQX::AmlSubscriber::AmlSubscriber(const EZMQX::Topic &topic, const std::string &serverPublicKey, const std::string &clientPublicKey, const std::string &clientSecretKey, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
+ : Subscriber(), mSubCb(subCb), mSubErrCb(errCb)
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    try
+    {
+        Subscriber::initialize(topic, serverPublicKey, clientPublicKey, clientSecretKey);
+    }
+    catch(const EZMQX::Exception& e)
+    {
+        throw e;
+    }
+    catch(...)
+    {
+        throw EZMQX::Exception("Could not initialize subscriber", EZMQX::UnKnownState);
+    }
+
+}
+
+EZMQX::AmlSubscriber::AmlSubscriber(const std::map<EZMQX::Topic, std::string> &topics, const std::string &clientPublicKey, const std::string &clientSecretKey, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
+ : Subscriber(), mSubCb(subCb), mSubErrCb(errCb)
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    try
+    {
+        Subscriber::initialize(topics, clientPublicKey, clientSecretKey);
+    }
+    catch(const EZMQX::Exception& e)
+    {
+        throw e;
+    }
+    catch(...)
+    {
+        throw EZMQX::Exception("Could not initialize subscriber", EZMQX::UnKnownState);
+    }
+}
+
 void EZMQX::AmlSubscriber::cb(const std::string &_topic, const AML::AMLObject *obj)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
@@ -119,6 +158,26 @@ EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSubscriber(const std::list<EZMQX:
 
     EZMQX::AmlSubscriber* subInstance = new AmlSubscriber(topics, subCb, errCb);
     return subInstance;
+}
+
+EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSecuredSubscriber(const EZMQX::Topic &topic, const std::string &serverPublicKey, const std::string &clientPublicKey, const std::string &clientSecretKey, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+    EZMQX::AmlSubscriber* subInstance = new AmlSubscriber(topic, serverPublicKey, clientPublicKey, clientSecretKey, subCb, errCb);
+    return subInstance;
+}
+
+EZMQX::AmlSubscriber* EZMQX::AmlSubscriber::getSecuredSubscriber(const std::map<EZMQX::Topic, std::string> &topics, const std::string &clientPublicKey, const std::string &clientSecretKey, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb)
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+    EZMQX::AmlSubscriber* subInstance = new AmlSubscriber(topics, clientPublicKey, clientSecretKey, subCb, errCb);
+    return subInstance;
+}
+
+bool EZMQX::AmlSubscriber::isSecured()
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+    return EZMQX::Subscriber::isSecured();
 }
 
 bool EZMQX::AmlSubscriber::isTerminated()

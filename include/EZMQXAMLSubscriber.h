@@ -55,6 +55,8 @@ class AmlSubscriber : public Subscriber
         AmlSubscriber() = delete;
         AmlSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb);
         AmlSubscriber(const std::string &topic, bool isHierarchical, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb);
+        AmlSubscriber(const EZMQX::Topic &topic, const std::string &serverPublicKey, const std::string &clientPublicKey, const std::string &clientSecretKey, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb);
+        AmlSubscriber(const std::map<EZMQX::Topic, std::string> &topics, const std::string &clientPublicKey, const std::string &clientSecretKey, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb);
         // make noncopyable
         AmlSubscriber(const AmlSubscriber&) = delete;
         AmlSubscriber& operator = (const AmlSubscriber&) = delete;
@@ -108,7 +110,7 @@ class AmlSubscriber : public Subscriber
         * @return instance of AmlSubscriber class.
         */
         static EZMQX::AmlSubscriber* getSubscriber(const EZMQX::Topic &topic, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb);
-        
+
         /**
         * Get instance of AmlSubscriber class.
         *
@@ -127,6 +129,57 @@ class AmlSubscriber : public Subscriber
         * @return instance of AmlSubscriber class.
         */
         static EZMQX::AmlSubscriber* getSubscriber(const std::list<EZMQX::Topic> &topics, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb);
+
+        /**
+        * Get instance of AmlSubscriber class.
+        *
+        * @param topic Instance of topic class to be Subscribed.
+        * @param serverPublicKey public key for server(publisher) that related with given topic.
+        * @param clientPublicKey public key for client(subscriber) that shared with given topic's owner.
+        * @param clientSecretKey secret key for client(subscriber) that pair of given clientPublickey
+        * @param subCb Callback to get AMLObject data on given topic.
+        * @param errCb errCb Error callback to get error code with topic information.
+        *
+        * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
+        * EZMQX::NotInitialized - Stack not initialized.\n
+        * EZMQX::SessionUnavailable - Could not connect with given endpoint.\n
+        * EZMQX::UnknownAmlModel - Could not find Aml Model.\n
+        * EZMQX::UnknownState - Unknown reason.\n
+        *
+        * @see EZMQX::Exception
+        *
+        * @return instance of AmlSubscriber class.
+        */
+        static EZMQX::AmlSubscriber* getSecuredSubscriber(const EZMQX::Topic &topic, const std::string &serverPublicKey, const std::string &clientPublicKey, const std::string &clientSecretKey, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb);
+
+        /**
+        * Get instance of AmlSubscriber class.
+        *
+        * @param topics Map of Topic and public keys.
+        * @param clientPublicKey public key for client(subscriber) that shared with given topic's owner.
+        * @param clientSecretKey secret key for client(subscriber) that pair of given clientPublickey
+        * @param subCb Callback to get AMLObject data on given topic.
+        * @param errCb errCb Error callback to get error code with topic information.
+        *
+        * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
+        * EZMQX::NotInitialized - Stack not initialized.\n
+        * EZMQX::SessionUnavailable - Could not connect with given endpoint.\n
+        * EZMQX::UnknownAmlModel - Could not find Aml Model.\n
+        * EZMQX::UnknownState - Unknown reason.\n
+        *
+        * @see EZMQX::Exception
+        *
+        * @return instance of AmlSubscriber class.
+        */
+        static EZMQX::AmlSubscriber* getSecuredSubscriber(const std::map<EZMQX::Topic, std::string> &topics, const std::string &clientPublicKey, const std::string &clientSecretKey, EZMQX::AmlSubCb &subCb, EZMQX::SubErrCb &errCb);
+
+        /**
+        * Return true if subscriber is secured
+        *
+        * @return bool Return true if subscriber is secured
+        *
+        */
+        bool isSecured();
 
         /**
         * Get status of AmlSubscriber instance.

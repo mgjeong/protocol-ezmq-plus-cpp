@@ -27,6 +27,7 @@
 #include <EZMQXBlockingQue.h>
 #include <EZMQXLogger.h>
 #include <chrono>
+#include <EZMQErrorCodes.h>
 
 #define TAG "EZMQXSubscriber"
 #define SLASH '/'
@@ -46,11 +47,12 @@ static const std::string PAYLOAD_TOPICS = "topics";
 static const std::string PAYLOAD_NAME = "name";
 static const std::string PAYLOAD_ENDPOINT = "endpoint";
 static const std::string PAYLOAD_DATAMODEL = "datamodel";
+static const std::string PAYLOAD_SECURED = "secured";
 
 static const std::string TOPIC_WILD_CARD = "*";
 static const std::string TOPIC_WILD_PATTERNN = "/*/";
 
-EZMQX::Subscriber::Subscriber() : terminated(false), ctx(EZMQX::Context::getInstance()), token(""), que(new EZMQX::BlockingQue()), mThread(std::thread(&EZMQX::Subscriber::handler, this)), mTerminated(false)
+EZMQX::Subscriber::Subscriber() : terminated(false), ctx(EZMQX::Context::getInstance()), subCtx(nullptr), token(""), que(new EZMQX::BlockingQue()), mThread(std::thread(&EZMQX::Subscriber::handler, this)), secured(false), mTerminated(false)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
 }
@@ -104,37 +106,85 @@ void EZMQX::Subscriber::initialize(const std::string &topic, bool isHierarchical
     }    
 }
 
-void EZMQX::Subscriber::getSession(EZMQX::Topic topic)
+void EZMQX::Subscriber::getSession(const EZMQX::Topic &topic)
+{
+    std::string empty="";
+    return getSession(topic, empty, empty, empty);
+}
+
+void EZMQX::Subscriber::getSession(EZMQX::Topic topic, const std::string &serverPublicKey, const std::string &clientPublicKey, const std::string &clientSecretKey)
 {
     EZMQX::Endpoint ep = topic.getEndpoint();
-    ezmq::EZMQSubscriber* subCtx = nullptr;
 
     try
     {
-        subCtx = new ezmq::EZMQSubscriber(ep.getAddr(), ep.getPort(),
+        if (subCtx == nullptr)
+        {
+            // create new one
+            subCtx = new ezmq::EZMQSubscriber(ep.getAddr(), ep.getPort(),
             std::bind(&EZMQX::Subscriber::internalSubCb, this, "", std::placeholders::_1),
             std::bind(&EZMQX::Subscriber::internalSubCb, this, std::placeholders::_1, std::placeholders::_2));
 
-        if (!subCtx)
-        {
-            EZMQX_LOG_V(DEBUG, TAG, "%s Could not connect with endpoint %s ", __func__, ep.toString().c_str());
-            throw EZMQX::Exception("Could not connect endpoint " + ep.toString(), EZMQX::SessionUnavailable);
+            if (!subCtx)
+            {
+                EZMQX_LOG_V(DEBUG, TAG, "%s Could not connect with endpoint %s ", __func__, ep.toString().c_str());
+                throw EZMQX::Exception("Could not connect endpoint " + ep.toString(), EZMQX::SessionUnavailable);
+            }
+
+            if (serverPublicKey.length() != 0)
+            {
+                if (subCtx->setServerPublicKey(serverPublicKey) != ezmq::EZMQ_OK)
+                {
+                    EZMQX_LOG_V(DEBUG, TAG, "%s Could not set server public key %s ", __func__, ep.toString().c_str());
+                    throw EZMQX::Exception("Could not set server public key " + ep.toString(), EZMQX::SessionUnavailable);
+                }
+            }
+
+            if (clientPublicKey.length() != 0 && clientSecretKey.length() != 0)
+            {
+                if (subCtx->setClientKeys(clientSecretKey, clientPublicKey) != ezmq::EZMQ_OK)
+                {
+                    EZMQX_LOG_V(DEBUG, TAG, "%s Could not set client key %s ", __func__, ep.toString().c_str());
+                    throw EZMQX::Exception("Could not set client key " + ep.toString(), EZMQX::SessionUnavailable);
+                }
+            }
+
+            ezmq::EZMQErrorCode ret = subCtx->start();
+
+            if (ezmq::EZMQ_OK != ret)
+            {
+                EZMQX_LOG_V(DEBUG, TAG, "%s Could not start session with endpoint %s ", __func__, ep.toString().c_str());
+                throw EZMQX::Exception("Could not connect endpoint " + ep.toString(), EZMQX::SessionUnavailable);
+            }
+
+            ret = subCtx->subscribe(topic.getName());
+
+            if (ezmq::EZMQ_OK != ret)
+            {
+                EZMQX_LOG_V(DEBUG, TAG, "%s Could not subscribe with endpoint %s ", __func__, ep.toString().c_str());
+                throw EZMQX::Exception("Could not connect endpoint " + ep.toString(), EZMQX::SessionUnavailable);
+            }
         }
-
-        ezmq::EZMQErrorCode ret = subCtx->start();
-
-        if (ezmq::EZMQ_OK != ret)
+        else
         {
-            EZMQX_LOG_V(DEBUG, TAG, "%s Could not start session with endpoint %s ", __func__, ep.toString().c_str());
-            throw EZMQX::Exception("Could not connect endpoint " + ep.toString(), EZMQX::SessionUnavailable);
-        }
+            // append session
+            if (serverPublicKey.length() != 0)
+            {
+                if (subCtx->setServerPublicKey(serverPublicKey) != ezmq::EZMQ_OK)
+                {
+                    EZMQX_LOG_V(DEBUG, TAG, "%s Could not set server public key %s ", __func__, ep.toString().c_str());
+                    throw EZMQX::Exception("Could not set server public key " + ep.toString(), EZMQX::SessionUnavailable);
+                }
+            }
 
-        ret = subCtx->subscribe(topic.getName());
+            //EZMQErrorCode subscribe(const std::string &ip, const int &port, std::string topic);
+            ezmq::EZMQErrorCode ret = subCtx->subscribe(ep.getAddr(), ep.getPort(), topic.getName());
 
-        if (ezmq::EZMQ_OK != ret)
-        {
-            EZMQX_LOG_V(DEBUG, TAG, "%s Could not subscribe with endpoint %s ", __func__, ep.toString().c_str());
-            throw EZMQX::Exception("Could not connect endpoint " + ep.toString(), EZMQX::SessionUnavailable);
+            if (ezmq::EZMQ_OK != ret)
+            {
+                EZMQX_LOG_V(DEBUG, TAG, "%s Could not subscribe with endpoint %s ", __func__, ep.toString().c_str());
+                throw EZMQX::Exception("Could not connect endpoint " + ep.toString(), EZMQX::SessionUnavailable);
+            }
         }
     }
     catch(const EZMQX::Exception &e)
@@ -156,8 +206,9 @@ void EZMQX::Subscriber::getSession(EZMQX::Topic topic)
         throw EZMQX::Exception("Could not connect endpoint " + ep.toString(), EZMQX::UnKnownState);
     }
 
-    subscribers.push_back(subCtx);
+    return;
 }
+
 
 void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics)
 {
@@ -196,14 +247,11 @@ void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics)
         {
             EZMQX_LOG_V(ERROR, TAG, "%s exception: %s", __func__, e.what());
 
-            // clear all subscribers
-            for (std::list<ezmq::EZMQSubscriber*>::iterator subItr = subscribers.begin() ; subItr != subscribers.end(); subItr++)
+            // clear subscriber
+            if (subCtx)
             {
-                if (*subItr)
-                {
-                    EZMQX_LOG_V(DEBUG, TAG, "%s try ezmq subscribers terminated", __func__);
-                    delete *subItr;
-                }
+                delete subCtx;
+                subCtx = nullptr;
             }
 
             throw e;
@@ -216,6 +264,113 @@ void EZMQX::Subscriber::initialize(const std::list<EZMQX::Topic> &topics)
     // register on CTX
 
     return;
+}
+
+void EZMQX::Subscriber::initialize(const EZMQX::Topic &topic, const std::string &serverPublicKey, const std::string &clientPublicKey, const std::string &clientSecretKey)
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    if (!ctx->isInitialized())
+    {
+        throw EZMQX::Exception("Could not create Subscriber context not initialized", EZMQX::NotInitialized);
+    }
+
+    EZMQX::Topic _topic = topic;
+    const std::string &topic_str = _topic.getName();
+
+    // find Aml rep
+    try
+    {
+        repDic.insert(std::make_pair(topic_str, ctx->getAmlRep(_topic.getDatamodel())));
+    }
+    catch(const EZMQX::Exception& e)
+    {
+        throw e;
+    }
+    catch(...)
+    {
+        throw EZMQX::Exception("Could not found Aml Rep", EZMQX::UnknownAmlModel);
+    }
+
+    try
+    {
+        getSession(topic, serverPublicKey, clientPublicKey, clientSecretKey);
+    }
+    catch(const EZMQX::Exception &e)
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s exception: %s", __func__, e.what());
+
+        // clear subscriber
+        if (subCtx)
+        {
+            delete subCtx;
+            subCtx = nullptr;
+        }
+
+        throw e;
+    }
+
+    storedTopics.push_back(topic);
+    EZMQX_LOG_V(DEBUG, TAG, "%s Topic: %s Model_Id: %s Endpoint: %s ", __func__, _topic.getName().c_str(), _topic.getDatamodel().c_str(), _topic.getEndpoint().toString().c_str());
+
+    return;
+
+}
+
+void EZMQX::Subscriber::initialize(const std::map<EZMQX::Topic, std::string> &topics, const std::string &clientPublicKey, const std::string &clientSecretKey)
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    if (!ctx->isInitialized())
+    {
+        throw EZMQX::Exception("Could not create Subscriber context not initialized", EZMQX::NotInitialized);
+    }
+
+    for (std::map<EZMQX::Topic, std::string>::const_iterator itr = topics.cbegin(); itr != topics.cend(); itr++)
+    {
+        // create subCtx with internal callback
+        EZMQX::Topic topic = itr->first;
+        const std::string &topic_str = topic.getName();
+
+        // find Aml rep
+        try
+        {
+            repDic.insert(std::make_pair(topic_str, ctx->getAmlRep(topic.getDatamodel())));
+        }
+        catch(const EZMQX::Exception& e)
+        {
+            throw e;
+        }
+        catch(...)
+        {
+            throw EZMQX::Exception("Could not found Aml Rep", EZMQX::UnknownAmlModel);
+        }
+
+        try
+        {
+            std::string serverPublicKey = itr->second;
+            getSession(topic, serverPublicKey, clientPublicKey, clientSecretKey);
+        }
+        catch(const EZMQX::Exception &e)
+        {
+            EZMQX_LOG_V(ERROR, TAG, "%s exception: %s", __func__, e.what());
+
+            // clear subscriber
+            if (subCtx)
+            {
+                delete subCtx;
+                subCtx = nullptr;
+            }
+
+            throw e;
+        }
+
+        storedTopics.push_back(topic);
+        EZMQX_LOG_V(DEBUG, TAG, "%s Topic: %s Model_Id: %s Endpoint: %s ", __func__, topic.getName().c_str(), topic.getDatamodel().c_str(), topic.getEndpoint().toString().c_str());
+    }
+
+    return;
+
 }
 
 void EZMQX::Subscriber::handler()
@@ -428,9 +583,9 @@ void EZMQX::Subscriber::verifyTopics(const std::string &topic, std::list<EZMQX::
             for (Json::Value::ArrayIndex i = 0; i < props.size(); i++)
             {
                 // get Topic
-                if (props[i].isMember(PAYLOAD_NAME) && props[i].isMember(PAYLOAD_DATAMODEL) && props[i].isMember(PAYLOAD_ENDPOINT))
+                if (props[i].isMember(PAYLOAD_NAME) && props[i].isMember(PAYLOAD_DATAMODEL) && props[i].isMember(PAYLOAD_ENDPOINT) && props[i].isMember(PAYLOAD_SECURED))
                 {
-                    verified.push_back(EZMQX::Topic(props[i][PAYLOAD_NAME].asString(), props[i][PAYLOAD_DATAMODEL].asString(), EZMQX::Endpoint(props[i][PAYLOAD_ENDPOINT].asString())));
+                    verified.push_back(EZMQX::Topic(props[i][PAYLOAD_NAME].asString(), props[i][PAYLOAD_DATAMODEL].asString(), props[i][PAYLOAD_SECURED].asBool(), EZMQX::Endpoint(props[i][PAYLOAD_ENDPOINT].asString())));
                 }
             }
         }
@@ -451,6 +606,11 @@ void EZMQX::Subscriber::verifyTopics(const std::string &topic, std::list<EZMQX::
     }
 
     return;
+}
+
+bool EZMQX::Subscriber::isSecured()
+{
+    return this->secured;
 }
 
 bool EZMQX::Subscriber::isTerminated()
@@ -487,14 +647,11 @@ void EZMQX::Subscriber::terminate()
 
             delete que;
 
-            EZMQX_LOG_V(DEBUG, TAG, "%s try terminate ezmq subscribers", __func__);
-            for (std::list<ezmq::EZMQSubscriber*>::iterator itr = subscribers.begin() ; itr != subscribers.end(); itr++)
+            EZMQX_LOG_V(DEBUG, TAG, "%s try terminate ezmq subscriber", __func__);
+            if (subCtx)
             {
-                if (*itr)
-                {
-                    EZMQX_LOG_V(DEBUG, TAG, "%s try ezmq subscribers terminated", __func__);
-                    delete *itr;
-                }
+                delete subCtx;
+                subCtx = nullptr;
             }
 
             // unregister from CTX
@@ -544,14 +701,11 @@ void EZMQX::Subscriber::terminateOwnResource()
 
             delete que;
 
-            EZMQX_LOG_V(DEBUG, TAG, "%s try terminate ezmq subscribers", __func__);
-            for (std::list<ezmq::EZMQSubscriber*>::iterator itr = subscribers.begin() ; itr != subscribers.end(); itr++)
+            EZMQX_LOG_V(DEBUG, TAG, "%s try terminate ezmq subscriber", __func__);
+            if (subCtx)
             {
-                if (*itr)
-                {
-                    EZMQX_LOG_V(DEBUG, TAG, "%s try ezmq subscribers terminated", __func__);
-                    delete *itr;
-                }
+                delete subCtx;
+                subCtx = nullptr;
             }
 
             terminated.store(true);
