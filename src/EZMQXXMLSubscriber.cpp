@@ -29,6 +29,7 @@
 #include <EZMQXLogger.h>
 
 #define TAG "EZMQXXmlSubscriber"
+#define KEY_LENGTH 40
 
 EZMQX::XmlSubscriber::~XmlSubscriber()
 {
@@ -175,6 +176,12 @@ EZMQX::XmlSubscriber* EZMQX::XmlSubscriber::getSubscriber(const EZMQX::Topic &to
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
 
+    if (topic.isSecured())
+    {
+        EZMQX_LOG_V(DEBUG, TAG, "%s topic is secured!!!", __func__);
+        throw EZMQX::Exception("topic is secured", EZMQX::InvalidParam);
+    }
+
     std::list<EZMQX::Topic> topics(1, topic);
     EZMQX::XmlSubscriber* subInstance = new XmlSubscriber(topics, subCb, errCb);
     return subInstance;
@@ -184,6 +191,15 @@ EZMQX::XmlSubscriber* EZMQX::XmlSubscriber::getSubscriber(const std::list<EZMQX:
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
 
+    for (std::list<EZMQX::Topic>::const_iterator itr = topics.cbegin(); itr != topics.cend(); itr++)
+    {
+        if ((*itr).isSecured())
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s topic is secured!!!", __func__);
+            throw EZMQX::Exception("topic is secured", EZMQX::InvalidParam);
+        }
+    }
+
     EZMQX::XmlSubscriber* subInstance = new XmlSubscriber(topics, subCb, errCb);
     return subInstance;
 }
@@ -192,6 +208,18 @@ EZMQX::XmlSubscriber* EZMQX::XmlSubscriber::getSecuredSubscriber(const EZMQX::To
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
 
+    if (!topic.isSecured())
+    {
+        EZMQX_LOG_V(DEBUG, TAG, "%s topic is unsecured!!!", __func__);
+        throw EZMQX::Exception("topic is unsecured", EZMQX::InvalidParam);
+    }
+
+    if (serverPublicKey.length() != KEY_LENGTH || clientPublicKey.length() != KEY_LENGTH || clientSecretKey.length() != KEY_LENGTH)
+    {
+        EZMQX_LOG_V(DEBUG, TAG, "%s Invalid key length!!!", __func__);
+        throw EZMQX::Exception("Invalid key length", EZMQX::InvalidParam);
+    }
+
     EZMQX::XmlSubscriber* subInstance = new XmlSubscriber(topic, serverPublicKey, clientPublicKey, clientSecretKey, subCb, errCb);
     return subInstance;
 }
@@ -199,6 +227,27 @@ EZMQX::XmlSubscriber* EZMQX::XmlSubscriber::getSecuredSubscriber(const EZMQX::To
 EZMQX::XmlSubscriber* EZMQX::XmlSubscriber::getSecuredSubscriber(const std::map<EZMQX::Topic, std::string> &topics, const std::string &clientPublicKey, const std::string &clientSecretKey, EZMQX::XmlSubCb &subCb, EZMQX::SubErrCb &errCb)
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+
+    for (std::map<EZMQX::Topic, std::string>::const_iterator itr = topics.cbegin(); itr != topics.cend(); itr++)
+    {
+        if ((*itr).first.isSecured() == false)
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s topic is unsecured!!!", __func__);
+            throw EZMQX::Exception("topic is unsecured", EZMQX::InvalidParam);
+        }
+
+        if ((*itr).second.length() != KEY_LENGTH)
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s Invalid key length!!!", __func__);
+            throw EZMQX::Exception("Invalid key length", EZMQX::InvalidParam);
+        }
+    }
+
+    if (clientPublicKey.length() != KEY_LENGTH || clientSecretKey.length() != KEY_LENGTH)
+    {
+        EZMQX_LOG_V(DEBUG, TAG, "%s Invalid key length!!!", __func__);
+        throw EZMQX::Exception("Invalid key length", EZMQX::InvalidParam);
+    }
 
     EZMQX::XmlSubscriber* subInstance = new XmlSubscriber(topics, clientPublicKey, clientSecretKey, subCb, errCb);
     return subInstance;

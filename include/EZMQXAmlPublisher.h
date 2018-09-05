@@ -64,7 +64,7 @@ class AmlPublisher : public Publisher
         * @param optionalPort Port to be used for publish when StandAloneMode.
         *
         * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
-        * EZMQX::InvalidTopic - Topic validation fail.\n
+        * EZMQX::InvalidTopic - Topic validation fail or secured topic passed.\n
         * EZMQX::InvalidParam - Invalid file path.\n
         * EZMQX::InvalidAmlModel - Could not parse given AML model file.\n
         * EZMQX::UnknownAmlModel - Could not find Aml Model.\n
@@ -86,7 +86,7 @@ class AmlPublisher : public Publisher
         * @param optionalPort Port to be used for publish when StandAloneMode.
         *
         * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
-        * EZMQX::InvalidTopic - Topic validation fail.\n
+        * EZMQX::InvalidTopic - Topic validation fail or unsecured topic passed.\n
         * EZMQX::InvalidParam - Invalid file path.\n
         * EZMQX::InvalidAmlModel - Could not parse given AML model file.\n
         * EZMQX::UnknownAmlModel - Could not find Aml Model.\n

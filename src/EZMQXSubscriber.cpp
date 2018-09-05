@@ -90,6 +90,15 @@ void EZMQX::Subscriber::initialize(const std::string &topic, bool isHierarchical
         throw EZMQX::Exception("TNS not available", EZMQX::TnsNotAvailable);
     }
 
+    for (std::list<EZMQX::Topic>::const_iterator itr = verified.cbegin(); itr != verified.cend(); itr++)
+    {
+        if ((*itr).isSecured())
+        {
+            EZMQX_LOG_V(DEBUG, TAG, "%s topic is secured!!!", __func__);
+            throw EZMQX::Exception("topic is secured", EZMQX::InvalidParam);
+        }
+    }
+
     try
     {
         Subscriber::initialize(verified);

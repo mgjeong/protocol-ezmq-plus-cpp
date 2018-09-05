@@ -78,7 +78,7 @@ class AmlSubscriber : public Subscriber
         *
         * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
         * EZMQX::NotInitialized - Stack not initialized.\n
-        * EZMQX::InvalidTopic - Topic validation fail.\n
+        * EZMQX::InvalidTopic - Topic validation fail or secured topic passed.\n
         * EZMQX::TnsNotAvailable - Tns service not available, use DockerMode or set Tns information for StandAloneMode.\n
         * EZMQX::RestError - Rest error, see detail on contained message.\n
         * EZMQX::NoTopicMatched - Could not find matched topic on tns service with given topic.\n
@@ -101,6 +101,7 @@ class AmlSubscriber : public Subscriber
         *
         * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
         * EZMQX::NotInitialized - Stack not initialized.\n
+        * EZMQX::InvalidTopic - Secured topic passed.\n
         * EZMQX::SessionUnavailable - Could not connect with given endpoint.\n
         * EZMQX::UnknownAmlModel - Could not find Aml Model.\n
         * EZMQX::UnknownState - Unknown reason.\n
@@ -120,6 +121,7 @@ class AmlSubscriber : public Subscriber
         *
         * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
         * EZMQX::NotInitialized - Stack not initialized.\n
+        * EZMQX::InvalidTopic - Secured topic passed.\n
         * EZMQX::SessionUnavailable - Could not connect with given endpoint.\n
         * EZMQX::UnknownAmlModel - Could not find Aml Model.\n
         * EZMQX::UnknownState - Unknown reason.\n
@@ -142,6 +144,7 @@ class AmlSubscriber : public Subscriber
         *
         * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
         * EZMQX::NotInitialized - Stack not initialized.\n
+        * EZMQX::InvalidTopic - Unsecured topic passed.\n
         * EZMQX::SessionUnavailable - Could not connect with given endpoint.\n
         * EZMQX::UnknownAmlModel - Could not find Aml Model.\n
         * EZMQX::UnknownState - Unknown reason.\n
@@ -163,6 +166,7 @@ class AmlSubscriber : public Subscriber
         *
         * @throws EZMQX::Exception thrown with ErrorCode, See below for detail.\n
         * EZMQX::NotInitialized - Stack not initialized.\n
+        * EZMQX::InvalidTopic - Unsecured topic passed.\n
         * EZMQX::SessionUnavailable - Could not connect with given endpoint.\n
         * EZMQX::UnknownAmlModel - Could not find Aml Model.\n
         * EZMQX::UnknownState - Unknown reason.\n
