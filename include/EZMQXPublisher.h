@@ -33,7 +33,7 @@ class Publisher
 
         // delete default ctor
         Publisher();
-        Publisher(int optionalPort, const std::string &privateKey);
+        Publisher(int optionalPort, const std::string &serverSecretKey);
 
         // make noncopyable        
         Publisher(const Publisher&) = delete;

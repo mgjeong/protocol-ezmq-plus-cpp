@@ -28,8 +28,8 @@
 #define TAG "EZMQXAmlPublisher"
 #define KEY_LENGTH 40
 
-EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const std::string &privateKey, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
- : Publisher(optionalPort, privateKey)
+EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const std::string &serverSecretKey, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
+ : Publisher(optionalPort, serverSecretKey)
 {
     validateTopic(topic);
 
@@ -102,15 +102,15 @@ EZMQX::AmlPublisher* EZMQX::AmlPublisher::getPublisher(const std::string &topic,
     return pubInstance;
 }
 
-EZMQX::AmlPublisher* EZMQX::AmlPublisher::getSecuredPublisher(const std::string &topic, const std::string &privateKey, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
+EZMQX::AmlPublisher* EZMQX::AmlPublisher::getSecuredPublisher(const std::string &topic, const std::string &serverSecretKey, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
 {
-    if (privateKey.length() != KEY_LENGTH)
+    if (serverSecretKey.length() != KEY_LENGTH)
     {
         EZMQX_LOG_V(DEBUG, TAG, "%s Invalid key length!!!", __func__);
         throw EZMQX::Exception("Invalid key length", EZMQX::InvalidParam);
     }
 
-    EZMQX::AmlPublisher* pubInstance = new AmlPublisher(topic, privateKey, infoType, amlModelInfo, optionalPort);
+    EZMQX::AmlPublisher* pubInstance = new AmlPublisher(topic, serverSecretKey, infoType, amlModelInfo, optionalPort);
     return pubInstance;
 }
 

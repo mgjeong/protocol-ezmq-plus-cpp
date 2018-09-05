@@ -43,7 +43,7 @@ class AmlPublisher : public Publisher
 
         // delete default ctor
         AmlPublisher();
-        AmlPublisher(const std::string &topic, const std::string &privateKey, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort);
+        AmlPublisher(const std::string &topic, const std::string &serverSecretKey, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort);
 
         // make noncopyable
         AmlPublisher(const AmlPublisher&) = delete;
@@ -80,7 +80,7 @@ class AmlPublisher : public Publisher
         * Get instance of AmlPublisher class.
         *
         * @param topic Topic to be used for publish.
-        * @param privateKey private key to enable data encryption.
+        * @param serverSecretKey private key to enable data encryption.
         * @param infoType enum for data model info, EZMQX::AmlModelId or EZMQX::AmlFilePath.
         * @param amlModelInfo  string of modelId of filePath.
         * @param optionalPort Port to be used for publish when StandAloneMode.
@@ -96,7 +96,7 @@ class AmlPublisher : public Publisher
         *
         * @return Instance of AmlPublisher class
         */
-        static EZMQX::AmlPublisher* getSecuredPublisher(const std::string &topic, const std::string &privateKey, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort);
+        static EZMQX::AmlPublisher* getSecuredPublisher(const std::string &topic, const std::string &serverSecretKey, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort);
 
         /**
         * Publish AMLObject on the socket for subscribers.

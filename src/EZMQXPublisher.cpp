@@ -51,7 +51,7 @@ static const std::string TOPIC_WILD_PATTERNN = "/*/";
 
 static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQErrorCode code)->void{std::cout<<"errCode"<< code <<std::endl; return;};
 
-EZMQX::Publisher::Publisher(int optionalPort, const std::string &privateKey) : terminated(false), ctx(EZMQX::Context::getInstance()), localPort(0), secured(false), token("")
+EZMQX::Publisher::Publisher(int optionalPort, const std::string &serverSecretKey) : terminated(false), ctx(EZMQX::Context::getInstance()), localPort(0), secured(false), token("")
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
 
@@ -93,10 +93,10 @@ EZMQX::Publisher::Publisher(int optionalPort, const std::string &privateKey) : t
 
     try
     {
-        if (privateKey.length() != 0)
+        if (serverSecretKey.length() != 0)
         {
             secured = true;
-            ret = pubCtx->setServerPrivateKey(privateKey);
+            ret = pubCtx->setServerPrivateKey(serverSecretKey);
         }
     }
     catch(const ezmq::EZMQException& e)
