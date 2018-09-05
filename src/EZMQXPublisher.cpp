@@ -89,7 +89,7 @@ EZMQX::Publisher::Publisher(int optionalPort, const std::string &privateKey) : t
         throw EZMQX::Exception("Could not create publisher", EZMQX::UnKnownState);
     }
 
-    ezmq::EZMQErrorCode ret = ezmq::EZMQ_ERROR;
+    ezmq::EZMQErrorCode ret = ezmq::EZMQ_OK;
 
     try
     {
