@@ -42,7 +42,7 @@ std::string EZMQX::Topic::getName()
     return name;
 }
 
-bool EZMQX::Topic::isSecured()
+bool EZMQX::Topic::isSecured() const
 {
     return secured;
 }

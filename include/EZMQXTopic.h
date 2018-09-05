@@ -77,7 +77,7 @@ class Topic
         *
         * @return true if topic is secured.
         */
-        bool isSecured();
+        bool isSecured() const;
 };
 
 } //namespace EZMQX
