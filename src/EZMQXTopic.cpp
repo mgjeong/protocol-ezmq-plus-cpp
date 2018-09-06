@@ -18,11 +18,13 @@
 #include <EZMQXTopic.h>
 
 EZMQX::Topic::Topic()
+ : name(""), datamodel(""), secured(false), endpoint()
 {
 
 }
 
-EZMQX::Topic::Topic(std::string name, std::string datamodel, bool secured, EZMQX::Endpoint endpoint): name(name), datamodel(datamodel), secured(secured), endpoint(endpoint)
+EZMQX::Topic::Topic(std::string name, std::string datamodel, bool secured, EZMQX::Endpoint endpoint)
+ : name(name), datamodel(datamodel), secured(secured), endpoint(endpoint)
 {
 
 }
