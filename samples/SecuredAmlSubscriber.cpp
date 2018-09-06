@@ -20,6 +20,7 @@
 #include <EZMQXConfig.h>
 #include <EZMQXException.h>
 #include <EZMQXAMLSubscriber.h>
+#include <EZMQXTopicDiscovery.h>
 #include <condition_variable>
 #include <signal.h>
 
@@ -105,6 +106,10 @@ void sigint(int /*signal*/)
 
 int main()
 {
+    std::string serverPublicKey = "tXJx&1^QE2g7WCXbF.$$TVP.wCtxwNhR8?iLi&S<";
+    std::string clientPublicKey = "-QW?Ved(f:<::3d5tJ$[4Er&]6#9yr=vha/caBc(";
+    std::string clientPrivateKey = "ZB1@RS6Kv^zucova$kH(!o>tZCQ.<!Q)6-0aWFmW";
+
     isStarted = false;
     //this handler is added to check stop API
     signal(SIGINT, sigint);
@@ -131,7 +136,8 @@ int main()
         EZMQX::SubErrCb errCb = [](std::string topic, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl << "topic: " <<  topic << std::endl << "err: " << errCode << std::endl;};
 
         // create subscriber with test topic
-        EZMQX::Endpoint ep("localhost", 4000);
+
+        EZMQX::Endpoint ep("10.113.65.50", 4000);
 
         if (amlId.empty())
         {
@@ -140,9 +146,12 @@ int main()
         }
 
         std::cout<<"amlId: " << amlId.front() << std::endl;
-        //EZMQX::Topic knownTopic("/TEST/A", amlId.front(), ep);
-        //std::shared_ptr<EZMQX::AmlSubscriber> subscriber(EZMQX::AmlSubscriber::getSubscriber(knownTopic, subCb, errCb));
-        std::shared_ptr<EZMQX::AmlSubscriber> subscriber(EZMQX::AmlSubscriber::getSubscriber(topic, true, subCb, errCb));
+        //EZMQX::Topic knownTopic("/TEST/A", amlId.front(),true ,ep);
+
+        std::shared_ptr<EZMQX::TopicDiscovery> discovery(new EZMQX::TopicDiscovery());
+        EZMQX::Topic result = discovery->query(topic);
+        
+        std::shared_ptr<EZMQX::AmlSubscriber> subscriber(EZMQX::AmlSubscriber::getSecuredSubscriber(result, serverPublicKey, clientPublicKey, clientPrivateKey, subCb, errCb));
 
         std::cout<<"subscriber created"<<std::endl;
 
