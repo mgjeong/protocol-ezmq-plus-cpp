@@ -113,6 +113,7 @@ void deleteTopic()
 
 int main()
 {
+  std::string serverPrivateKey = "[:X%Q3UfY+kv2A^.wv:(qy2E=bk0L][cm=mS3Hcx";
   std::string topic;
   std::cout<<"Enter topic ex) /test/"<<std::endl;
   std::cin>>topic;
@@ -124,14 +125,16 @@ int main()
       EZMQX::Config* config = EZMQX::Config::getInstance();
 
       config->startDockerMode("tnsConf.json");
+      //config->startStandAloneMode("addressOfHost", true, "addressOfTns");
       //config->startStandAloneMode("10.113.65.50", true, "10.113.64.62:80/tns-server");
 
       amlId = config->addAmlModel(amlPath);
 
       // create publisher with test topic
-      publisherA = EZMQX::AmlPublisher::getPublisher(topic + "A", EZMQX::AmlModelId, amlId.front(), 4000);
-      publisherB = EZMQX::AmlPublisher::getPublisher(topic + "B", EZMQX::AmlModelId, amlId.front(), 4001);
-      publisherC = EZMQX::AmlPublisher::getPublisher(topic + "C", EZMQX::AmlModelId, amlId.front(), 4002);
+      publisherA = EZMQX::AmlPublisher::getSecuredPublisher(topic + "A", serverPrivateKey, EZMQX::AmlModelId, amlId.front(), 4000);
+      publisherB = EZMQX::AmlPublisher::getSecuredPublisher(topic + "B", serverPrivateKey, EZMQX::AmlModelId, amlId.front(), 4001);
+      publisherC = EZMQX::AmlPublisher::getSecuredPublisher(topic + "C", serverPrivateKey, EZMQX::AmlModelId, amlId.front(), 4002);
+
 
       // create AMLObject
       std::string deviceId = "GTC001";

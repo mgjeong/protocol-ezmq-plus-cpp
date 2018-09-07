@@ -25,6 +25,7 @@ class Publisher
         ezmq::EZMQPublisher* pubCtx;
         int localPort;
         EZMQX::Topic topic;
+        bool secured;
         std::string token;
 
         void validateTopic(const std::string topic);
@@ -32,12 +33,13 @@ class Publisher
 
         // delete default ctor
         Publisher();
-        Publisher(int optionalPort);
+        Publisher(int optionalPort, const std::string &serverSecretKey);
 
         // make noncopyable        
         Publisher(const Publisher&) = delete;
         Publisher& operator = (const Publisher&) = delete;
 
+        bool isSecured();
         bool isTerminated();
         void terminate();
         void terminateOwnResource();

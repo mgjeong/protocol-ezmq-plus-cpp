@@ -100,6 +100,10 @@ protected:
     EZMQX::Config *config;
     std::string dummyId;
     EZMQX::AmlPublisher* pub;
+    std::string serverPublicKey = "tXJx&1^QE2g7WCXbF.$$TVP.wCtxwNhR8?iLi&S<";
+    std::string clientPublicKey = "-QW?Ved(f:<::3d5tJ$[4Er&]6#9yr=vha/caBc(";
+    std::string clientPrivateKey = "ZB1@RS6Kv^zucova$kH(!o>tZCQ.<!Q)6-0aWFmW";
+
     virtual void SetUp()
     {
         config = EZMQX::Config::getInstance();
@@ -122,6 +126,21 @@ protected:
         }
     }
 
+    std::string getServerPublicKey()
+    {
+        return serverPublicKey;
+    }
+
+    std::string getclientPublicKey()
+    {
+        return clientPublicKey;
+    }
+
+    std::string getclientPrivateKey()
+    {
+        return clientPrivateKey;
+    }
+
     std::string getDummyId()
     {
         return dummyId;
@@ -129,30 +148,40 @@ protected:
 
     EZMQX::Topic getPositiveTestTopic()
     {
-        return EZMQX::Topic("/T/A", getDummyId(), EZMQX::Endpoint("localhost", 4000));
+        return EZMQX::Topic("/T/A", getDummyId(), false, EZMQX::Endpoint("localhost", 4000));
     }
 
     std::list<EZMQX::Topic> getPositiveTestTopics()
     {
         std::list<EZMQX::Topic> dummy;
-        dummy.push_back(EZMQX::Topic("/T/A", getDummyId(), EZMQX::Endpoint("localhost", 4000)));
-        dummy.push_back(EZMQX::Topic("/T/B", getDummyId(), EZMQX::Endpoint("localhost", 4001)));
-        dummy.push_back(EZMQX::Topic("/T/C", getDummyId(), EZMQX::Endpoint("localhost", 4002)));
+        dummy.push_back(EZMQX::Topic("/T/A", getDummyId(), false, EZMQX::Endpoint("localhost", 4000)));
+        dummy.push_back(EZMQX::Topic("/T/B", getDummyId(), false, EZMQX::Endpoint("localhost", 4001)));
+        dummy.push_back(EZMQX::Topic("/T/C", getDummyId(), false, EZMQX::Endpoint("localhost", 4002)));
         return dummy;
     }
 
     EZMQX::Topic getNegativeTestTopic()
     {
-        return EZMQX::Topic("/T/A", "ssss", EZMQX::Endpoint("localhost", 4000));
+        return EZMQX::Topic("/T/A", "ssss", false, EZMQX::Endpoint("localhost", 4000));
     }
 
     std::list<EZMQX::Topic> getNegativeTestTopics()
     {
         std::list<EZMQX::Topic> dummy;
-        dummy.push_back(EZMQX::Topic("/T/A", "ssss", EZMQX::Endpoint("localhost", 4000)));
-        dummy.push_back(EZMQX::Topic("/T/B", "ssss", EZMQX::Endpoint("localhost", 4001)));
-        dummy.push_back(EZMQX::Topic("/T/C", "ssss", EZMQX::Endpoint("localhost", 4002)));
+        dummy.push_back(EZMQX::Topic("/T/A", "ssss", false, EZMQX::Endpoint("localhost", 4000)));
+        dummy.push_back(EZMQX::Topic("/T/B", "ssss", false, EZMQX::Endpoint("localhost", 4001)));
+        dummy.push_back(EZMQX::Topic("/T/C", "ssss", false, EZMQX::Endpoint("localhost", 4002)));
         return dummy;
+    }
+
+    EZMQX::Topic getSecuredTopic()
+    {
+        return EZMQX::Topic("/T/A", getDummyId(), true, EZMQX::Endpoint("localhost", 4000));
+    }
+
+    EZMQX::Topic getUnsecuredTopic()
+    {
+        return EZMQX::Topic("/T/A", getDummyId(), false, EZMQX::Endpoint("localhost", 4000));
     }
 
     void destoryPub()
@@ -234,15 +263,15 @@ protected:
 
     EZMQX::Topic getTestTopic()
     {
-        return EZMQX::Topic("/T/A", getDummyId(), EZMQX::Endpoint("localhost", 4000));
+        return EZMQX::Topic("/T/A", getDummyId(), false, EZMQX::Endpoint("localhost", 4000));
     }
 
     std::list<EZMQX::Topic> getDummyTopics()
     {
         std::list<EZMQX::Topic> dummy;
-        dummy.push_back(EZMQX::Topic("/TEST/A", getDummyId(), EZMQX::Endpoint("localhost", 4000)));
-        dummy.push_back(EZMQX::Topic("/TEST/B", getDummyId(), EZMQX::Endpoint("localhost", 4001)));
-        dummy.push_back(EZMQX::Topic("/TEST/C", getDummyId(), EZMQX::Endpoint("localhost", 4002)));
+        dummy.push_back(EZMQX::Topic("/TEST/A", getDummyId(), false, EZMQX::Endpoint("localhost", 4000)));
+        dummy.push_back(EZMQX::Topic("/TEST/B", getDummyId(), false, EZMQX::Endpoint("localhost", 4001)));
+        dummy.push_back(EZMQX::Topic("/TEST/C", getDummyId(), false, EZMQX::Endpoint("localhost", 4002)));
         return dummy;
     }
 };
@@ -264,12 +293,12 @@ protected:
     std::list<EZMQX::Topic> getDummyTopics()
     {
         std::list<EZMQX::Topic> dummy;
-        dummy.push_back(EZMQX::Topic("/A/A", "GTC_Robot_0.0.1", EZMQX::Endpoint("localhost", 4000)));
-        dummy.push_back(EZMQX::Topic("/A/B", "GTC_Robot_0.0.1", EZMQX::Endpoint("localhost", 4001)));
-        dummy.push_back(EZMQX::Topic("/A/C", "GTC_Robot_0.0.1", EZMQX::Endpoint("localhost", 4002)));
-        dummy.push_back(EZMQX::Topic("/B/A", "GTC_Robot_0.0.1", EZMQX::Endpoint("localhost", 4000)));
-        dummy.push_back(EZMQX::Topic("/B/B", "GTC_Robot_0.0.1", EZMQX::Endpoint("localhost", 4001)));
-        dummy.push_back(EZMQX::Topic("/B/C", "GTC_Robot_0.0.1", EZMQX::Endpoint("localhost", 4002)));
+        dummy.push_back(EZMQX::Topic("/A/A", "GTC_Robot_0.0.1", false, EZMQX::Endpoint("localhost", 4000)));
+        dummy.push_back(EZMQX::Topic("/A/B", "GTC_Robot_0.0.1", false, EZMQX::Endpoint("localhost", 4001)));
+        dummy.push_back(EZMQX::Topic("/A/C", "GTC_Robot_0.0.1", false, EZMQX::Endpoint("localhost", 4002)));
+        dummy.push_back(EZMQX::Topic("/B/A", "GTC_Robot_0.0.1", false, EZMQX::Endpoint("localhost", 4000)));
+        dummy.push_back(EZMQX::Topic("/B/B", "GTC_Robot_0.0.1", false, EZMQX::Endpoint("localhost", 4001)));
+        dummy.push_back(EZMQX::Topic("/B/C", "GTC_Robot_0.0.1", false, EZMQX::Endpoint("localhost", 4002)));
         return dummy;
     }
 

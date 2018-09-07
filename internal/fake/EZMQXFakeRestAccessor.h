@@ -63,7 +63,7 @@ private:
         {
             if (query.compare(QUERY_PARAM+UNITTEST_DISCOVERY_FAKE) == 0)
             {
-                RestResponse fake(EZMQX::Success, "{ \"topics\" : [{ \"name\" : \"/A/A\", \"endpoint\" : \"localhost:4000\", \"datamodel\" : \"GTC_Robot_0.0.1\" }, { \"name\" : \"/A/B\", \"endpoint\" : \"localhost:4001\", \"datamodel\" : \"GTC_Robot_0.0.1\" } , { \"name\" : \"/A/C\", \"endpoint\" : \"localhost:4002\", \"datamodel\" : \"GTC_Robot_0.0.1\" }, { \"name\" : \"/B/A\", \"endpoint\" : \"localhost:4000\", \"datamodel\" : \"GTC_Robot_0.0.1\" }, { \"name\" : \"/B/B\", \"endpoint\" : \"localhost:4001\", \"datamodel\" : \"GTC_Robot_0.0.1\" }, { \"name\" : \"/B/C\", \"endpoint\" : \"localhost:4002\", \"datamodel\" : \"GTC_Robot_0.0.1\" }]}");
+                RestResponse fake(EZMQX::Success, "{ \"topics\" : [{ \"name\" : \"/A/A\", \"endpoint\" : \"localhost:4000\", \"datamodel\" : \"GTC_Robot_0.0.1\", \"secured\" : false }, { \"name\" : \"/A/B\", \"endpoint\" : \"localhost:4001\", \"datamodel\" : \"GTC_Robot_0.0.1\", \"secured\" : false} , { \"name\" : \"/A/C\", \"endpoint\" : \"localhost:4002\", \"datamodel\" : \"GTC_Robot_0.0.1\", \"secured\" : false }, { \"name\" : \"/B/A\", \"endpoint\" : \"localhost:4000\", \"datamodel\" : \"GTC_Robot_0.0.1\" ,\"secured\" : false }, { \"name\" : \"/B/B\", \"endpoint\" : \"localhost:4001\", \"datamodel\" : \"GTC_Robot_0.0.1\", \"secured\" : false  }, { \"name\" : \"/B/C\", \"endpoint\" : \"localhost:4002\", \"datamodel\" : \"GTC_Robot_0.0.1\", \"secured\" : false }]}");
                 return fake;
             }
         }

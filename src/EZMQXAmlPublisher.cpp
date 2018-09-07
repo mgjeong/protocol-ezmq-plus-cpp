@@ -26,9 +26,10 @@
 #include <EZMQXLogger.h>
 
 #define TAG "EZMQXAmlPublisher"
+#define KEY_LENGTH 40
 
-EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
- : Publisher(optionalPort)
+EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const std::string &serverSecretKey, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
+ : Publisher(optionalPort, serverSecretKey)
 {
     validateTopic(topic);
 
@@ -75,7 +76,7 @@ EZMQX::AmlPublisher::AmlPublisher(const std::string &topic, const EZMQX::AmlMode
     EZMQX::Topic _topic;
     try
     {
-        _topic = EZMQX::Topic(topic, rep->getRepresentationId(), ctx->getHostEp(localPort));
+        _topic = EZMQX::Topic(topic, rep->getRepresentationId(), secured, ctx->getHostEp(localPort));
     }
     catch (const EZMQX::Exception& e)
     {
@@ -96,7 +97,20 @@ EZMQX::AmlPublisher::~AmlPublisher()
 
 EZMQX::AmlPublisher* EZMQX::AmlPublisher::getPublisher(const std::string &topic, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
 {
-    EZMQX::AmlPublisher* pubInstance = new AmlPublisher(topic, infoType, amlModelInfo, optionalPort);
+    std::string emptyString = "";
+    EZMQX::AmlPublisher* pubInstance = new AmlPublisher(topic, emptyString, infoType, amlModelInfo, optionalPort);
+    return pubInstance;
+}
+
+EZMQX::AmlPublisher* EZMQX::AmlPublisher::getSecuredPublisher(const std::string &topic, const std::string &serverSecretKey, const EZMQX::AmlModelInfo& infoType, const std::string &amlModelInfo, int optionalPort)
+{
+    if (serverSecretKey.length() != KEY_LENGTH)
+    {
+        EZMQX_LOG_V(DEBUG, TAG, "%s Invalid key length!!!", __func__);
+        throw EZMQX::Exception("Invalid key length", EZMQX::InvalidParam);
+    }
+
+    EZMQX::AmlPublisher* pubInstance = new AmlPublisher(topic, serverSecretKey, infoType, amlModelInfo, optionalPort);
     return pubInstance;
 }
 
@@ -134,6 +148,11 @@ void EZMQX::AmlPublisher::publish(const AML::AMLObject& payload)
 EZMQX::Topic EZMQX::AmlPublisher::getTopic()
 {
     return Publisher::getTopic();
+}
+
+bool EZMQX::AmlPublisher::isSecured()
+{
+    return Publisher::isSecured();
 }
 
 bool EZMQX::AmlPublisher::isTerminated()

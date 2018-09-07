@@ -33,6 +33,7 @@ class Topic
     private:
         std::string name;
         std::string datamodel;
+        bool secured;
         EZMQX::Endpoint endpoint;
         
     public:
@@ -48,7 +49,7 @@ class Topic
         * @param datamodel String formatted ID of data model.
         * @param endpoint endpoint.
         */
-        Topic(std::string name, std::string datamodel, EZMQX::Endpoint endpoint);
+        Topic(std::string name, std::string datamodel, bool secured, EZMQX::Endpoint endpoint);
 
         /**
         * Return Endpoint instance of topic.
@@ -70,6 +71,13 @@ class Topic
         * @return name of topic.
         */
         std::string getName();
+
+        /**
+        * Return true if topic is secured.
+        *
+        * @return true if topic is secured.
+        */
+        bool isSecured() const;
 };
 
 } //namespace EZMQX

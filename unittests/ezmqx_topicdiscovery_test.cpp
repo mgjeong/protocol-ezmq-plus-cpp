@@ -37,6 +37,8 @@ TEST_F(FakeDiscoveryTest, FakeRest)
         EXPECT_TRUE((*itr).getName().compare((*checker).getName())==0);
         EXPECT_TRUE((*itr).getDatamodel().compare((*checker).getDatamodel())==0);
         EXPECT_TRUE((*itr).getEndpoint().toString().compare((*checker).getEndpoint().toString()) == 0);
+        EXPECT_TRUE((*itr).isSecured() == false);
+
     }
 
 }

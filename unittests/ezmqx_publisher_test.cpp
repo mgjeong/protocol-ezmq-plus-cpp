@@ -284,3 +284,57 @@ TEST(publisher, teminateTest)
         delete pub;
     }    
 }
+
+TEST(publisher, securedPublisher)
+{
+    std::string serverPrivateKey = "[:X%Q3UfY+kv2A^.wv:(qy2E=bk0L][cm=mS3Hcx";
+    EZMQX::Config* config = EZMQX::Config::getInstance();
+
+    config->startStandAloneMode("localhost", false, "127.0.0.1");
+
+    std::list<std::string> amlPath(1, "sample_data_model.aml");
+    std::list<std::string> amlIds(1);
+    amlIds = config->addAmlModel(amlPath);
+    std::string amlId = amlIds.front();
+
+    //wrong case : invalid amlfile path
+    EZMQX::AmlPublisher* pub = EZMQX::AmlPublisher::getSecuredPublisher("/T/C", serverPrivateKey, EZMQX::AmlModelId, amlId, 4000);
+
+    EXPECT_TRUE(pub->isSecured() == true);
+
+    config->reset();
+
+    pub->isTerminated();
+    pub->terminate();
+
+    if (pub)
+    {
+        delete pub;
+    }
+}
+
+TEST(publisher, securedPublisherWithWrongKey)
+{
+    std::string wrongKey = "aaaaa";
+    EZMQX::Config* config = EZMQX::Config::getInstance();
+
+    config->startStandAloneMode("localhost", false, "127.0.0.1");
+
+    std::list<std::string> amlPath(1, "sample_data_model.aml");
+    std::list<std::string> amlIds(1);
+    amlIds = config->addAmlModel(amlPath);
+    std::string amlId = amlIds.front();
+
+    //wrong case : invalid amlfile path
+    EZMQX::AmlPublisher* pub = nullptr;
+
+    EXPECT_THROW(pub = EZMQX::AmlPublisher::getSecuredPublisher("/T/C", wrongKey, EZMQX::AmlModelId, amlId, 4000);, EZMQX::Exception);
+
+    config->reset();
+
+    if (pub)
+    {
+        pub->terminate();
+        delete pub;
+    }
+}

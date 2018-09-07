@@ -25,6 +25,7 @@
 #include <json/writer.h>
 #include <json/reader.h>
 #include <EZMQXLogger.h>
+#include <EZMQException.h>
 
 #define TAG "EZMQXPublisher"
 #define SLASH '/'
@@ -39,6 +40,7 @@ static const std::string PAYLOAD_TOPIC = "topic";
 static const std::string PAYLOAD_NAME = "name";
 static const std::string PAYLOAD_ENDPOINT = "endpoint";
 static const std::string PAYLOAD_DATAMODEL = "datamodel";
+static const std::string PAYLOAD_SECURED = "secured";
 
 static const std::string PAYLOAD_KEEPALIVE_INTERVAL = "ka_interval";
 
@@ -49,7 +51,7 @@ static const std::string TOPIC_WILD_PATTERNN = "/*/";
 
 static std::function<void(ezmq::EZMQErrorCode code)> ezmqCb = [](ezmq::EZMQErrorCode code)->void{std::cout<<"errCode"<< code <<std::endl; return;};
 
-EZMQX::Publisher::Publisher(int optionalPort) : terminated(false), ctx(EZMQX::Context::getInstance()), localPort(0), token("")
+EZMQX::Publisher::Publisher(int optionalPort, const std::string &serverSecretKey) : terminated(false), ctx(EZMQX::Context::getInstance()), localPort(0), secured(false), token("")
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
 
@@ -85,6 +87,29 @@ EZMQX::Publisher::Publisher(int optionalPort) : terminated(false), ctx(EZMQX::Co
     {
         EZMQX_LOG_V(ERROR, TAG, "%s Could not create publisher", __func__);
         throw EZMQX::Exception("Could not create publisher", EZMQX::UnKnownState);
+    }
+
+    ezmq::EZMQErrorCode ret = ezmq::EZMQ_OK;
+
+    try
+    {
+        if (serverSecretKey.length() != 0)
+        {
+            secured = true;
+            ret = pubCtx->setServerPrivateKey(serverSecretKey);
+        }
+    }
+    catch(const ezmq::EZMQException& e)
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not set private key : %s", __func__, e.what());
+        
+        throw EZMQX::Exception("Could not set private key", EZMQX::UnKnownState);
+    }
+
+    if (ezmq::EZMQ_OK != ret)
+    {
+        EZMQX_LOG_V(ERROR, TAG, "%s Could not set private key", __func__);
+        throw EZMQX::Exception("Could not set private key", EZMQX::UnKnownState);
     }
 
     if (ezmq::EZMQ_OK != pubCtx->start())
@@ -155,6 +180,7 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
         root[PAYLOAD_TOPIC][PAYLOAD_NAME] = regTopic.getName();
         root[PAYLOAD_TOPIC][PAYLOAD_ENDPOINT] = regTopic.getEndpoint().toString();
         root[PAYLOAD_TOPIC][PAYLOAD_DATAMODEL] = regTopic.getDatamodel();
+        root[PAYLOAD_TOPIC][PAYLOAD_SECURED] = regTopic.isSecured();
 
         Json::StreamWriterBuilder builder;
         builder[PAYLOAD_OPTION] = "";
@@ -249,6 +275,12 @@ void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)
     // Update keepAlive interval
 
     return;
+}
+
+bool EZMQX::Publisher::isSecured()
+{
+    EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
+    return this->secured;
 }
 
 bool EZMQX::Publisher::isTerminated()

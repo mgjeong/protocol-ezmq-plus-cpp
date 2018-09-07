@@ -40,6 +40,7 @@ static const std::string PAYLOAD_TOPICS = "topics";
 static const std::string PAYLOAD_NAME = "name";
 static const std::string PAYLOAD_ENDPOINT = "endpoint";
 static const std::string PAYLOAD_DATAMODEL = "datamodel";
+static const std::string PAYLOAD_SECURED = "secured";
 
 static const std::string TOPIC_PATTERN = "(\\/[a-zA-Z0-9-_*.]+)+";
 static const std::string TOPIC_WILD_CARD = "*";
@@ -165,9 +166,9 @@ void EZMQX::TopicDiscovery::verifyTopic(std::string& topic, std::list<EZMQX::Top
             for (Json::Value::ArrayIndex i = 0; i < props.size(); i++)
             {
                 // get Topic
-                if (props[i].isMember(PAYLOAD_NAME) && props[i].isMember(PAYLOAD_DATAMODEL) && props[i].isMember(PAYLOAD_ENDPOINT))
+                if (props[i].isMember(PAYLOAD_NAME) && props[i].isMember(PAYLOAD_DATAMODEL) && props[i].isMember(PAYLOAD_ENDPOINT) && props[i].isMember(PAYLOAD_SECURED))
                 {
-                    topics.push_back(EZMQX::Topic(props[i][PAYLOAD_NAME].asString(), props[i][PAYLOAD_DATAMODEL].asString(), EZMQX::Endpoint(props[i][PAYLOAD_ENDPOINT].asString())));
+                    topics.push_back(EZMQX::Topic(props[i][PAYLOAD_NAME].asString(), props[i][PAYLOAD_DATAMODEL].asString(), props[i][PAYLOAD_SECURED].asBool(), EZMQX::Endpoint(props[i][PAYLOAD_ENDPOINT].asString())));
                 }
             }
         }

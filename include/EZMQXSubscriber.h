@@ -49,12 +49,13 @@ class Subscriber
         std::mutex lock;
         std::atomic_bool terminated;
         EZMQX::Context* ctx;
-        std::list<ezmq::EZMQSubscriber*> subscribers;
+        ezmq::EZMQSubscriber* subCtx;
         std::list<EZMQX::Topic> storedTopics;
         std::map<std::string, std::shared_ptr<AML::Representation>> repDic;
         std::string token;
         EZMQX::BlockingQue* que;
         std::thread mThread;
+        bool secured;
         std::atomic_bool mTerminated;
 
         void handler();
@@ -63,10 +64,13 @@ class Subscriber
         void internalSubCb(std::string topic, const ezmq::EZMQMessage &event);
         void initialize(const std::string &topic, bool isHierarchical);
         void initialize(const std::list<EZMQX::Topic> &topics);
+        void initialize(const EZMQX::Topic &topic, const std::string &serverPublicKey, const std::string &clientPublicKey, const std::string &clientSecretKey);
+        void initialize(const std::map<EZMQX::Topic, std::string> &topics, const std::string &clientPublicKey, const std::string &clientSecretKey);
 
         void validateTopic(const std::string& topic);
         void verifyTopics(const std::string &topic, std::list<EZMQX::Topic> &verified, bool isHierarchical);
-        void getSession(EZMQX::Topic topic);
+        void getSession(const EZMQX::Topic &topic);
+        void getSession(EZMQX::Topic topic, const std::string &serverPublicKey, const std::string &clientPublicKey, const std::string &clientSecretKey);
 
         Subscriber();
         virtual ~Subscriber() = 0;
@@ -74,6 +78,7 @@ class Subscriber
         Subscriber(const Subscriber&) = delete;
         Subscriber& operator = (const Subscriber&) = delete;
 
+        bool isSecured();
         bool isTerminated();
         void terminate();
         void terminateOwnResource();
