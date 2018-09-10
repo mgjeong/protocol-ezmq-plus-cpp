@@ -51,17 +51,17 @@ EZMQX::Endpoint::Endpoint(std::string address, int port) : addr(address), port(p
 
 }
 
-std::string EZMQX::Endpoint::getAddr()
+std::string EZMQX::Endpoint::getAddr() const
 {
     return addr;
 }
 
-int EZMQX::Endpoint::getPort()
+int EZMQX::Endpoint::getPort() const
 {
     return port;
 }
 
-std::string EZMQX::Endpoint::toString()
+std::string EZMQX::Endpoint::toString() const
 {
     return port == -1 ? addr : addr + COLLON + std::to_string(port);
 }

@@ -56,21 +56,21 @@ class Topic
         *
         * @return Endpoint instance of topic.
         */
-        EZMQX::Endpoint getEndpoint();
+        EZMQX::Endpoint getEndpoint() const;
 
         /**
         * Return Datamodel ID.
         *
         * @return Datamodel ID.
         */
-        std::string getDatamodel();
+        std::string getDatamodel() const;
 
         /**
         * Return name of topic.
         *
         * @return name of topic.
         */
-        std::string getName();
+        std::string getName() const;
 
         /**
         * Return true if topic is secured.
@@ -78,6 +78,8 @@ class Topic
         * @return true if topic is secured.
         */
         bool isSecured() const;
+
+        bool operator< (const Topic& topic) const;
 };
 
 } //namespace EZMQX

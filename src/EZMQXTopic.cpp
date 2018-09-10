@@ -29,17 +29,17 @@ EZMQX::Topic::Topic(std::string name, std::string datamodel, bool secured, EZMQX
 
 }
 
-EZMQX::Endpoint EZMQX::Topic::getEndpoint()
+EZMQX::Endpoint EZMQX::Topic::getEndpoint() const
 {
     return endpoint;
 }
 
-std::string EZMQX::Topic::getDatamodel()
+std::string EZMQX::Topic::getDatamodel() const
 {
     return datamodel;
 }
 
-std::string EZMQX::Topic::getName()
+std::string EZMQX::Topic::getName() const
 {
     return name;
 }
@@ -47,4 +47,16 @@ std::string EZMQX::Topic::getName()
 bool EZMQX::Topic::isSecured() const
 {
     return secured;
+}
+
+bool EZMQX::Topic::operator< (const Topic& topic) const
+{
+    if (topic.name + topic.endpoint.toString() < this->name + this->endpoint.toString())
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }

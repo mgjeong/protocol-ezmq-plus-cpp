@@ -61,21 +61,21 @@ class Endpoint
         * 
         * @return string ip address.
         */
-        std::string getAddr();
+        std::string getAddr() const;
 
         /**
         * Return stored port.
         * 
         * @return port.
         */
-        int getPort();
+        int getPort() const;
 
         /**
         * Return ip address with port as string
         * 
         * @return ip address with port as string
         */
-        std::string toString();
+        std::string toString() const;
 };
 
 } // namespace EZMQX
