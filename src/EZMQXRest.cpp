@@ -21,6 +21,8 @@
 #include <EZMQXLogger.h>
 #define TAG "EZMQXRest"
 
+#define CONNECTION_TIMEOUT 5L
+
 static const std::string QUESTION_MARK = "?";
 static const std::string DELETE = "DELETE";
 static const std::string PUT = "PUT";
@@ -65,6 +67,7 @@ EZMQX::RestResponse EZMQX::SimpleRest::Get(const std::string &url)
     CURLcode res;
     long respCode;
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, CONNECTION_TIMEOUT);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _writeCb);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buff);
     res = curl_easy_perform(curl);
@@ -87,6 +90,7 @@ EZMQX::RestResponse EZMQX::SimpleRest::Get(const std::string &url, const std::st
     CURLcode res;
     long respCode;
     curl_easy_setopt(curl, CURLOPT_URL, addr.c_str());
+    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, CONNECTION_TIMEOUT);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _writeCb);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buff);
     res = curl_easy_perform(curl);
@@ -108,6 +112,7 @@ EZMQX::RestResponse EZMQX::SimpleRest::Put(const std::string &url, const std::st
     long respCode;
     std::string buff;
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, CONNECTION_TIMEOUT);
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, PUT.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _writeCb);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buff);
@@ -132,6 +137,7 @@ EZMQX::RestResponse EZMQX::SimpleRest::Post(const std::string &url, const std::s
     CURLcode res;
     long respCode;
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, CONNECTION_TIMEOUT);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _writeCb);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buff);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.c_str());
@@ -157,6 +163,7 @@ EZMQX::RestResponse EZMQX::SimpleRest::Delete(const std::string &url, const std:
     std::string addr = url + QUESTION_MARK + query;
     long respCode;
     curl_easy_setopt(curl, CURLOPT_URL, addr.c_str());
+    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, CONNECTION_TIMEOUT);
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, DELETE.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _writeCb);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buff);
