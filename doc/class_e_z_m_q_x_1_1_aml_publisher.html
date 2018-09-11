@@ -113,6 +113,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aff60a90e4e48182ae3f833b55f1375a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add4ce711259cda34f121f4334a6d97d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_z_m_q_x_1_1_aml_publisher.html#add4ce711259cda34f121f4334a6d97d2">getTopic</a> ()</td></tr>
 <tr class="separator:add4ce711259cda34f121f4334a6d97d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b7d376218a2ebde1e851d8d52da5806"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_z_m_q_x_1_1_aml_publisher.html#a8b7d376218a2ebde1e851d8d52da5806">isSecured</a> ()</td></tr>
+<tr class="separator:a8b7d376218a2ebde1e851d8d52da5806"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3266ea8383702ec05557b8c3035fa9f1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_z_m_q_x_1_1_aml_publisher.html#a3266ea8383702ec05557b8c3035fa9f1">isTerminated</a> ()</td></tr>
 <tr class="separator:a3266ea8383702ec05557b8c3035fa9f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a76785613f84bcc2ddc418ac4c92e3ffd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_z_m_q_x_1_1_aml_publisher.html#a76785613f84bcc2ddc418ac4c92e3ffd">terminate</a> ()</td></tr>
@@ -122,6 +124,8 @@ Public Member Functions</h2></td></tr>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a239d763a780f16aaa2315f1f01bd274a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_e_z_m_q_x_1_1_aml_publisher.html">EZMQX::AmlPublisher</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_z_m_q_x_1_1_aml_publisher.html#a239d763a780f16aaa2315f1f01bd274a">getPublisher</a> (const std::string &amp;topic, const <a class="el" href="_e_z_m_q_x_aml_model_info_8h.html#a4444190cc3d94ed1070fe37f7aa2384b">EZMQX::AmlModelInfo</a> &amp;infoType, const std::string &amp;amlModelInfo, int optionalPort)</td></tr>
 <tr class="separator:a239d763a780f16aaa2315f1f01bd274a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e0089174cffe694fe71f414e293d880"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_e_z_m_q_x_1_1_aml_publisher.html">EZMQX::AmlPublisher</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_z_m_q_x_1_1_aml_publisher.html#a3e0089174cffe694fe71f414e293d880">getSecuredPublisher</a> (const std::string &amp;topic, const std::string &amp;serverSecretKey, const <a class="el" href="_e_z_m_q_x_aml_model_info_8h.html#a4444190cc3d94ed1070fe37f7aa2384b">EZMQX::AmlModelInfo</a> &amp;infoType, const std::string &amp;amlModelInfo, int optionalPort)</td></tr>
+<tr class="separator:a3e0089174cffe694fe71f414e293d880"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -132,15 +136,18 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>validateTopic</b> (co
 <tr class="memitem:ab68dff275d73041be87d9c3972b700ee inherit pro_methods_class_e_z_m_q_x_1_1_publisher"><td class="memItemLeft" align="right" valign="top"><a id="ab68dff275d73041be87d9c3972b700ee"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>registerTopic</b> (<a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a> &amp;topic)</td></tr>
 <tr class="separator:ab68dff275d73041be87d9c3972b700ee inherit pro_methods_class_e_z_m_q_x_1_1_publisher"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a642515440b3593b3e1066844c93a47d5 inherit pro_methods_class_e_z_m_q_x_1_1_publisher"><td class="memItemLeft" align="right" valign="top"><a id="a642515440b3593b3e1066844c93a47d5"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Publisher</b> (int optionalPort)</td></tr>
-<tr class="separator:a642515440b3593b3e1066844c93a47d5 inherit pro_methods_class_e_z_m_q_x_1_1_publisher"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e57d4d153028f0105f76759b733de7b inherit pro_methods_class_e_z_m_q_x_1_1_publisher"><td class="memItemLeft" align="right" valign="top"><a id="a4e57d4d153028f0105f76759b733de7b"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Publisher</b> (int optionalPort, const std::string &amp;serverSecretKey)</td></tr>
+<tr class="separator:a4e57d4d153028f0105f76759b733de7b inherit pro_methods_class_e_z_m_q_x_1_1_publisher"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b86cdb23d455bf3dbc8f9f2113badd5 inherit pro_methods_class_e_z_m_q_x_1_1_publisher"><td class="memItemLeft" align="right" valign="top"><a id="a5b86cdb23d455bf3dbc8f9f2113badd5"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Publisher</b> (const <a class="el" href="class_e_z_m_q_x_1_1_publisher.html">Publisher</a> &amp;)=delete</td></tr>
 <tr class="separator:a5b86cdb23d455bf3dbc8f9f2113badd5 inherit pro_methods_class_e_z_m_q_x_1_1_publisher"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad13dfd33f8d7bc67ee79ad25617c4f42 inherit pro_methods_class_e_z_m_q_x_1_1_publisher"><td class="memItemLeft" align="right" valign="top"><a id="ad13dfd33f8d7bc67ee79ad25617c4f42"></a>
 <a class="el" href="class_e_z_m_q_x_1_1_publisher.html">Publisher</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="class_e_z_m_q_x_1_1_publisher.html">Publisher</a> &amp;)=delete</td></tr>
 <tr class="separator:ad13dfd33f8d7bc67ee79ad25617c4f42 inherit pro_methods_class_e_z_m_q_x_1_1_publisher"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35b84c2227b3e94431595df89a0ad5a1 inherit pro_methods_class_e_z_m_q_x_1_1_publisher"><td class="memItemLeft" align="right" valign="top"><a id="a35b84c2227b3e94431595df89a0ad5a1"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isSecured</b> ()</td></tr>
+<tr class="separator:a35b84c2227b3e94431595df89a0ad5a1 inherit pro_methods_class_e_z_m_q_x_1_1_publisher"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc73980532ec490487a9cec8229c8b89 inherit pro_methods_class_e_z_m_q_x_1_1_publisher"><td class="memItemLeft" align="right" valign="top"><a id="acc73980532ec490487a9cec8229c8b89"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isTerminated</b> ()</td></tr>
 <tr class="separator:acc73980532ec490487a9cec8229c8b89 inherit pro_methods_class_e_z_m_q_x_1_1_publisher"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -172,6 +179,9 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>localPort</b></td></tr
 <tr class="memitem:ab023517f1f7da39b80a449ab6f94b36f inherit pro_attribs_class_e_z_m_q_x_1_1_publisher"><td class="memItemLeft" align="right" valign="top"><a id="ab023517f1f7da39b80a449ab6f94b36f"></a>
 <a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a>&#160;</td><td class="memItemRight" valign="bottom"><b>topic</b></td></tr>
 <tr class="separator:ab023517f1f7da39b80a449ab6f94b36f inherit pro_attribs_class_e_z_m_q_x_1_1_publisher"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e6b379528871f078b0c59a4b28def5f inherit pro_attribs_class_e_z_m_q_x_1_1_publisher"><td class="memItemLeft" align="right" valign="top"><a id="a3e6b379528871f078b0c59a4b28def5f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>secured</b></td></tr>
+<tr class="separator:a3e6b379528871f078b0c59a4b28def5f inherit pro_attribs_class_e_z_m_q_x_1_1_publisher"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0498a2f7687d2b00bb9d888bfb21bc5 inherit pro_attribs_class_e_z_m_q_x_1_1_publisher"><td class="memItemLeft" align="right" valign="top"><a id="ac0498a2f7687d2b00bb9d888bfb21bc5"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>token</b></td></tr>
 <tr class="separator:ac0498a2f7687d2b00bb9d888bfb21bc5 inherit pro_attribs_class_e_z_m_q_x_1_1_publisher"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -256,7 +266,86 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>token</b></td>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="class_e_z_m_q_x_1_1_exception.html">EZMQX::Exception</a></td><td>thrown with ErrorCode, See below for detail.<br />
-EZMQX::InvalidTopic - <a class="el" href="class_e_z_m_q_x_1_1_topic.html">Topic</a> validation fail.<br />
+EZMQX::InvalidTopic - <a class="el" href="class_e_z_m_q_x_1_1_topic.html">Topic</a> validation fail or secured topic passed.<br />
+EZMQX::InvalidParam - Invalid file path.<br />
+EZMQX::InvalidAmlModel - Could not parse given AML model file.<br />
+EZMQX::UnknownAmlModel - Could not find Aml Model.<br />
+EZMQX::UnKnownState - Unknown reason.<br />
+ </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_e_z_m_q_x_1_1_exception.html">EZMQX::Exception</a></dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Instance of <a class="el" href="class_e_z_m_q_x_1_1_aml_publisher.html">AmlPublisher</a> class </dd></dl>
+
+</div>
+</div>
+<a id="a3e0089174cffe694fe71f414e293d880"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e0089174cffe694fe71f414e293d880">&#9670;&nbsp;</a></span>getSecuredPublisher()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="class_e_z_m_q_x_1_1_aml_publisher.html">EZMQX::AmlPublisher</a>* EZMQX::AmlPublisher::getSecuredPublisher </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>topic</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>serverSecretKey</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="_e_z_m_q_x_aml_model_info_8h.html#a4444190cc3d94ed1070fe37f7aa2384b">EZMQX::AmlModelInfo</a> &amp;&#160;</td>
+          <td class="paramname"><em>infoType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>amlModelInfo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>optionalPort</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p class="">Get instance of <a class="el" href="class_e_z_m_q_x_1_1_aml_publisher.html">AmlPublisher</a> class.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">topic</td><td><a class="el" href="class_e_z_m_q_x_1_1_topic.html">Topic</a> to be used for publish. </td></tr>
+    <tr><td class="paramname">serverSecretKey</td><td>private key to enable data encryption. </td></tr>
+    <tr><td class="paramname">infoType</td><td>enum for data model info, EZMQX::AmlModelId or EZMQX::AmlFilePath. </td></tr>
+    <tr><td class="paramname">amlModelInfo</td><td>string of modelId of filePath. </td></tr>
+    <tr><td class="paramname">optionalPort</td><td>Port to be used for publish when StandAloneMode.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="class_e_z_m_q_x_1_1_exception.html">EZMQX::Exception</a></td><td>thrown with ErrorCode, See below for detail.<br />
+EZMQX::InvalidTopic - <a class="el" href="class_e_z_m_q_x_1_1_topic.html">Topic</a> validation fail or unsecured topic passed.<br />
 EZMQX::InvalidParam - Invalid file path.<br />
 EZMQX::InvalidAmlModel - Could not parse given AML model file.<br />
 EZMQX::UnknownAmlModel - Could not find Aml Model.<br />
@@ -286,6 +375,25 @@ EZMQX::UnKnownState - Unknown reason.<br />
 </div><div class="memdoc">
 <p class="">Get instance of <a class="el" href="class_e_z_m_q_x_1_1_topic.html">Topic</a> that used on this publisher.</p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="class_e_z_m_q_x_1_1_topic.html">Topic</a> <a class="el" href="class_e_z_m_q_x_1_1_topic.html">Topic</a> instance that include topic name, data model, endpoint. </dd></dl>
+
+</div>
+</div>
+<a id="a8b7d376218a2ebde1e851d8d52da5806"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b7d376218a2ebde1e851d8d52da5806">&#9670;&nbsp;</a></span>isSecured()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool EZMQX::AmlPublisher::isSecured </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p class="">Return true if publisher is secured</p>
+<dl class="section return"><dt>Returns</dt><dd>bool Return true if publisher is secured </dd></dl>
 
 </div>
 </div>
@@ -335,6 +443,7 @@ EZMQX::UnKnownState - Unknown reason.<br />
     <tr><td class="paramname"><a class="el" href="class_e_z_m_q_x_1_1_exception.html">EZMQX::Exception</a></td><td>thrown with ErrorCode, See below for detail.<br />
 . EZMQX::Terminated - Stack terminated.<br />
 EZMQX::UnknownAmlModel - Could not find Aml Model.<br />
+EZMQX::UnKnownState - Unknown reason.<br />
  </td></tr>
   </table>
   </dd>
@@ -362,7 +471,7 @@ EZMQX::UnknownAmlModel - Could not find Aml Model.<br />
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/home/bgchun2/work/protocol-ezmq-plus-cpp/include/<a class="el" href="_e_z_m_q_x_aml_publisher_8h_source.html">EZMQXAmlPublisher.h</a></li>
+<li><a class="el" href="_e_z_m_q_x_aml_publisher_8h_source.html">EZMQXAmlPublisher.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
