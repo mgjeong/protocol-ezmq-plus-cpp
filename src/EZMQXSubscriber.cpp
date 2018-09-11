@@ -320,6 +320,7 @@ void EZMQX::Subscriber::initialize(const EZMQX::Topic &topic, const std::string 
     }
 
     storedTopics.push_back(topic);
+    this->secured = true;
     EZMQX_LOG_V(DEBUG, TAG, "%s Topic: %s Model_Id: %s Endpoint: %s ", __func__, _topic.getName().c_str(), _topic.getDatamodel().c_str(), _topic.getEndpoint().toString().c_str());
 
     return;
@@ -375,6 +376,7 @@ void EZMQX::Subscriber::initialize(const std::map<EZMQX::Topic, std::string> &to
         }
 
         storedTopics.push_back(topic);
+        this->secured = true;
         EZMQX_LOG_V(DEBUG, TAG, "%s Topic: %s Model_Id: %s Endpoint: %s ", __func__, topic.getName().c_str(), topic.getDatamodel().c_str(), topic.getEndpoint().toString().c_str());
     }
 
