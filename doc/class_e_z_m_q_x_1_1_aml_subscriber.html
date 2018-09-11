@@ -111,6 +111,8 @@ Inheritance diagram for EZMQX::AmlSubscriber:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a1d9b2a49384c6ed26e7814aca6ea2d84"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_z_m_q_x_1_1_aml_subscriber.html#a1d9b2a49384c6ed26e7814aca6ea2d84">~AmlSubscriber</a> ()</td></tr>
 <tr class="separator:a1d9b2a49384c6ed26e7814aca6ea2d84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc999ddae8768ba3ae1613728619b941"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_z_m_q_x_1_1_aml_subscriber.html#adc999ddae8768ba3ae1613728619b941">isSecured</a> ()</td></tr>
+<tr class="separator:adc999ddae8768ba3ae1613728619b941"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:addbd35e4e25fa9df04cbe8f9ff0c8f74"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_z_m_q_x_1_1_aml_subscriber.html#addbd35e4e25fa9df04cbe8f9ff0c8f74">isTerminated</a> ()</td></tr>
 <tr class="separator:addbd35e4e25fa9df04cbe8f9ff0c8f74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af79b4e161525238065ddeeeb26a7b318"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_z_m_q_x_1_1_aml_subscriber.html#af79b4e161525238065ddeeeb26a7b318">terminate</a> ()</td></tr>
@@ -126,6 +128,10 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a130b57f7ad856c3b50feb75a570fd249"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6ee99a67d09b95ec2d2dd583dd5a1cf"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_e_z_m_q_x_1_1_aml_subscriber.html">EZMQX::AmlSubscriber</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_z_m_q_x_1_1_aml_subscriber.html#ab6ee99a67d09b95ec2d2dd583dd5a1cf">getSubscriber</a> (const std::list&lt; <a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a> &gt; &amp;topics, <a class="el" href="_e_z_m_q_x_a_m_l_subscriber_8h.html#afdb414a7d64c662b2eb6596e55f09830">EZMQX::AmlSubCb</a> &amp;subCb, <a class="el" href="_e_z_m_q_x_a_m_l_subscriber_8h.html#a47dac475b9d768049400dab865ac9614">EZMQX::SubErrCb</a> &amp;errCb)</td></tr>
 <tr class="separator:ab6ee99a67d09b95ec2d2dd583dd5a1cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbdd2e5816b056ceb3240c8f9b7033c0"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_e_z_m_q_x_1_1_aml_subscriber.html">EZMQX::AmlSubscriber</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_z_m_q_x_1_1_aml_subscriber.html#afbdd2e5816b056ceb3240c8f9b7033c0">getSecuredSubscriber</a> (const <a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a> &amp;topic, const std::string &amp;serverPublicKey, const std::string &amp;clientPublicKey, const std::string &amp;clientSecretKey, <a class="el" href="_e_z_m_q_x_a_m_l_subscriber_8h.html#afdb414a7d64c662b2eb6596e55f09830">EZMQX::AmlSubCb</a> &amp;subCb, <a class="el" href="_e_z_m_q_x_a_m_l_subscriber_8h.html#a47dac475b9d768049400dab865ac9614">EZMQX::SubErrCb</a> &amp;errCb)</td></tr>
+<tr class="separator:afbdd2e5816b056ceb3240c8f9b7033c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2eda2cd934c00571d3d72b8dda0d16ac"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_e_z_m_q_x_1_1_aml_subscriber.html">EZMQX::AmlSubscriber</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_e_z_m_q_x_1_1_aml_subscriber.html#a2eda2cd934c00571d3d72b8dda0d16ac">getSecuredSubscriber</a> (const std::map&lt; <a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a>, std::string &gt; &amp;topics, const std::string &amp;clientPublicKey, const std::string &amp;clientSecretKey, <a class="el" href="_e_z_m_q_x_a_m_l_subscriber_8h.html#afdb414a7d64c662b2eb6596e55f09830">EZMQX::AmlSubCb</a> &amp;subCb, <a class="el" href="_e_z_m_q_x_a_m_l_subscriber_8h.html#a47dac475b9d768049400dab865ac9614">EZMQX::SubErrCb</a> &amp;errCb)</td></tr>
+<tr class="separator:a2eda2cd934c00571d3d72b8dda0d16ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -138,6 +144,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>cb</b> (const std::st
 <tr class="memitem:ab1d8f51fdd21cb1a513999c91c92bc6f"><td class="memItemLeft" align="right" valign="top"><a id="ab1d8f51fdd21cb1a513999c91c92bc6f"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>AmlSubscriber</b> (const std::string &amp;topic, bool isHierarchical, <a class="el" href="_e_z_m_q_x_a_m_l_subscriber_8h.html#afdb414a7d64c662b2eb6596e55f09830">EZMQX::AmlSubCb</a> &amp;subCb, <a class="el" href="_e_z_m_q_x_a_m_l_subscriber_8h.html#a47dac475b9d768049400dab865ac9614">EZMQX::SubErrCb</a> &amp;errCb)</td></tr>
 <tr class="separator:ab1d8f51fdd21cb1a513999c91c92bc6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6453bb244dc4c28e299817e4adc51f21"><td class="memItemLeft" align="right" valign="top"><a id="a6453bb244dc4c28e299817e4adc51f21"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>AmlSubscriber</b> (const <a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a> &amp;topic, const std::string &amp;serverPublicKey, const std::string &amp;clientPublicKey, const std::string &amp;clientSecretKey, <a class="el" href="_e_z_m_q_x_a_m_l_subscriber_8h.html#afdb414a7d64c662b2eb6596e55f09830">EZMQX::AmlSubCb</a> &amp;subCb, <a class="el" href="_e_z_m_q_x_a_m_l_subscriber_8h.html#a47dac475b9d768049400dab865ac9614">EZMQX::SubErrCb</a> &amp;errCb)</td></tr>
+<tr class="separator:a6453bb244dc4c28e299817e4adc51f21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5dadba6ccb47987ff50b2c094f4820f4"><td class="memItemLeft" align="right" valign="top"><a id="a5dadba6ccb47987ff50b2c094f4820f4"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>AmlSubscriber</b> (const std::map&lt; <a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a>, std::string &gt; &amp;topics, const std::string &amp;clientPublicKey, const std::string &amp;clientSecretKey, <a class="el" href="_e_z_m_q_x_a_m_l_subscriber_8h.html#afdb414a7d64c662b2eb6596e55f09830">EZMQX::AmlSubCb</a> &amp;subCb, <a class="el" href="_e_z_m_q_x_a_m_l_subscriber_8h.html#a47dac475b9d768049400dab865ac9614">EZMQX::SubErrCb</a> &amp;errCb)</td></tr>
+<tr class="separator:a5dadba6ccb47987ff50b2c094f4820f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae846e38106145d576c97a483c5d807f5"><td class="memItemLeft" align="right" valign="top"><a id="ae846e38106145d576c97a483c5d807f5"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>AmlSubscriber</b> (const <a class="el" href="class_e_z_m_q_x_1_1_aml_subscriber.html">AmlSubscriber</a> &amp;)=delete</td></tr>
 <tr class="separator:ae846e38106145d576c97a483c5d807f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -157,21 +169,33 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>initialize</b> (const
 <tr class="memitem:a40a259db20d4b0c6c05b321f928e0626 inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memItemLeft" align="right" valign="top"><a id="a40a259db20d4b0c6c05b321f928e0626"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>initialize</b> (const std::list&lt; <a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a> &gt; &amp;topics)</td></tr>
 <tr class="separator:a40a259db20d4b0c6c05b321f928e0626 inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf25902663e0162b80b0eef93ba38e36 inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memItemLeft" align="right" valign="top"><a id="acf25902663e0162b80b0eef93ba38e36"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>initialize</b> (const <a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a> &amp;topic, const std::string &amp;serverPublicKey, const std::string &amp;clientPublicKey, const std::string &amp;clientSecretKey)</td></tr>
+<tr class="separator:acf25902663e0162b80b0eef93ba38e36 inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fc1f2e9732e89ec25f7c31ea3b0102a inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memItemLeft" align="right" valign="top"><a id="a5fc1f2e9732e89ec25f7c31ea3b0102a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>initialize</b> (const std::map&lt; <a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a>, std::string &gt; &amp;topics, const std::string &amp;clientPublicKey, const std::string &amp;clientSecretKey)</td></tr>
+<tr class="separator:a5fc1f2e9732e89ec25f7c31ea3b0102a inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac9f547260ef0521236bbe82c2f64c106 inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memItemLeft" align="right" valign="top"><a id="ac9f547260ef0521236bbe82c2f64c106"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>validateTopic</b> (const std::string &amp;topic)</td></tr>
 <tr class="separator:ac9f547260ef0521236bbe82c2f64c106 inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3da617f6a90024afa0f2fa4e946f235 inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memItemLeft" align="right" valign="top"><a id="ae3da617f6a90024afa0f2fa4e946f235"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>verifyTopics</b> (const std::string &amp;topic, std::list&lt; <a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a> &gt; &amp;verified, bool isHierarchical)</td></tr>
 <tr class="separator:ae3da617f6a90024afa0f2fa4e946f235 inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd815d09d4806155f948a975c42ab8e6 inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memItemLeft" align="right" valign="top"><a id="abd815d09d4806155f948a975c42ab8e6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>getSession</b> (<a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a> topic)</td></tr>
-<tr class="separator:abd815d09d4806155f948a975c42ab8e6 inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80e34894c8eab56ec689010f8b881bc9 inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memItemLeft" align="right" valign="top"><a id="a80e34894c8eab56ec689010f8b881bc9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>getSession</b> (const <a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a> &amp;topic)</td></tr>
+<tr class="separator:a80e34894c8eab56ec689010f8b881bc9 inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2d3ec7e0eb04e1020a9413e8fe837fc inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memItemLeft" align="right" valign="top"><a id="ab2d3ec7e0eb04e1020a9413e8fe837fc"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>getSession</b> (<a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a> topic, const std::string &amp;serverPublicKey, const std::string &amp;clientPublicKey, const std::string &amp;clientSecretKey)</td></tr>
+<tr class="separator:ab2d3ec7e0eb04e1020a9413e8fe837fc inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a688bd2d0bc6390fe4b26fe4a4abe0cce inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memItemLeft" align="right" valign="top"><a id="a688bd2d0bc6390fe4b26fe4a4abe0cce"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Subscriber</b> (const <a class="el" href="class_e_z_m_q_x_1_1_subscriber.html">Subscriber</a> &amp;)=delete</td></tr>
 <tr class="separator:a688bd2d0bc6390fe4b26fe4a4abe0cce inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a864148611d758f59dfc53dc3fb4afff3 inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memItemLeft" align="right" valign="top"><a id="a864148611d758f59dfc53dc3fb4afff3"></a>
 <a class="el" href="class_e_z_m_q_x_1_1_subscriber.html">Subscriber</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="class_e_z_m_q_x_1_1_subscriber.html">Subscriber</a> &amp;)=delete</td></tr>
 <tr class="separator:a864148611d758f59dfc53dc3fb4afff3 inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a412d57a996e50e2319d311aca5782824 inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memItemLeft" align="right" valign="top"><a id="a412d57a996e50e2319d311aca5782824"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isSecured</b> ()</td></tr>
+<tr class="separator:a412d57a996e50e2319d311aca5782824 inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a225d5eb0e239b931a816d259e0054202 inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memItemLeft" align="right" valign="top"><a id="a225d5eb0e239b931a816d259e0054202"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isTerminated</b> ()</td></tr>
 <tr class="separator:a225d5eb0e239b931a816d259e0054202 inherit pro_methods_class_e_z_m_q_x_1_1_subscriber"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -203,9 +227,9 @@ std::atomic_bool&#160;</td><td class="memItemRight" valign="bottom"><b>terminate
 <tr class="memitem:a9a700d7c6a171c44eef4eb6e973ff63a inherit pro_attribs_class_e_z_m_q_x_1_1_subscriber"><td class="memItemLeft" align="right" valign="top"><a id="a9a700d7c6a171c44eef4eb6e973ff63a"></a>
 EZMQX::Context *&#160;</td><td class="memItemRight" valign="bottom"><b>ctx</b></td></tr>
 <tr class="separator:a9a700d7c6a171c44eef4eb6e973ff63a inherit pro_attribs_class_e_z_m_q_x_1_1_subscriber"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78a7527e550bbf63314883038a9f2012 inherit pro_attribs_class_e_z_m_q_x_1_1_subscriber"><td class="memItemLeft" align="right" valign="top"><a id="a78a7527e550bbf63314883038a9f2012"></a>
-std::list&lt; ezmq::EZMQSubscriber * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>subscribers</b></td></tr>
-<tr class="separator:a78a7527e550bbf63314883038a9f2012 inherit pro_attribs_class_e_z_m_q_x_1_1_subscriber"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15b9a3d0d90fefe92eee84ab513a63cf inherit pro_attribs_class_e_z_m_q_x_1_1_subscriber"><td class="memItemLeft" align="right" valign="top"><a id="a15b9a3d0d90fefe92eee84ab513a63cf"></a>
+ezmq::EZMQSubscriber *&#160;</td><td class="memItemRight" valign="bottom"><b>subCtx</b></td></tr>
+<tr class="separator:a15b9a3d0d90fefe92eee84ab513a63cf inherit pro_attribs_class_e_z_m_q_x_1_1_subscriber"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aca790d929f54f07a8e362df6fe19845f inherit pro_attribs_class_e_z_m_q_x_1_1_subscriber"><td class="memItemLeft" align="right" valign="top"><a id="aca790d929f54f07a8e362df6fe19845f"></a>
 std::list&lt; <a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>storedTopics</b></td></tr>
 <tr class="separator:aca790d929f54f07a8e362df6fe19845f inherit pro_attribs_class_e_z_m_q_x_1_1_subscriber"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -221,6 +245,12 @@ EZMQX::BlockingQue *&#160;</td><td class="memItemRight" valign="bottom"><b>que</
 <tr class="memitem:aa07b8bff593c88c2ecab019387580c32 inherit pro_attribs_class_e_z_m_q_x_1_1_subscriber"><td class="memItemLeft" align="right" valign="top"><a id="aa07b8bff593c88c2ecab019387580c32"></a>
 std::thread&#160;</td><td class="memItemRight" valign="bottom"><b>mThread</b></td></tr>
 <tr class="separator:aa07b8bff593c88c2ecab019387580c32 inherit pro_attribs_class_e_z_m_q_x_1_1_subscriber"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b3e058ed9b92d9a091f0692a6a186e2 inherit pro_attribs_class_e_z_m_q_x_1_1_subscriber"><td class="memItemLeft" align="right" valign="top"><a id="a9b3e058ed9b92d9a091f0692a6a186e2"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>secured</b></td></tr>
+<tr class="separator:a9b3e058ed9b92d9a091f0692a6a186e2 inherit pro_attribs_class_e_z_m_q_x_1_1_subscriber"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb4f3a6dc7870ae2965d82cbd0af33cc inherit pro_attribs_class_e_z_m_q_x_1_1_subscriber"><td class="memItemLeft" align="right" valign="top"><a id="aeb4f3a6dc7870ae2965d82cbd0af33cc"></a>
+std::atomic_bool&#160;</td><td class="memItemRight" valign="bottom"><b>mTerminated</b></td></tr>
+<tr class="separator:aeb4f3a6dc7870ae2965d82cbd0af33cc inherit pro_attribs_class_e_z_m_q_x_1_1_subscriber"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p class="">This class Contains the APIs that subscribe AMLObject data with topic or list of topic. </p>
@@ -244,6 +274,171 @@ std::thread&#160;</td><td class="memItemRight" valign="bottom"><b>mThread</b></t
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="afbdd2e5816b056ceb3240c8f9b7033c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbdd2e5816b056ceb3240c8f9b7033c0">&#9670;&nbsp;</a></span>getSecuredSubscriber() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="class_e_z_m_q_x_1_1_aml_subscriber.html">EZMQX::AmlSubscriber</a>* EZMQX::AmlSubscriber::getSecuredSubscriber </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a> &amp;&#160;</td>
+          <td class="paramname"><em>topic</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>serverPublicKey</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>clientPublicKey</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>clientSecretKey</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_e_z_m_q_x_a_m_l_subscriber_8h.html#afdb414a7d64c662b2eb6596e55f09830">EZMQX::AmlSubCb</a> &amp;&#160;</td>
+          <td class="paramname"><em>subCb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_e_z_m_q_x_a_m_l_subscriber_8h.html#a47dac475b9d768049400dab865ac9614">EZMQX::SubErrCb</a> &amp;&#160;</td>
+          <td class="paramname"><em>errCb</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p class="">Get instance of <a class="el" href="class_e_z_m_q_x_1_1_aml_subscriber.html">AmlSubscriber</a> class.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">topic</td><td>Instance of topic class to be Subscribed. </td></tr>
+    <tr><td class="paramname">serverPublicKey</td><td>public key for server(publisher) that related with given topic. </td></tr>
+    <tr><td class="paramname">clientPublicKey</td><td>public key for client(subscriber) that shared with given topic's owner. </td></tr>
+    <tr><td class="paramname">clientSecretKey</td><td>secret key for client(subscriber) that pair of given clientPublickey </td></tr>
+    <tr><td class="paramname">subCb</td><td>Callback to get AMLObject data on given topic. </td></tr>
+    <tr><td class="paramname">errCb</td><td>errCb Error callback to get error code with topic information.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="class_e_z_m_q_x_1_1_exception.html">EZMQX::Exception</a></td><td>thrown with ErrorCode, See below for detail.<br />
+EZMQX::NotInitialized - Stack not initialized.<br />
+EZMQX::InvalidTopic - Unsecured topic passed.<br />
+EZMQX::SessionUnavailable - Could not connect with given endpoint.<br />
+EZMQX::UnknownAmlModel - Could not find Aml Model.<br />
+EZMQX::UnknownState - Unknown reason.<br />
+ </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_e_z_m_q_x_1_1_exception.html">EZMQX::Exception</a></dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>instance of <a class="el" href="class_e_z_m_q_x_1_1_aml_subscriber.html">AmlSubscriber</a> class. </dd></dl>
+
+</div>
+</div>
+<a id="a2eda2cd934c00571d3d72b8dda0d16ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2eda2cd934c00571d3d72b8dda0d16ac">&#9670;&nbsp;</a></span>getSecuredSubscriber() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="class_e_z_m_q_x_1_1_aml_subscriber.html">EZMQX::AmlSubscriber</a>* EZMQX::AmlSubscriber::getSecuredSubscriber </td>
+          <td>(</td>
+          <td class="paramtype">const std::map&lt; <a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a>, std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>topics</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>clientPublicKey</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>clientSecretKey</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_e_z_m_q_x_a_m_l_subscriber_8h.html#afdb414a7d64c662b2eb6596e55f09830">EZMQX::AmlSubCb</a> &amp;&#160;</td>
+          <td class="paramname"><em>subCb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_e_z_m_q_x_a_m_l_subscriber_8h.html#a47dac475b9d768049400dab865ac9614">EZMQX::SubErrCb</a> &amp;&#160;</td>
+          <td class="paramname"><em>errCb</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p class="">Get instance of <a class="el" href="class_e_z_m_q_x_1_1_aml_subscriber.html">AmlSubscriber</a> class.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">topics</td><td>Map of <a class="el" href="class_e_z_m_q_x_1_1_topic.html">Topic</a> and public keys. </td></tr>
+    <tr><td class="paramname">clientPublicKey</td><td>public key for client(subscriber) that shared with given topic's owner. </td></tr>
+    <tr><td class="paramname">clientSecretKey</td><td>secret key for client(subscriber) that pair of given clientPublickey </td></tr>
+    <tr><td class="paramname">subCb</td><td>Callback to get AMLObject data on given topic. </td></tr>
+    <tr><td class="paramname">errCb</td><td>errCb Error callback to get error code with topic information.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="class_e_z_m_q_x_1_1_exception.html">EZMQX::Exception</a></td><td>thrown with ErrorCode, See below for detail.<br />
+EZMQX::NotInitialized - Stack not initialized.<br />
+EZMQX::InvalidTopic - Unsecured topic passed.<br />
+EZMQX::SessionUnavailable - Could not connect with given endpoint.<br />
+EZMQX::UnknownAmlModel - Could not find Aml Model.<br />
+EZMQX::UnknownState - Unknown reason.<br />
+ </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_e_z_m_q_x_1_1_exception.html">EZMQX::Exception</a></dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>instance of <a class="el" href="class_e_z_m_q_x_1_1_aml_subscriber.html">AmlSubscriber</a> class. </dd></dl>
+
+</div>
+</div>
 <a id="a9ce68040037ca869a0c697792e78d10e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9ce68040037ca869a0c697792e78d10e">&#9670;&nbsp;</a></span>getSubscriber() <span class="overload">[1/3]</span></h2>
 
@@ -303,7 +498,7 @@ std::thread&#160;</td><td class="memItemRight" valign="bottom"><b>mThread</b></t
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="class_e_z_m_q_x_1_1_exception.html">EZMQX::Exception</a></td><td>thrown with ErrorCode, See below for detail.<br />
 EZMQX::NotInitialized - Stack not initialized.<br />
-EZMQX::InvalidTopic - <a class="el" href="class_e_z_m_q_x_1_1_topic.html">Topic</a> validation fail.<br />
+EZMQX::InvalidTopic - <a class="el" href="class_e_z_m_q_x_1_1_topic.html">Topic</a> validation fail or secured topic passed.<br />
 EZMQX::TnsNotAvailable - Tns service not available, use DockerMode or set Tns information for StandAloneMode.<br />
 EZMQX::RestError - Rest error, see detail on contained message.<br />
 EZMQX::NoTopicMatched - Could not find matched topic on tns service with given topic.<br />
@@ -371,6 +566,7 @@ EZMQX::UnknownState - Unknown reason.<br />
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="class_e_z_m_q_x_1_1_exception.html">EZMQX::Exception</a></td><td>thrown with ErrorCode, See below for detail.<br />
 EZMQX::NotInitialized - Stack not initialized.<br />
+EZMQX::InvalidTopic - Secured topic passed.<br />
 EZMQX::SessionUnavailable - Could not connect with given endpoint.<br />
 EZMQX::UnknownAmlModel - Could not find Aml Model.<br />
 EZMQX::UnknownState - Unknown reason.<br />
@@ -435,6 +631,7 @@ EZMQX::UnknownState - Unknown reason.<br />
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="class_e_z_m_q_x_1_1_exception.html">EZMQX::Exception</a></td><td>thrown with ErrorCode, See below for detail.<br />
 EZMQX::NotInitialized - Stack not initialized.<br />
+EZMQX::InvalidTopic - Secured topic passed.<br />
 EZMQX::SessionUnavailable - Could not connect with given endpoint.<br />
 EZMQX::UnknownAmlModel - Could not find Aml Model.<br />
 EZMQX::UnknownState - Unknown reason.<br />
@@ -463,6 +660,25 @@ EZMQX::UnknownState - Unknown reason.<br />
 </div><div class="memdoc">
 <p class="">Get list of <a class="el" href="class_e_z_m_q_x_1_1_topic.html">Topic</a> instance that subscribed.</p>
 <dl class="section return"><dt>Returns</dt><dd>list of <a class="el" href="class_e_z_m_q_x_1_1_topic.html">Topic</a> instance that subscribed. </dd></dl>
+
+</div>
+</div>
+<a id="adc999ddae8768ba3ae1613728619b941"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc999ddae8768ba3ae1613728619b941">&#9670;&nbsp;</a></span>isSecured()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool EZMQX::AmlSubscriber::isSecured </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p class="">Return true if subscriber is secured</p>
+<dl class="section return"><dt>Returns</dt><dd>bool Return true if subscriber is secured </dd></dl>
 
 </div>
 </div>
@@ -504,7 +720,7 @@ EZMQX::UnknownState - Unknown reason.<br />
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/home/bgchun2/work/protocol-ezmq-plus-cpp/include/<a class="el" href="_e_z_m_q_x_a_m_l_subscriber_8h_source.html">EZMQXAMLSubscriber.h</a></li>
+<li><a class="el" href="_e_z_m_q_x_a_m_l_subscriber_8h_source.html">EZMQXAMLSubscriber.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

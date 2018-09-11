@@ -1,8 +1,10 @@
 var class_e_z_m_q_x_1_1_topic =
 [
     [ "Topic", "class_e_z_m_q_x_1_1_topic.html#a813f1966eaff43c2d2c3e4265111ac66", null ],
-    [ "Topic", "class_e_z_m_q_x_1_1_topic.html#ae9547d519945c169842584d4ab4fd9c2", null ],
-    [ "getDatamodel", "class_e_z_m_q_x_1_1_topic.html#a10f635bf94a30b27a9b910fe1e2b487b", null ],
-    [ "getEndpoint", "class_e_z_m_q_x_1_1_topic.html#a8988df440d14759e05e50376224670df", null ],
-    [ "getName", "class_e_z_m_q_x_1_1_topic.html#ae733c5d1eb91050445934ff6a3b828dc", null ]
+    [ "Topic", "class_e_z_m_q_x_1_1_topic.html#a2e32e9b1a8322d37e12d374c3aef0ae9", null ],
+    [ "getDatamodel", "class_e_z_m_q_x_1_1_topic.html#aa4312cf30cb83a0ddf8940922f92ab38", null ],
+    [ "getEndpoint", "class_e_z_m_q_x_1_1_topic.html#ae31833462a109acba7a272f4909b2b4e", null ],
+    [ "getName", "class_e_z_m_q_x_1_1_topic.html#a21807c7f6fd7db5b93b83d3729e6035e", null ],
+    [ "isSecured", "class_e_z_m_q_x_1_1_topic.html#aa527bff470a57f4c1efdeb4ee8ae1f5c", null ],
+    [ "operator<", "class_e_z_m_q_x_1_1_topic.html#a0fcfa50e2826beba833816e99292db64", null ]
 ];

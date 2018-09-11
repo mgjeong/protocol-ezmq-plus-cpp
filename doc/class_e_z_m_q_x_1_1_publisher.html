@@ -114,15 +114,18 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>validateTopic</b> (co
 <tr class="memitem:ab68dff275d73041be87d9c3972b700ee"><td class="memItemLeft" align="right" valign="top"><a id="ab68dff275d73041be87d9c3972b700ee"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>registerTopic</b> (<a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a> &amp;topic)</td></tr>
 <tr class="separator:ab68dff275d73041be87d9c3972b700ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a642515440b3593b3e1066844c93a47d5"><td class="memItemLeft" align="right" valign="top"><a id="a642515440b3593b3e1066844c93a47d5"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Publisher</b> (int optionalPort)</td></tr>
-<tr class="separator:a642515440b3593b3e1066844c93a47d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e57d4d153028f0105f76759b733de7b"><td class="memItemLeft" align="right" valign="top"><a id="a4e57d4d153028f0105f76759b733de7b"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Publisher</b> (int optionalPort, const std::string &amp;serverSecretKey)</td></tr>
+<tr class="separator:a4e57d4d153028f0105f76759b733de7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b86cdb23d455bf3dbc8f9f2113badd5"><td class="memItemLeft" align="right" valign="top"><a id="a5b86cdb23d455bf3dbc8f9f2113badd5"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Publisher</b> (const <a class="el" href="class_e_z_m_q_x_1_1_publisher.html">Publisher</a> &amp;)=delete</td></tr>
 <tr class="separator:a5b86cdb23d455bf3dbc8f9f2113badd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad13dfd33f8d7bc67ee79ad25617c4f42"><td class="memItemLeft" align="right" valign="top"><a id="ad13dfd33f8d7bc67ee79ad25617c4f42"></a>
 <a class="el" href="class_e_z_m_q_x_1_1_publisher.html">Publisher</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="class_e_z_m_q_x_1_1_publisher.html">Publisher</a> &amp;)=delete</td></tr>
 <tr class="separator:ad13dfd33f8d7bc67ee79ad25617c4f42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35b84c2227b3e94431595df89a0ad5a1"><td class="memItemLeft" align="right" valign="top"><a id="a35b84c2227b3e94431595df89a0ad5a1"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isSecured</b> ()</td></tr>
+<tr class="separator:a35b84c2227b3e94431595df89a0ad5a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc73980532ec490487a9cec8229c8b89"><td class="memItemLeft" align="right" valign="top"><a id="acc73980532ec490487a9cec8229c8b89"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isTerminated</b> ()</td></tr>
 <tr class="separator:acc73980532ec490487a9cec8229c8b89"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -156,6 +159,9 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>localPort</b></td></tr
 <tr class="memitem:ab023517f1f7da39b80a449ab6f94b36f"><td class="memItemLeft" align="right" valign="top"><a id="ab023517f1f7da39b80a449ab6f94b36f"></a>
 <a class="el" href="class_e_z_m_q_x_1_1_topic.html">EZMQX::Topic</a>&#160;</td><td class="memItemRight" valign="bottom"><b>topic</b></td></tr>
 <tr class="separator:ab023517f1f7da39b80a449ab6f94b36f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e6b379528871f078b0c59a4b28def5f"><td class="memItemLeft" align="right" valign="top"><a id="a3e6b379528871f078b0c59a4b28def5f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>secured</b></td></tr>
+<tr class="separator:a3e6b379528871f078b0c59a4b28def5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0498a2f7687d2b00bb9d888bfb21bc5"><td class="memItemLeft" align="right" valign="top"><a id="ac0498a2f7687d2b00bb9d888bfb21bc5"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>token</b></td></tr>
 <tr class="separator:ac0498a2f7687d2b00bb9d888bfb21bc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -169,7 +175,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>Context</b></td></tr
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p class="">Super class for <a class="el" href="class_e_z_m_q_x_1_1_publisher.html">Publisher</a>. </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li>/home/bgchun2/work/protocol-ezmq-plus-cpp/include/<a class="el" href="_e_z_m_q_x_publisher_8h_source.html">EZMQXPublisher.h</a></li>
+<li><a class="el" href="_e_z_m_q_x_publisher_8h_source.html">EZMQXPublisher.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
