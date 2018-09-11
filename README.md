@@ -33,6 +33,12 @@ protocol-ezmq-plus-cpp is a library which provides a messaging interface with Au
   $ sudo apt-get install cmake3
   ```
 
+- libsodium
+  - How to install
+  ```
+  $ sudo apt-get install libsodium-dev 
+  ```
+
 ## API Reference ##
 - Reference ezmq plus library APIs : [doc/index.html](doc/index.html)
 
@@ -109,6 +115,7 @@ help:-
         - libjsoncpp.so</br>
         - libprotobuf.so</br>
         - libzmq.so </br>
+        - libsodium.so </br>
    **(B) If microservice wants to link ezmq plus statically following are the libraries it needs to link:**</br>
         - libezmq_plus.a</br>
         - libezmq.a</br>
@@ -117,6 +124,7 @@ help:-
         - libjsoncpp.a</br>
         - libprotobuf.a</br>
         - libzmq.a </br>
+        - libsodium.so </br>
 
 ## Docker Build sample ##
 1. Reference [Dockerfile_arm](Dockerfile_arm) on repository.

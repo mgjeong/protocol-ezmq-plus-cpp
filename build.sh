@@ -25,7 +25,7 @@ install_dependencies() {
         git checkout v4.2.2
         ./version.sh
         ./autogen.sh
-        ./configure
+        ./configure --with-libsodium=yes
         make -j 8
         sudo make install
         sudo ldconfig

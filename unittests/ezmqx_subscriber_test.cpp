@@ -185,6 +185,86 @@ TEST_F(SubStandAloneTest, getSecuredAmlSubscriberWithWrongKey)
     }
 }
 
+TEST_F(SubStandAloneTest, getSecuredAmlSubscriberWithMap)
+{
+    EZMQX::AmlSubCb subCb = [](std::string topic, const AML::AMLObject& payload){std::cout << "subCb called" << std::endl << "topic: " << topic << std::endl; printAMLObject(payload);};
+    EZMQX::SubErrCb errCb = [](std::string topic, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl << "topic: " <<  topic << std::endl << "err: " << errCode << std::endl;};
+
+    EZMQX::AmlSubscriber* sub1 = nullptr;
+
+    std::map<EZMQX::Topic, std::string> topics;
+
+    topics.insert(std::pair<EZMQX::Topic, std::string>(getSecuredTopic(), getServerPublicKey()));
+
+    sub1 = EZMQX::AmlSubscriber::getSecuredSubscriber(topics, getclientPublicKey(), getclientPrivateKey(), subCb, errCb);
+
+    if (sub1)
+    {
+        sub1->isTerminated();
+        delete sub1;
+    }
+}
+
+TEST_F(SubStandAloneTest, getSecuredAmlSubscriberWithMapAndUnsecuredTopic)
+{
+    EZMQX::AmlSubCb subCb = [](std::string topic, const AML::AMLObject& payload){std::cout << "subCb called" << std::endl << "topic: " << topic << std::endl; printAMLObject(payload);};
+    EZMQX::SubErrCb errCb = [](std::string topic, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl << "topic: " <<  topic << std::endl << "err: " << errCode << std::endl;};
+
+    EZMQX::AmlSubscriber* sub1 = nullptr;
+
+    std::map<EZMQX::Topic, std::string> topics;
+
+    topics.insert(std::pair<EZMQX::Topic, std::string>(getUnsecuredTopic(), getServerPublicKey()));
+
+    EXPECT_THROW(sub1 = EZMQX::AmlSubscriber::getSecuredSubscriber(topics, getclientPublicKey(), getclientPrivateKey(), subCb, errCb), EZMQX::Exception);
+
+    if (sub1)
+    {
+        sub1->isTerminated();
+        delete sub1;
+    }
+}
+
+TEST_F(SubStandAloneTest, getSecuredAmlSubscriberWithMapAndWrongServerKey)
+{
+    EZMQX::AmlSubCb subCb = [](std::string topic, const AML::AMLObject& payload){std::cout << "subCb called" << std::endl << "topic: " << topic << std::endl; printAMLObject(payload);};
+    EZMQX::SubErrCb errCb = [](std::string topic, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl << "topic: " <<  topic << std::endl << "err: " << errCode << std::endl;};
+
+    EZMQX::AmlSubscriber* sub1 = nullptr;
+
+    std::map<EZMQX::Topic, std::string> topics;
+
+    topics.insert(std::pair<EZMQX::Topic, std::string>(getSecuredTopic(), "THIS_IS_WRONG_KEY"));
+
+    EXPECT_THROW(sub1 = EZMQX::AmlSubscriber::getSecuredSubscriber(topics, getclientPublicKey(), getclientPrivateKey(), subCb, errCb), EZMQX::Exception);
+
+    if (sub1)
+    {
+        sub1->isTerminated();
+        delete sub1;
+    }
+}
+
+TEST_F(SubStandAloneTest, getSecuredAmlSubscriberWithMapAndWrongClientKey)
+{
+    EZMQX::AmlSubCb subCb = [](std::string topic, const AML::AMLObject& payload){std::cout << "subCb called" << std::endl << "topic: " << topic << std::endl; printAMLObject(payload);};
+    EZMQX::SubErrCb errCb = [](std::string topic, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl << "topic: " <<  topic << std::endl << "err: " << errCode << std::endl;};
+
+    EZMQX::AmlSubscriber* sub1 = nullptr;
+
+    std::map<EZMQX::Topic, std::string> topics;
+
+    topics.insert(std::pair<EZMQX::Topic, std::string>(getSecuredTopic(), getServerPublicKey()));
+
+    EXPECT_THROW(sub1 = EZMQX::AmlSubscriber::getSecuredSubscriber(topics, "THIS_IS_WRONG_KEY", getclientPrivateKey(), subCb, errCb), EZMQX::Exception);
+
+    if (sub1)
+    {
+        sub1->isTerminated();
+        delete sub1;
+    }
+}
+
 //Xml Test
 
 TEST_F(SubDockerTest, XmlSubFailTest)
@@ -364,6 +444,87 @@ TEST_F(SubStandAloneTest, getSecuredXmlSubscriberWithWrongKey)
     EZMQX::XmlSubscriber* sub1 = nullptr;
 
     EXPECT_THROW(sub1 = EZMQX::XmlSubscriber::getSecuredSubscriber(getSecuredTopic(), "THIS_IS_WRONG_KEY", getclientPublicKey(), getclientPrivateKey(), subCb, errCb), EZMQX::Exception);
+
+    if (sub1)
+    {
+        sub1->isTerminated();
+        delete sub1;
+    }
+}
+
+TEST_F(SubStandAloneTest, getSecuredXmlSubscriberWithMap)
+{
+    EZMQX::XmlSubCb subCb = [](std::string topic, const std::string& payload){std::cout << "subCb called" << std::endl << "topic: " <<  topic << std::endl << payload << std::endl; std::cout << payload << std::endl;};
+    EZMQX::SubErrCb errCb = [](std::string topic, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl << "topic: " <<  topic << std::endl << "err: " << errCode << std::endl;};
+
+    EZMQX::XmlSubscriber* sub1 = nullptr;
+
+    std::map<EZMQX::Topic, std::string> topics;
+
+    topics.insert(std::pair<EZMQX::Topic, std::string>(getSecuredTopic(), getServerPublicKey()));
+
+
+    sub1 = EZMQX::XmlSubscriber::getSecuredSubscriber(topics, getclientPublicKey(), getclientPrivateKey(), subCb, errCb);
+
+    if (sub1)
+    {
+        sub1->isTerminated();
+        delete sub1;
+    }
+}
+
+TEST_F(SubStandAloneTest, getSecuredXmlSubscriberWithMapAndUnsecuredTopic)
+{
+    EZMQX::XmlSubCb subCb = [](std::string topic, const std::string& payload){std::cout << "subCb called" << std::endl << "topic: " <<  topic << std::endl << payload << std::endl; std::cout << payload << std::endl;};
+    EZMQX::SubErrCb errCb = [](std::string topic, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl << "topic: " <<  topic << std::endl << "err: " << errCode << std::endl;};
+
+    EZMQX::XmlSubscriber* sub1 = nullptr;
+
+    std::map<EZMQX::Topic, std::string> topics;
+
+    topics.insert(std::pair<EZMQX::Topic, std::string>(getUnsecuredTopic(), getServerPublicKey()));
+
+    EXPECT_THROW(sub1 = EZMQX::XmlSubscriber::getSecuredSubscriber(topics, getclientPublicKey(), getclientPrivateKey(), subCb, errCb), EZMQX::Exception);
+
+    if (sub1)
+    {
+        sub1->isTerminated();
+        delete sub1;
+    }
+}
+
+TEST_F(SubStandAloneTest, getSecuredXmlSubscriberWithMapAndWrongServerKey)
+{
+    EZMQX::XmlSubCb subCb = [](std::string topic, const std::string& payload){std::cout << "subCb called" << std::endl << "topic: " <<  topic << std::endl << payload << std::endl; std::cout << payload << std::endl;};
+    EZMQX::SubErrCb errCb = [](std::string topic, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl << "topic: " <<  topic << std::endl << "err: " << errCode << std::endl;};
+
+    EZMQX::XmlSubscriber* sub1 = nullptr;
+
+    std::map<EZMQX::Topic, std::string> topics;
+
+    topics.insert(std::pair<EZMQX::Topic, std::string>(getSecuredTopic(), "THIS_IS_WRONG_KEY"));
+
+    EXPECT_THROW(sub1 = EZMQX::XmlSubscriber::getSecuredSubscriber(topics, getclientPublicKey(), getclientPrivateKey(), subCb, errCb), EZMQX::Exception);
+
+    if (sub1)
+    {
+        sub1->isTerminated();
+        delete sub1;
+    }
+}
+
+TEST_F(SubStandAloneTest, getSecuredXmlSubscriberWithMapAndWrongClientKey)
+{
+    EZMQX::XmlSubCb subCb = [](std::string topic, const std::string& payload){std::cout << "subCb called" << std::endl << "topic: " <<  topic << std::endl << payload << std::endl; std::cout << payload << std::endl;};
+    EZMQX::SubErrCb errCb = [](std::string topic, EZMQX::ErrorCode errCode){std::cout << "errCb called" << std::endl << "topic: " <<  topic << std::endl << "err: " << errCode << std::endl;};
+
+    EZMQX::XmlSubscriber* sub1 = nullptr;
+
+    std::map<EZMQX::Topic, std::string> topics;
+
+    topics.insert(std::pair<EZMQX::Topic, std::string>(getSecuredTopic(), getServerPublicKey()));
+
+    EXPECT_THROW(sub1 = EZMQX::XmlSubscriber::getSecuredSubscriber(topics, "THIS_IS_WRONG_KEY", getclientPrivateKey(), subCb, errCb), EZMQX::Exception);
 
     if (sub1)
     {
