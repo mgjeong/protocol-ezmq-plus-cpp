@@ -2,6 +2,9 @@
 
 EZMQ_PLUS_WITH_DEP=true
 
+PROTOCOL_EZMQ_CPP_VERSION=v1.0_rc1
+DATAMODEL_AML_CPP_VERSION=v1.0_rc1
+
 PROJECT_ROOT=$(pwd)
 DEP_ROOT=$(pwd)/dependencies
 EZMQ_PLUS_BUILD_MODE="release"
@@ -75,6 +78,7 @@ install_dependencies() {
         git clone git@github.sec.samsung.net:RS7-EdgeComputing/protocol-ezmq-cpp.git
     fi
     cd ./protocol-ezmq-cpp
+    git checkout ${PROTOCOL_EZMQ_CPP_VERSION}
 
     echo "build protocol-ezmq-cpp"
     if [ "debug" = ${EZMQ_PLUS_BUILD_MODE} ]; then
@@ -95,6 +99,7 @@ install_dependencies() {
         git clone git@github.sec.samsung.net:RS7-EdgeComputing/datamodel-aml-cpp.git
     fi
     cd datamodel-aml-cpp
+    git checkout ${DATAMODEL_AML_CPP_VERSION}
 
     if [ "debug" = ${EZMQ_PLUS_BUILD_MODE} ]; then
          ./build_common.sh --target_arch=x86_64 --build_mode=debug --logging=on

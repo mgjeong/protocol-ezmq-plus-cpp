@@ -5,6 +5,7 @@ MAINTAINER bg.chun@samsung.com
 WORKDIR /
 RUN git clone git@github.sec.samsung.net:RS7-EdgeComputing/protocol-ezmq-plus-cpp.git
 WORKDIR /protocol-ezmq-plus-cpp
+RUN git checkout v1.0_rc1
 RUN sh build_arm.sh --with_dependencies=false --build_mode=release
 RUN sh install_arm.sh
 
