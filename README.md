@@ -38,7 +38,13 @@ protocol-ezmq-plus-cpp is a library which provides a messaging interface with Au
   ```
   $ sudo apt-get install libsodium-dev 
   ```
-
+  
+- **Important** information regarding **libcurl**:
+  -  Protocol-ezmq-plus-cpp internally builds **curl-7.58.0** and install it in /usr/local/lib.
+  - In case of **libcurl linking issue** while building protocol-ezmq-plus-cpp library, following can be done:
+    - Uninstall all libcurl versions from the system.
+    - Do a fresh build of protocol-ezmq-plus-cpp sdk.  
+  
 ## API Reference ##
 - Reference ezmq plus library APIs : [doc/index.html](doc/index.html)
 
