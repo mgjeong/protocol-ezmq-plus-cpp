@@ -201,6 +201,7 @@ void EZMQX::Subscriber::getSession(EZMQX::Topic topic, const std::string &server
         if (subCtx)
         {
             delete subCtx;
+            subCtx = nullptr;
         }
 
         throw e;
@@ -210,6 +211,7 @@ void EZMQX::Subscriber::getSession(EZMQX::Topic topic, const std::string &server
         if (subCtx)
         {
             delete subCtx;
+            subCtx = nullptr;
         }
 
         throw EZMQX::Exception("Could not connect endpoint " + ep.toString(), EZMQX::UnKnownState);
