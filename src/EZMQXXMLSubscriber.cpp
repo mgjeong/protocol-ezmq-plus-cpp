@@ -149,6 +149,10 @@ void EZMQX::XmlSubscriber::cb(const std::string &_topic, const AML::AMLObject *o
             isError = true;
         }
     }
+    else
+    {
+        isError = true;
+    }
 
     if (isError)
     {
