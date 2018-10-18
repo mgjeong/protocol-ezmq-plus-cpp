@@ -27,6 +27,7 @@
 #include <EZMQXBlockingQue.h>
 #include <EZMQXLogger.h>
 #include <chrono>
+#include <regex>
 #include <EZMQErrorCodes.h>
 
 #define TAG "EZMQXSubscriber"
@@ -512,15 +513,12 @@ void EZMQX::Subscriber::validateTopic(const std::string& topic)
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
 
-//Regex support is supported from  gcc-4.9 and higher
-#if defined(EZMQX_GCC_VERSION) && EZMQX_GCC_VERSION >= 40900
     std::regex pattern(TOPIC_PATTERN);
 
     if (!std::regex_match(tmp, pattern))
     {
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
-#endif
 }
 
 void EZMQX::Subscriber::verifyTopics(const std::string &topic, std::list<EZMQX::Topic> &verified, bool isHierarchical)
