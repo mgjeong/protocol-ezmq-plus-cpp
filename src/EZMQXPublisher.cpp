@@ -26,13 +26,14 @@
 #include <json/reader.h>
 #include <EZMQXLogger.h>
 #include <EZMQException.h>
+#include <regex>
 
 #define TAG "EZMQXPublisher"
 #define SLASH '/'
 #define DOUBLE_SLASH "//"
 
 static const std::string PREFIX = "/api/v1";
-static const std::string TOPIC = "/tns/topic";
+static const std::string TOPIC = "/tns/topic"; 
 static const std::string HEALTH = "/health";
 
 static const std::string PAYLOAD_OPTION = "indentation";
@@ -146,16 +147,17 @@ void EZMQX::Publisher::validateTopic(const std::string topic)
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
 
-//Regex support is supported from  gcc-4.9 and higher
-#if defined(EZMQX_GCC_VERSION) && EZMQX_GCC_VERSION >= 40900
     std::regex pattern(TOPIC_PATTERN);
+
+    EZMQX_LOG_V(DEBUG, TAG, "%s regrex entered %s", __func__, topic.c_str());
 
     if (!std::regex_match(tmp, pattern))
     {
-        EZMQX_LOG_V(DEBUG, TAG, "%s Invalid topic %s", __func__, topic);
+        EZMQX_LOG_V(DEBUG, TAG, "%s Invalid topic %s", __func__, topic.c_str());
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
-#endif
+
+    EZMQX_LOG_V(DEBUG, TAG, "%s regrex passed %s", __func__, topic.c_str());
 }
 
 void EZMQX::Publisher::registerTopic(EZMQX::Topic& regTopic)

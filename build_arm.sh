@@ -193,8 +193,11 @@ else
     scons TARGET_OS=linux TARGET_ARCH=armhf LOGGING=0
 fi
 
+#copy aml file to run samples
+if [ "debug" = ${EZMQ_PLUS_BUILD_MODE} ]; then
+    cp samples/sample_data_model.aml out/linux/armhf/debug/samples
+else
+    cp samples/sample_data_model.aml out/linux/armhf/release/samples
+fi
 
 echo "done"
-
-
-
