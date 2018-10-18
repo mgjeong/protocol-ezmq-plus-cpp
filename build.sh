@@ -187,4 +187,11 @@ else
     scons TARGET_OS=linux TARGET_ARCH=x86_64 LOGGING=0
 fi
 
+#copy aml file to run samples
+if [ "debug" = ${EZMQ_PLUS_BUILD_MODE} ]; then
+    cp samples/sample_data_model.aml out/linux/x86_64/debug/samples
+else
+    cp samples/sample_data_model.aml out/linux/x86_64/release/samples
+fi
+
 echo "done"
