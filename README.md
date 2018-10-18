@@ -47,6 +47,7 @@ protocol-ezmq-plus-cpp is a library which provides a messaging interface with Au
   
 ## API Reference ##
 - Reference ezmq plus library APIs : [doc/index.html](doc/index.html)
+- Topic Naming Rule: [Nameing Guide](TOPIC_NAMING_CONVENTION.md)
 
 ## How to build ##
 1. Goto: ~/protocol-ezmq-plus-cpp/</br>
