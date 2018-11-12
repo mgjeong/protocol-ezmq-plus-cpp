@@ -46,10 +46,6 @@ static const std::string TOPIC_PATTERN = "(\\/[a-zA-Z0-9-_*.]+)+";
 static const std::string TOPIC_WILD_CARD = "*";
 static const std::string TOPIC_WILD_PATTERNN = "/*/";
 
-#ifdef __GNUC__
-#define EZMQX_GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
-#endif
-
 EZMQX::TopicDiscovery::TopicDiscovery() : ctx(EZMQX::Context::getInstance())
 {
     EZMQX_LOG_V(DEBUG, TAG, "%s Entered", __func__);
@@ -83,8 +79,6 @@ void EZMQX::TopicDiscovery::validateTopic(std::string& topic)
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
 
-//Regex support is supported from  gcc-4.9 and higher
-#if defined(EZMQX_GCC_VERSION) && EZMQX_GCC_VERSION >= 40900
     std::regex pattern(TOPIC_PATTERN);
 
     if (!std::regex_match(tmp, pattern))
@@ -92,7 +86,7 @@ void EZMQX::TopicDiscovery::validateTopic(std::string& topic)
         EZMQX_LOG_V(ERROR, TAG, "%s Invalid topic %s", __func__, topic.c_str());
         throw EZMQX::Exception("Invalid topic", EZMQX::InvalidTopic);
     }
-#endif
+
 }
 
 void EZMQX::TopicDiscovery::verifyTopic(std::string& topic, std::list<EZMQX::Topic>& topics, bool isHierarchical)
