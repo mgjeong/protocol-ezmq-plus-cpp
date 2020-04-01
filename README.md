@@ -154,6 +154,6 @@ help:-
 
 ## How to deploy using Pharos anchor ##
 - Way1) Using Pharos Web Client with yaml file.
-   - see [Pharos Web Client Guide](https://https://github.com/edgexfoundry-holding/system-pharos-web-client)
+   - see [Pharos Web Client Guide](https://github.com/edgexfoundry-holding/system-pharos-web-client)
 - Way2) Using Pharos Anchor rest api with yaml file.
-   - see [Pharos Anchor Guide](https://https://github.com/edgexfoundry-holding/system-pharos-anchor-go)
+   - see [Pharos Anchor Guide](https://github.com/edgexfoundry-holding/system-pharos-anchor-go)
