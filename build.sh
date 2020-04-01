@@ -72,7 +72,7 @@ install_dependencies() {
     if [ -d "./protocol-ezmq-cpp" ] ; then
         echo "protocol-ezmq-cpp exist"
     else
-        git clone git@github.sec.samsung.net:RS7-EdgeComputing/protocol-ezmq-cpp.git
+        git clone git@github.com:edgexfoundry-holding/protocol-ezmq-cpp.git
     fi
     cd ./protocol-ezmq-cpp
 
@@ -92,7 +92,7 @@ install_dependencies() {
     if [ -d "./datamodel-aml-cpp" ] ; then
         echo "datamodel-aml-cpp exist"
     else
-        git clone git@github.sec.samsung.net:RS7-EdgeComputing/datamodel-aml-cpp.git
+        git clone git@github.com:edgexfoundry-holding/datamodel-aml-cpp.git
     fi
     cd datamodel-aml-cpp
 
