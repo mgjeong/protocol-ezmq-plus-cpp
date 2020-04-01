@@ -125,7 +125,6 @@ int main()
         EZMQX::Config* config = EZMQX::Config::getInstance();
 
         config->startDockerMode("tnsConf.json");
-        //config->startStandAloneMode("10.113.65.50", true, "10.113.64.62:80/tns-server");
 
         std::list<std::string> amlId = config->addAmlModel(amlPath);
 
@@ -137,7 +136,8 @@ int main()
 
         // create subscriber with test topic
 
-        EZMQX::Endpoint ep("10.113.65.50", 4000);
+	// TODO insert ip address
+        EZMQX::Endpoint ep("0.0.0.0", 4000);
 
         if (amlId.empty())
         {

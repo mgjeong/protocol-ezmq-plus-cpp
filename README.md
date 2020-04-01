@@ -143,7 +143,7 @@ help:-
     version: '2'
     services:
       ezmq-plus-loop:
-      image: docker.sec.samsung.net:5000/edge/protocol-ezmq-plus-cpp/rpi_arm:latest
+      image: ${edgexfoundry}/protocol-ezmq-plus-cpp/rpi_arm:latest
       container_name: "ezmq-plus-loop"
       command: ["./run.sh", "loop"]
       ports:
@@ -154,6 +154,6 @@ help:-
 
 ## How to deploy using Pharos anchor ##
 - Way1) Using Pharos Web Client with yaml file.
-   - see [Pharos Web Client Guide](https://github.sec.samsung.net/RS7-EdgeComputing/system-pharos-web-client)
+   - see [Pharos Web Client Guide](https://https://github.com/edgexfoundry-holding/system-pharos-web-client)
 - Way2) Using Pharos Anchor rest api with yaml file.
-   - see [Pharos Anchor Guide](https://github.sec.samsung.net/RS7-EdgeComputing/system-pharos-anchor-go#3-deploy-a-new-service-to-pharos-node-device)
+   - see [Pharos Anchor Guide](https://https://github.com/edgexfoundry-holding/system-pharos-anchor-go)
